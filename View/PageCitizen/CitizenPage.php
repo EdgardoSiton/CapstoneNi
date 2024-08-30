@@ -4,8 +4,12 @@ $nme = $_SESSION['fullname'];
 $regId = $_SESSION['citizend_id'];
 require_once '../../Model/db_connection.php';
 require_once '../../Model/staff_mod.php';
+
+// Initialize the Staff object
 $staff = new Staff($conn);
-$announcements = $staff->getAnnouncements();
+
+// Fetch announcements
+$announcements = $staff->getAnnouncements(); // Fetch all announcements
 ?>
 
 <!DOCTYPE html>
@@ -297,55 +301,66 @@ $announcements = $staff->getAnnouncements();
 
     <!-- Testimonial Start -->
     <div class="container-fluid testimonial pb-5">
-      <div class="container pb-5">
-        <div
-          class="text-center mx-auto pb-5 wow fadeInUp"
-          data-wow-delay="0.2s"
-          style="max-width: 800px"
-        >
-          <h1 class="display-4 mb-4">ANNOUNCEMENT</h1>
-          <p class="mb-0">
-            Upcoming Events in the Church: Mark your calendars for our upcoming
-            Mass Wedding, Mass Confirmation, Baptism Seminar, and First
-            Communion. Registration is required for each event.
-          </p>
-        </div>
-        <div
-          class="owl-carousel testimonial-carousel wow fadeInUp"
-          data-wow-delay="0.2s"
-        >
-        <?php foreach ($announcements as $announcement): ?>
-   
-     
-          <div class="testimonial-item bg-light rounded">
-            <div class="row g-0">
-              <div class="col-8 col-lg-8 col-xl-9">
-                <div class="d-flex flex-column my-auto text-start p-4">
-                  <div class="small">
-                    <span class="fa fa-calendar text-primary"></span>  <?php 
-        $date = htmlspecialchars(date('F j, Y', strtotime($announcement['date'])));
-        $startTime = htmlspecialchars(date('g:i a', strtotime($announcement['start_time'])));
-
-        echo "$date - $startTime";
-        ?>
-    </a>
-                  </div>
-
-                  <h4 class="text-dark mb-0">
-                  <?php echo htmlspecialchars($announcement['title']) ?>
-                  </h4>
-                  <br />
-                  <p class="mb-0">
-                  <?php echo htmlspecialchars($announcement['description']) ?>
-                  </p>
-                </div>
-              </div>
+        <div class="container pb-5">
+            <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.2s" style="max-width: 800px">
+                <h1 class="display-4 mb-4">ANNOUNCEMENT</h1>
+                <p class="mb-0">
+                    Upcoming Events in the Church: Mark your calendars for our upcoming
+                    Mass Wedding, Mass Confirmation, Baptism Seminar, and First Communion. Registration is required for each event.
+                </p>
             </div>
+            <div class="owl-carousel testimonial-carousel wow fadeInUp" data-wow-delay="0.2s">
+                <?php foreach ($announcements as $announcement): ?>
+                    <div class="testimonial-item bg-light rounded">
+                        <div class="row g-0">
+                            <div class="col-8 col-lg-8 col-xl-9">
+                                <div class="d-flex flex-column my-auto text-start p-4">
+                                    <div class="small">
+                                        <span class="fa fa-calendar text-primary"></span> 
+                                        <?php 
+                                            $date = htmlspecialchars(date('F j, Y', strtotime($announcement['date'])));
+                                            $startTime = htmlspecialchars(date('g:i a', strtotime($announcement['start_time'])));
+                                            echo "$date - $startTime";
+                                        ?>
+                                    </div>
 
-          </div>
-          <?php endforeach; ?>
+                                    <h4 class="text-dark mb-0">
+                                        <?php echo htmlspecialchars($announcement['title']); ?>
+                                    </h4>
+                                    <br />
+                                    <p class="mb-0">
+                                        <?php echo htmlspecialchars($announcement['description']); ?>
+                                    </p>
+
+                                    <?php
+                                        // Determine the form link based on event type
+                                        $eventType = htmlspecialchars($announcement['event_type']);
+                                        $formLink = '#'; // Default link in case none match
+
+                                        // Set form link based on event type
+                                        switch ($eventType) {
+                                            case 'MassBaptism':
+                                                $formLink = 'MassFillBaptismForm.php';
+                                                break;
+                                            case 'MassConfirmation':
+                                                $formLink = 'MassFillConfirmationForm.php';
+                                                break;
+                                            case 'MassWedding':
+                                                $formLink = 'MassFillWeddingForm.php';
+                                                break;
+                                            // Add more cases as needed for other event types
+                                        }
+                                    ?>
+
+                                    <a href="<?php echo $formLink; ?>?announcement_id=<?php echo $announcement['announcement_id']; ?>" class="btn btn-primary btn-rounded btn-sm">Register Now</a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
         </div>
-      </div>
     </div>
     <!-- Testimonial End -->
 

@@ -6,121 +6,249 @@ class Staff {
         $this->conn = $conn;
     
     }
-
-    public function getAnnouncements() {
+    
+    public function getAnnouncementById($announcementId) {
         $sql = "SELECT 
-                    `announcement`.`announcenment_id`,
+                    `announcement`.`announcement_id`,
                     `announcement`.`event_type`,
                     `announcement`.`title`,
                     `announcement`.`description`,
                     `announcement`.`date_created`,
                     `announcement`.`capacity`,
                     `schedule`.`date`,
-                    `schedule`.`start_time`
-               
+                    `schedule`.`start_time`,
+                    `schedule`.`end_time`
                 FROM 
                     `announcement`
                 JOIN 
                     `schedule` ON `announcement`.`schedule_id` = `schedule`.`schedule_id`
-                ORDER BY date_created DESC";
-
-        $result = $this->conn->query($sql);
-
-        if ($result === FALSE) {
-            die("Error: " . $this->conn->error);
+                WHERE
+                    `announcement`.`announcement_id` = ?
+                LIMIT 1";
+    
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $announcementId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        if ($result->num_rows > 0) {
+            return $result->fetch_assoc();
+        } else {
+            return null;
         }
-
-        $announcements = [];
-        while ($row = $result->fetch_assoc()) {
-            $announcements[] = $row;
-        }
-        return $announcements;
     }
-    public function getPendingCitizen() {
-        $sql = "SELECT 
-                    b.fullname AS citizen_name,
-                    s.date AS schedule_date,
-                    s.start_time AS schedule_start_time,
-                    b.event_name AS event_name,
-                    b.status AS approval_status,
-                    b.role AS roles,
-                    b.baptism_id AS id,
-                    'Baptism' AS type
-                FROM 
-                    citizen c
-                JOIN 
-                    schedule s ON c.citizend_id = s.citizen_id
-                JOIN 
-                    baptismfill b ON s.schedule_id = b.schedule_id
-                WHERE 
-                    b.status = 'Pending'
-                UNION ALL
-                SELECT 
-               c.fullname AS citizen_name,
-                    s.date AS schedule_date,
-                    s.start_time AS schedule_start_time,
-                    cf.event_name AS event_name,
-                    cf.status AS approval_status,
-                    cf.role AS roles,
-                    cf.confirmationfill_id AS id,
-                    'Confirmation' AS type
-                FROM 
-                    citizen c
-                JOIN 
-                    schedule s ON c.citizend_id = s.citizen_id
-                JOIN 
-                    confirmationfill cf ON s.schedule_id = cf.schedule_id
-                WHERE 
-                    cf.status = 'Pending'
-                UNION ALL
-                SELECT 
-                c.fullname AS citizen_name,
-                    s.date AS schedule_date,
-                    s.start_time AS schedule_start_time,
-                    mf.event_name AS event_name,
-                    mf.status AS approval_status,
-                    mf.role AS roles,
-                    mf.marriagefill_id AS id,
-                    'Marriage' AS type
-                FROM 
-                    citizen c
-                JOIN 
-                    schedule s ON c.citizend_id = s.citizen_id
-                JOIN 
-                    marriagefill mf ON s.schedule_id = mf.schedule_id
-                WHERE 
-                    mf.status = 'Pending'
-                UNION ALL
-                SELECT 
-                c.fullname AS citizen_name,
-                    s.date AS schedule_date,
-                    s.start_time AS schedule_start_time,
-                    df.event_name AS event_name,
-                    df.status AS approval_status,
-                    df.role AS roles,
-                    df.defuctomfill_id AS id,
-                    'Defuctom' AS type
-                FROM 
-                    citizen c
-                JOIN 
-                    schedule s ON c.citizend_id = s.citizen_id
-                JOIN 
-                    defuctomfill df ON s.schedule_id = df.schedule_id
-                WHERE 
-                    df.status = 'Pending'";
-    
-        $result = $this->conn->query($sql);
-    
-        if ($result === FALSE) {
-            die("Error: " . $this->conn->error);
-        }
-    
-        $pendingItems = [];
-        while ($row = $result->fetch_assoc()) {
-            $pendingItems[] = $row;
-        }
-        return $pendingItems;
+
+   public function getAnnouncements() {
+    $sql = "SELECT 
+                `announcement`.`announcement_id`,
+                `announcement`.`event_type`,
+                `announcement`.`title`,
+                `announcement`.`description`,
+                `announcement`.`date_created`,
+                `announcement`.`capacity`,
+                `schedule`.`date`,
+                `schedule`.`start_time`,
+                `schedule`.`end_time`
+            FROM 
+                `announcement`
+            JOIN 
+                `schedule` ON `announcement`.`schedule_id` = `schedule`.`schedule_id`
+            ORDER BY `announcement`.`date_created` DESC";
+
+    $result = $this->conn->query($sql);
+
+    if ($result === FALSE) {
+        die("Error: " . $this->conn->error);
     }
+
+    $announcements = [];
+    while ($row = $result->fetch_assoc()) {
+        $announcements[] = $row;
+    }
+    return $announcements;
+}
+
+    public function fetchBaptismFill($status) {
+        $query = "
+            SELECT 
+                b.fullname AS citizen_name,
+                s.date AS schedule_date,
+                s.start_time AS schedule_start_time,
+                s.end_time AS schedule_end_time,
+                b.event_name AS event_name,
+                b.status AS approval_status,
+                b.role AS roles,
+                b.baptism_id AS id,
+                'Baptism' AS type,
+                b.father_fullname,
+                b.pbirth,
+                b.mother_fullname,
+                b.religion,
+                b.parent_resident,
+                b.godparent,
+                b.gender,
+                b.c_date_birth,
+                b.age,
+                b.address
+            FROM 
+                citizen c
+            JOIN 
+                schedule s ON c.citizend_id = s.citizen_id
+            JOIN 
+                baptismfill b ON s.schedule_id = b.schedule_id
+            WHERE 
+                b.status = ?";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("s", $status);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function fetchConfirmationFill($status) {
+        $query = "
+            SELECT 
+                c.fullname AS citizen_name,
+                s.date AS schedule_date,
+                s.start_time AS schedule_start_time,
+                s.end_time AS schedule_end_time,
+                cf.event_name AS event_name,
+                cf.status AS approval_status,
+                cf.role AS roles,
+                cf.confirmationfill_id AS id,
+                'Confirmation' AS type,
+                cf.fullname,
+                cf.father_fullname,
+                cf.date_of_baptism,
+                cf.mother_fullname,
+                cf.permission_to_confirm ,
+                cf.church_address ,
+                cf.name_of_church ,
+                cf.c_gender ,
+                cf.c_date_birth,
+             
+                cf.c_address
+            FROM 
+                citizen c
+            JOIN 
+                schedule s ON c.citizend_id = s.citizen_id
+            JOIN 
+                confirmationfill cf ON s.schedule_id = cf.schedule_id
+            WHERE 
+                cf.status = ?";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("s", $status);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function fetchMarriageFill($status) {
+        $query = "
+            SELECT 
+                c.fullname AS citizen_name,
+                s.date AS schedule_date,
+                s.start_time AS schedule_start_time,
+                s.end_time AS schedule_end_time,
+                mf.event_name AS event_name,
+                mf.status AS approval_status,
+                mf.role AS roles,
+                mf.marriagefill_id AS id,
+                'Marriage' AS type,
+                mf.groom_name,
+                mf.groom_dob,
+                mf.groom_age,
+                mf.groom_place_of_birth,
+                mf.groom_citizenship,
+                mf.groom_address,
+                mf.groom_religion,
+                mf.groom_previously_married,
+                mf.bride_name,
+                mf.bride_dob,
+                mf.bride_age,
+                mf.bride_place_of_birth,
+                mf.bride_citizenship,
+                mf.bride_address,
+                mf.bride_religion,
+                mf.bride_previously_married
+              
+            FROM 
+                citizen c
+            JOIN 
+                schedule s ON c.citizend_id = s.citizen_id
+            JOIN 
+                marriagefill mf ON s.schedule_id = mf.schedule_id
+            WHERE 
+                mf.status = ?";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("s", $status);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+    
+    public function fetchDefuctomFill($status) {
+        $query = "
+            SELECT 
+                c.fullname AS citizen_name,
+                s.date AS schedule_date,
+                s.start_time AS schedule_start_time,
+                s.end_time AS schedule_end_time,
+                df.event_name AS event_name,
+                df.status AS approval_status,
+                df.role AS roles,
+                df.defuctomfill_id AS id,
+                'Defuctom' AS type,
+                df.d_fullname,
+                df.d_address,
+                df.father_fullname,
+                df.place_of_birth ,
+                df.mother_fullname,
+                df.cause_of_death,
+                df.marital_status,
+                df.place_of_death,
+                df.d_gender,
+                df.date_of_birth ,
+                df.date_of_death ,
+                df.parents_residence
+                
+              
+            FROM 
+                citizen c
+            JOIN 
+                schedule s ON c.citizend_id = s.citizen_id
+            JOIN 
+                defuctomfill df ON s.schedule_id = df.schedule_id
+            WHERE 
+                df.status = ?";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("s", $status);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function getPendingCitizen($eventType = null, $status = 'Pending') {
+        switch ($eventType) {
+            case 'Baptism':
+                return $this->fetchBaptismFill($status);
+            case 'Confirmation':
+                return $this->fetchConfirmationFill($status);
+            case 'Marriage':
+                return $this->fetchMarriageFill($status);
+            case 'Defuctom':
+                return $this->fetchDefuctomFill($status);
+            default:
+                return array_merge(
+                    $this->fetchBaptismFill($status),
+                    $this->fetchConfirmationFill($status),
+                    $this->fetchMarriageFill($status),
+                    $this->fetchDefuctomFill($status)
+                );
+        }
+    }
+    
+    
     public function getPendingAppointments() {
         $sql = "SELECT 
                     b.baptism_id AS id,
@@ -600,7 +728,7 @@ class Staff {
             s.end_time AS schedule_endtime,
             a.event_type AS Event_Name,
             'Approved' AS approval_status,
-            a.announcenment_id AS event_id
+            a.announcement_id AS event_id
         FROM 
             announcement a
         JOIN 
@@ -617,6 +745,8 @@ class Staff {
     
         return $events;
     }
+    
+    
     
 }
 ?>

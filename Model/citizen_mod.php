@@ -7,64 +7,80 @@ class Citizen {
         $this->conn = $conn;
         $this->regId = $regId;
     }
-
-    public function getSchedule($date) {
-        $sql = "SELECT `start_time`, `end_time` FROM `schedule` WHERE `date` = ?";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("s", $date);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $schedules = $result->fetch_all(MYSQLI_ASSOC);
+    
+    public function insertMassBaptismFill($citizenId, $announcementId, $fullname, $gender, $address, $dateOfBirth,$fatherFullname, $placeOfBirth, $motherFullname, $religion, $parentResident, $godparent, $status, $eventName, $role) {
+        $stmt = $this->conn->prepare("
+            INSERT INTO baptismfill (
+                citizen_id, announcement_id, fullname, gender, address, c_date_birth, father_fullname, pbirth, mother_fullname, religion, parent_resident, godparent, status, event_name, role
+            ) VALUES (?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?)
+        ");
+        
+        if ($stmt === FALSE) {
+            die("Error: " . $this->conn->error);
+        }
+    
+        $stmt->bind_param(
+            "iisssssssssssss",
+            $citizenId, $announcementId, $fullname, $gender, $address, $dateOfBirth,  $fatherFullname, $placeOfBirth, $motherFullname, $religion, $parentResident, $godparent, $status, $eventName, $role
+        );
+    
+        if ($stmt->execute() === FALSE) {
+            die("Error: " . $stmt->error);
+        }
+    
         $stmt->close();
-        return $schedules;
-    }
-
-   public function getFetchDetails($email) {
-    $sql = "SELECT `citizend_id`, `fullname`, `gender`, `c_date_birth`, `age`, `address` FROM `citizen` WHERE `email` = ?";
-    $stmt = $this->conn->prepare($sql);
-    
-    if (!$stmt) {
-        error_log("Prepare failed: " . $this->conn->error);
-        return null;
-    }
-
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    
-    if ($stmt->errno) {
-        error_log("Execute failed: " . $stmt->error);
     }
     
-    $result = $stmt->get_result();
-    $details = $result->fetch_assoc();
-    $stmt->close();
-
-    if ($details) {
+    
+    
+    public function getFetchDetails($email) {
+        $sql = "SELECT `citizend_id`, `fullname`, `gender`, `c_date_birth`,  `address` FROM `citizen` WHERE `email` = ?";
+        $stmt = $this->conn->prepare($sql);
+        
+        if (!$stmt) {
+            error_log("Prepare failed: " . $this->conn->error);
+            return null;
+        }
+    
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        
+        if ($stmt->errno) {
+            error_log("Execute failed: " . $stmt->error);
+        }
+        
+        $result = $stmt->get_result();
+        $details = $result->fetch_assoc();
+        $stmt->close();
+    
+        if (!$details) {
+            error_log("No details found for email: " . $email);
+            return null;
+        }
+    
         // Split fullname into components
         $names = explode(' ', $details['fullname']);
         $details['firstname'] = $names[0];
         $details['lastname'] = end($names);
+        
         // Handle the case where there's a middle name
         if (count($names) > 2) {
             $details['middlename'] = implode(' ', array_slice($names, 1, -1));
         } else {
             $details['middlename'] = '';
         }
-    }
-
-    // Debug output
-    error_log("Fetched details: " . print_r($details, true));
     
-    return $details;
-}
+        return $details;
+    }
+    
 
-    public function insertIntoBaptismFill($scheduleId, $fatherFullname, $fullname, $gender, $c_date_birth, $address, $pbirth, $motherFullname, $religion, $parentResident, $godparent) {
+    public function insertIntoBaptismFill($scheduleId, $fatherFullname, $fullname, $gender, $c_date_birth, $address, $pbirth, $mother_fullname, $religion, $parentResident, $godparent) {
         $sql = "INSERT INTO baptismfill (schedule_id, father_fullname, fullname, gender, c_date_birth, address, pbirth, mother_fullname, religion, parent_resident, godparent, status, event_name, role) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', 'Baptism', 'Online')";
         $stmt = $this->conn->prepare($sql);
     
         // Use 'issssssssss' for the type definition string, corresponding to the parameters
-        $stmt->bind_param("issssssssss", $scheduleId, $fatherFullname, $fullname, $gender, $c_date_birth, $address, $pbirth, $motherFullname, $religion, $parentResident, $godparent);
+        $stmt->bind_param("issssssssss", $scheduleId, $fatherFullname, $fullname, $gender, $c_date_birth, $address, $pbirth, $mother_fullname, $religion, $parentResident, $godparent);
 
         if (!$stmt->execute()) {
             error_log("Insert failed: " . $stmt->error);
@@ -131,7 +147,16 @@ class Citizen {
         }
     }
     
-    
+    public function getSchedule($date) {
+        $sql = "SELECT `start_time`, `end_time` FROM `schedule` WHERE `date` = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("s", $date);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $schedules = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+        return $schedules;
+    }
 
     public function updateCitizen($fullname, $gender, $address) {
         $sql = "UPDATE `citizen` SET `fullname` = ?, `gender` = ?, `address` = ? WHERE `citizend_id` = ?";

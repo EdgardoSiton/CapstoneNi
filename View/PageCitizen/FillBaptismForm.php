@@ -4,12 +4,9 @@ require_once '../../Model/db_connection.php';
 require_once '../../Controller/citizen_con.php';
 $nme = $_SESSION['fullname'];
 $regId = $_SESSION['citizend_id'];
-require_once '../../Model/db_connection.php';
-require_once '../../Model/staff_mod.php';
-$staff = new Staff($conn);
-$announcements = $staff->getAnnouncements();
-?>
 
+
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -105,8 +102,8 @@ small {
     }
 
     // Optionally, clear the session storage if you don't want to persist the data
-    // sessionStorage.removeItem('selectedDate');
-    // sessionStorage.removeItem('selectedTime');
+     sessionStorage.removeItem('selectedDate');
+     sessionStorage.removeItem('selectedTime');
 });
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -169,12 +166,14 @@ document.getElementById('baptismForm').addEventListener('submit', function(event
                     </div>
                     <div class="card-body">
                     <form method="post" action="../../Controller/citizen_con.php" onsubmit="return validateForm()">
+                    
     <input type="hidden" name="form_type" value="baptism">
     <div class="row">
         <div class="col-md-6 col-lg-4">
             <div class="form-group">
                 <label for="date">Date</label>
-                <input type="text" class="form-control" id="date" name="date" placeholder="" readonly />
+                <input type="text" class="form-control" id="date" name="date" value="<?php echo htmlspecialchars($announcementData['date']); ?>" readonly />
+
                 <span class="error" id="dateError"></span>
             </div>
             <div class="form-group">
@@ -234,7 +233,7 @@ document.getElementById('baptismForm').addEventListener('submit', function(event
         <div class="col-md-6 col-lg-4">
             <div class="form-group">
                 <label for="start_time">Start Time</label>
-                <input type="text" class="form-control" id="start_time" name="start_time" placeholder="" readonly />
+                <input type="text" class="form-control" id="start_time" name="start_time"  value="<?php echo htmlspecialchars($announcementData['start_time']); ?>" readonly />
                 <span class="error" id="startTimeError"></span>
             </div>
             <div class="form-group">
@@ -298,7 +297,7 @@ document.getElementById('baptismForm').addEventListener('submit', function(event
         <div class="col-md-6 col-lg-4">
             <div class="form-group">
                 <label for="end_time">End Time</label>
-                <input type="text" class="form-control" id="end_time" name="end_time" placeholder="" readonly />
+                <input type="text" class="form-control" id="end_time" name="end_time" value="<?php echo htmlspecialchars($announcementData['end_time']); ?>"readonly />
                 <span class="error" id="endTimeError"></span>
             </div>
             <div class="form-group">
@@ -373,9 +372,9 @@ function validateForm() {
     }
 
     // Validate date of birth
-    const month = document.getElementById('month').value;
-    const day = document.getElementById('day').value;
-    const year = document.getElementById('year').value;
+    const month = document.getElementById('months').value;
+    const day = document.getElementById('days').value;
+    const year = document.getElementById('years').value;
     if (month === '' || day === '' || year === '') {
         document.getElementById('dobError').innerText = 'Date of birth is required';
         isValid = false;

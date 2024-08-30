@@ -5,9 +5,7 @@ require_once '../../Controller/citizen_con.php';
 $nme = $_SESSION['fullname'];
 $regId = $_SESSION['citizend_id'];
 require_once '../../Model/db_connection.php';
-require_once '../../Model/staff_mod.php';
-$staff = new Staff($conn);
-$announcements = $staff->getAnnouncements();
+
 ?>
 
 <!DOCTYPE html>
@@ -57,9 +55,10 @@ $announcements = $staff->getAnnouncements();
     }
 
     // Optionally, clear the session storage if you don't want to persist the data
-    // sessionStorage.removeItem('selectedDate');
-    // sessionStorage.removeItem('selectedTime');
+     sessionStorage.removeItem('selectedDate');
+     sessionStorage.removeItem('selectedTime');
 });
+
 
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('.btn-info').addEventListener('click', function() {

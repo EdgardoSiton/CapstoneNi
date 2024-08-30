@@ -84,29 +84,41 @@ $pendingItems = $staff->getPendingCitizen();
                         <tfoot>
                           
                         <tbody>
-                <?php if (isset($pendingItems) && !empty($pendingItems)): ?>
-                    <?php foreach ($pendingItems as $index => $item): ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($index + 1); ?></td>
-                            <td><?php echo htmlspecialchars($item['citizen_name']); ?></td>
-                            <td><?php echo htmlspecialchars($item['event_name']); ?></td>
-                            <td><?php echo htmlspecialchars(date('Y/m/d', strtotime($item['schedule_date']))); ?></td>
-                            <td><?php echo htmlspecialchars(date('g:i A', strtotime($item['schedule_start_time']))); ?></td>
-                            <td><?php echo htmlspecialchars($item['roles']); ?></td>
-                            <td><?php echo htmlspecialchars($item['approval_status']); ?></td>
-                            
-                            <td>
-                                <button class="btn btn-primary btn-xs" style="background-color: #31ce36!important; border-color:#31ce36!important;">Approve</button> 
-                                <button class="btn btn-primary btn-xs">Delete</button>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <tr>
-                        <td colspan="8">No pending Citizen found.</td>
-                    </tr>
-                <?php endif; ?>
-            </tbody>
+    <?php if (isset($pendingItems) && !empty($pendingItems)): ?>
+        <?php foreach ($pendingItems as $index => $item): ?>
+            <tr>
+                <td><?php echo htmlspecialchars($index + 1); ?></td>
+                <td><?php echo htmlspecialchars($item['citizen_name']); ?></td>
+                <td><?php echo htmlspecialchars($item['event_name']); ?></td>
+                <td><?php echo htmlspecialchars(date('Y/m/d', strtotime($item['schedule_date']))); ?></td>
+                <td><?php echo htmlspecialchars(date('g:i A', strtotime($item['schedule_start_time']))); ?></td>
+                <td><?php echo htmlspecialchars($item['roles']); ?></td>
+                <td><?php echo htmlspecialchars($item['approval_status']); ?></td>
+                <td>
+                    <?php
+                    $viewUrl = '';
+                    if ($item['event_name'] === 'Baptism') {
+                        $viewUrl = 'FillBaptismForm.php';
+                    } elseif ($item['event_name'] === 'Confirmation') {
+                        $viewUrl = 'FillConfirmationForm.php';
+                    } elseif ($item['event_name'] === 'Wedding') {
+                        $viewUrl = 'FillWeddingForm.php';
+                    } elseif ($item['event_name'] === 'Funeral') {
+                        $viewUrl = 'FillFuneralForm.php';
+                    }
+                    ?>
+                    <a href="<?php echo htmlspecialchars($viewUrl . '?id=' . $item['id']); ?>" class="btn btn-primary btn-xs" style="background-color: #31ce36!important; border-color:#31ce36!important;">View</a>
+                    <button class="btn btn-primary btn-xs">Delete</button>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <tr>
+            <td colspan="8">No pending Citizen found.</td>
+        </tr>
+    <?php endif; ?>
+</tbody>
+
                       </table>
                     </div>
                   </div>
