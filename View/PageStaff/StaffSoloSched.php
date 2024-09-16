@@ -108,8 +108,7 @@ $pendingItems = $staff->getPendingCitizen();
                     }
                     ?>
                     <a href="<?php echo htmlspecialchars($viewUrl . '?id=' . $item['id']); ?>" class="btn btn-primary btn-xs" style="background-color: #31ce36!important; border-color:#31ce36!important;">View</a>
-                    <button class="btn btn-primary btn-xs">Delete</button>
-                </td>
+                  </td>
             </tr>
         <?php endforeach; ?>
     <?php else: ?>

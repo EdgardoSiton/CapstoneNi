@@ -127,7 +127,7 @@ $announcements = $staff->getAnnouncements();
     <!-- Carousel Start -->
     <div class="header-carousel owl-carousel">
       <div class="header-carousel-item bg-primary">
-        <img src="../assets/img/coverpage.png" alt="" />
+        <img src="assets/img/cover.jpeg" alt="" />
       </div>
     </div>
 

@@ -80,7 +80,22 @@
               </li>
              
               <li class="nav-item">
-                <a href="AdminEvents.php">
+                <a href="BaptismRecords.php">
+                  <i class="fas fa-calendar-alt"></i>
+                  <p>Event Records</p> 
+                </a>
+                <li class="nav-item">
+                <a href="ConfirmationRecords.php">
+                  <i class="fas fa-calendar-alt"></i>
+                  <p>Event Records</p> 
+                </a>
+                <li class="nav-item">
+                <a href="DefunctorumRecords.php">
+                  <i class="fas fa-calendar-alt"></i>
+                  <p>Event Records</p> 
+                </a>
+                <li class="nav-item">
+                <a href="WeddingRecords.php">
                   <i class="fas fa-calendar-alt"></i>
                   <p>Event Records</p> 
                 </a>
@@ -96,7 +111,7 @@
               <li class="nav-item">
                 <a href="AdminFinancial.php">
                   <i class="fas fa-calendar-alt"></i>
-                  <p>Financial Reports</p> 
+                  <p>Acknowledgement Receipt</p> 
                 </a>
                
               </li>

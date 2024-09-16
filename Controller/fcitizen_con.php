@@ -84,8 +84,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $place_of_death
         );
     
+
         if ($result) {
-            header("Location: success.php");
+            $_SESSION['status'] = "success";
+            header('Location: ../View/PageCitizen/CitizenPage.php');
             exit();
         } else {
             echo "Failed to insert funeral details.";

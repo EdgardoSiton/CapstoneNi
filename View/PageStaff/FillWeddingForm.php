@@ -1,5 +1,23 @@
 <?php
+
+
+require_once '../../Model/staff_mod.php';
+require_once '../../Model/db_connection.php';
 require_once '../../Controller/fetchpending_con.php';
+require_once '../../Model/citizen_mod.php';
+
+// Initialize the Staff class
+$staff = new Staff($conn);
+$citizen = new Citizen($conn);
+$weddingffill_id = isset($_GET['id']) ? intval($_GET['id']) : null;
+$priests = $citizen->getPriests();
+if ($weddingffill_id) {
+    // Fetch schedule_id from baptismfill
+    $scheduleId = $staff->getwScheduleId($weddingffill_id);
+} else {
+    echo "No baptism ID provided.";
+    $scheduleId = null;
+}
 ?>
 
 <!DOCTYPE html>
@@ -101,15 +119,66 @@ small {
   <?php require_once 'sidebar.php'?>
        
   <div class="container">
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Approval for Schedule Baptism</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="modalForm" method="POST" action="../../Controller/addwedding_con.php">
+                <div class="modal-body">
+            <input type="hidden" name="marriage_id" value="<?php echo htmlspecialchars($weddingffill_id); ?>" />
+            <div class="form-group">
+                                <label for="eventType">Select Priest</label>
+                                <select class="form-control" id="eventType" name="eventType">
+                                    <option value="" disabled selected>Select Priest</option>
+                                    <!-- Populate priests in the dropdown -->
+                                    <?php foreach ($priests as $priest): ?>
+                                        <option value="<?php echo htmlspecialchars($priest['citizend_id']); ?>">
+                                            <?php echo htmlspecialchars($priest['fullname']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+            <div class="form-group">
+            <label for="sundays">Select Seminar</label>
+            <select class="form-control" id="sundays" name="sundays">
+                <?php
+                // Display the Sundays dropdown
+                if ($scheduleId) {
+                    $staff->displaySundaysDropdowns($scheduleId); // this contain of date , start_time and end_time
+                }
+                ?>
+            </select>
+        </div>
+
+                 
+                    <div class="form-group">
+                        <label for="eventTitle">Payable Amount</label>
+                        <input type="number" class="form-control" id="eventTitle" name="eventTitle" placeholder="Enter Amount">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
     <div class="page-inner">
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
     <div class="card-header">
-        <div class="card-title">Wedding Fill-up Form</div>
+        <div class="card-title">Wedding View Information Form</div>
     </div>
     <div class="card-body">
-        <form method="post" action="../../Controller/wcitizen_con.php" onsubmit="return validateForm()">
+       
             <div class="row">
                 <!-- Display fields only if they exist and are relevant -->
                 <div class="col-md-6 col-lg-4">
@@ -310,11 +379,13 @@ small {
                                 
                             </div>
                             <div class="card-action">
-                                <button type="submit" class="btn btn-success">Submit</button>
-                                <button type="button" class="btn btn-danger" onclick="window.location.href='your_cancel_url.php'">Cancel</button>
+                            <button type="submit" data-toggle="modal" data-target="#myModal" class="btn btn-success">Approve</button>
+                            <button class="btn btn-primary ">Decline</button>
+           
+              <button type="button" class="btn btn-danger" onclick="window.location.href='StaffSoloSched.php'">Cancel</button>
                     
                             </div>
-                        </form>
+                   
                     </div>
                 </div>
             </div>
@@ -322,10 +393,13 @@ small {
     </div>
 </div>
 
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"
-        integrity="sha384-KyZXEAg3QhqLMpG8r+8auK+4szKfEFbpLHsTf7iJgD/+ub2oU" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<!-- Popper.js (required for Bootstrap 4) -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <!-- Sweet Alert -->
+  <script src="../assets/js/plugin/sweetalert/sweetalert.min.js"></script>
     <!--   Core JS Files   -->
     <script src="../assets/js/core/jquery-3.7.1.min.js"></script>
     <script src="../assets/js/core/popper.min.js"></script>
@@ -334,11 +408,25 @@ small {
     <!-- jQuery Scrollbar -->
     <script src="../assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
 
-  
+    <!-- Chart JS -->
+    <script src="../assets/js/plugin/chart.js/chart.min.js"></script>
+
+    <!-- jQuery Sparkline -->
+    <script src="../assets/js/plugin/jquery.sparkline/jquery.sparkline.min.js"></script>
+
+    <!-- Chart Circle -->
+    <script src="../assets/js/plugin/chart-circle/circles.min.js"></script>
+
+    <!-- Datatables -->
+    <script src="../assets/js/plugin/datatables/datatables.min.js"></script>
+
+
+    <!-- jQuery Vector Maps -->
+    <script src="../assets/js/plugin/jsvectormap/jsvectormap.min.js"></script>
+    <script src="../assets/js/plugin/jsvectormap/world.js"></script>
+
+
     <!-- Kaiadmin JS -->
     <script src="../assets/js/kaiadmin.min.js"></script>
-
-  
-    </script>
   </body>
 </html>

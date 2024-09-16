@@ -1,209 +1,323 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Calendar</title>
+  <meta charset="UTF-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.css"/> <!-- DESIGN -->
+
+
+  <script src="assets/js/dash.js"></script>
+
+    <!-- ====== ionicons ======= -->
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
     <link rel="stylesheet" href="../css/calendar.css">
+      
+  <title>Calendar with Events</title>
 </head>
-
- 
-<style>
-  
-</style>
 <body>
-    <div class="cal-container">
-        <div id="calendar"></div>
-    </div>
+<style> 
+.blue {
+  background: rgba(156, 202, 235, 1);
+}
+.orange {
+  background: rgba(247, 167, 0, 1);
+}
+.green {
+  background: rgba(153, 198, 109, 1);
+}
+.yellow {
+  background: rgba(249, 233, 0, 1);
+}
+.pink {
+  background: rgba(255, 192, 203, 1);
+}
+</style>
+
+<div class="container">
+  <div id="calendar"></div>
+  
+</div>
+<?php
+include_once "../../Model/db_connection.php";
+include_once "../../Model/staff_mod.php";
+
+try {
+    $eventFetcher = new Staff($conn);
+    
+    // Attempt to fetch events
+    $marriageEvents = $eventFetcher->fetchMarriageEvents();
+    $baptismEvents = $eventFetcher->fetchBaptismEvents();
+    $confirmationEvents = $eventFetcher->fetchConfirmationEvents();
+    $defuctomEvents = $eventFetcher->fetchDefuctomEvents();
+    $massEvents = $eventFetcher->fetchMassEvents();
+
+    // Process or display the events as needed
+    // Example: var_dump($marriageEvents);
+    
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage();
+}
+?>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min.js"></script><script>
+!function() {
+  var events = [
     <?php
-    require_once '../../Model/staff_mod.php';
-    require_once '../../Model/db_connection.php';
-    $staff = new Staff($conn);
+    function convertTo12HourFormat($time) {
+        return date("g:i A", strtotime($time));
+    }
 
-    // Fetch calendar events
-    $calendarEvents = $staff->getCalendar();
+    // Mass Events
+    foreach ($massEvents as $event) {
     ?>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min.js"></script>
-    <script>
-    !function() {
-        var events = [
-            <?php
-            foreach ($calendarEvents as $event) {
-                $eventName = addslashes($event['Event_Name']);
-                $startTime = date("g:i A", strtotime($event['schedule_starttime']));
-                $endTime = date("g:i A", strtotime($event['schedule_starttime']));
-                $date = $event['date'];
-                $color = $event['color'] ?? 'gray';
-                echo "{";
-                echo "eventName: '$eventName', ";
-                echo "startTime: '$startTime', ";
-                echo "endTime: '$endTime', ";
-                echo "calendar: '{$event['calendar']}', ";
-                echo "color: '$color', ";
-                echo "date: '$date'";
-                echo "},";
-            }
-            ?>
-        ];
+    {
+        eventName: '<?php echo $event['title']; ?>',
+        startTime: '<?php echo convertTo12HourFormat($event['start_time']); ?>',
+        endTime: '<?php echo convertTo12HourFormat($event['end_time']); ?>',
+        calendar: 'Announcement Event',
+        color: 'pink',
+        date: '<?php echo $event['date']; ?>'
+    },
+    <?php } ?>
 
-        // Log the events array for debugging
-        console.log(events);
+    // Marriage Events
+    <?php
+    foreach ($marriageEvents as $event) {
+    ?>
+    {
+        eventName: '<?php echo $event['Event_Name']; ?>',
+        startTime: '<?php echo convertTo12HourFormat($event['schedule_starttime']); ?>',
+        endTime: '<?php echo convertTo12HourFormat($event['schedule_endtime']); ?>',
+        calendar: 'Marriage',
+        color: 'orange',
+        date: '<?php echo $event['schedule_date']; ?>'
+    },
+    <?php } ?>
 
-        function Calendar(selector, events) {
-            this.el = document.querySelector(selector);
-            this.events = events;
-            this.current = moment().date(1);
-            this.draw();
-            var current = document.querySelector('.today');
-            if (current) {
-                var self = this;
-                window.setTimeout(function() {
-                    self.openDay(current);
-                }, 500);
-            }
-        }
+    // Baptism Events
+    <?php
+    foreach ($baptismEvents as $event) {
+    ?>
+    {
+        eventName: '<?php echo $event['Event_Name']; ?>',
+        startTime: '<?php echo convertTo12HourFormat($event['schedule_starttime']); ?>',
+        endTime: '<?php echo convertTo12HourFormat($event['schedule_endtime']); ?>',
+        calendar: 'Baptism',
+        color: 'blue',
+        date: '<?php echo $event['schedule_date']; ?>'
+    },
+    <?php } ?>
 
-        Calendar.prototype.draw = function() {
-            this.drawHeader();
-            this.drawMonth();
-            this.drawLegend();
-        }
+    // Confirmation Events
+    <?php
+    foreach ($confirmationEvents as $event) {
+    ?>
+    {
+        eventName: '<?php echo $event['Event_Name']; ?>',
+        startTime: '<?php echo convertTo12HourFormat($event['schedule_starttime']); ?>',
+        endTime: '<?php echo convertTo12HourFormat($event['schedule_endtime']); ?>',
+        calendar: 'Confirmation',
+        color: 'green',
+        date: '<?php echo $event['schedule_date']; ?>'
+    },
+    <?php } ?>
 
-        Calendar.prototype.drawHeader = function() {
-            var self = this;
-            if (!this.header) {
-                this.header = createElement('div', 'header');
-                this.header.className = 'header';
+    // Defuctom Events
+    <?php
+    foreach ($defuctomEvents as $event) {
+    ?>
+    {
+        eventName: '<?php echo $event['Event_Name']; ?>',
+        startTime: '<?php echo convertTo12HourFormat($event['schedule_starttime']); ?>',
+        endTime: '<?php echo convertTo12HourFormat($event['schedule_endtime']); ?>',
+        calendar: 'Defuctom',
+        color: 'yellow',
+        date: '<?php echo $event['schedule_date']; ?>'
+    },
+    <?php } ?>
+  ];
 
-                this.title = createElement('h1');
+    
 
-                var right = createElement('div', 'right');
-                right.addEventListener('click', function() { self.nextMonth(); });
+    function Calendar(selector, events) {
+      this.el = document.querySelector(selector);
+      this.events = events;
+      this.current = moment().date(1);
+      this.draw();
+      var current = document.querySelector('.today');
+      if (current) {
+        var self = this;
+        window.setTimeout(function() {
+          self.openDay(current);
+        }, 500);
+      }
+    }
 
-                var left = createElement('div', 'left');
-                left.addEventListener('click', function() { self.prevMonth(); });
+    Calendar.prototype.draw = function() {
+      // Create Header
+      this.drawHeader();
 
-                this.header.appendChild(this.title);
-                this.header.appendChild(right);
-                this.header.appendChild(left);
-                this.el.appendChild(this.header);
-            }
+      // Draw Month
+      this.drawMonth();
 
-            this.title.innerHTML = this.current.format('MMMM YYYY');
-        }
+      this.drawLegend();
+    }
 
-        Calendar.prototype.drawMonth = function() {
-            var self = this;
-            if (this.month) {
-                this.oldMonth = this.month;
-                this.oldMonth.className = 'month out ' + (self.next ? 'next' : 'prev');
-                this.oldMonth.addEventListener('webkitAnimationEnd', function() {
-                    self.oldMonth.parentNode.removeChild(self.oldMonth);
-                    self.month = createElement('div', 'month');
-                    self.backFill();
-                    self.currentMonth();
-                    self.forwardFill();
-                    self.el.appendChild(self.month);
-                    window.setTimeout(function() {
-                        self.month.className = 'month in ' + (self.next ? 'next' : 'prev');
-                    }, 16);
-                });
-            } else {
-                this.month = createElement('div', 'month');
-                this.el.appendChild(this.month);
-                this.backFill();
-                this.currentMonth();
-                this.forwardFill();
-                this.month.className = 'month new';
-            }
-        }
+    Calendar.prototype.drawHeader = function() {
+      var self = this;
+      if (!this.header) {
+        // Create the header elements
+        this.header = createElement('div', 'header');
+        this.header.className = 'header';
 
-        Calendar.prototype.backFill = function() {
-            var clone = this.current.clone();
-            var dayOfWeek = clone.day();
+        this.title = createElement('h1');
 
-            if (!dayOfWeek) { return; }
+        var right = createElement('div', 'right');
+        right.addEventListener('click', function() { self.nextMonth(); });
 
-            clone.subtract('days', dayOfWeek + 1);
+        var left = createElement('div', 'left');
+        left.addEventListener('click', function() { self.prevMonth(); });
 
-            for (var i = dayOfWeek; i > 0; i--) {
-                this.drawDay(clone.add('days', 1));
-            }
-        }
+        // Append the Elements
+        this.header.appendChild(this.title);
+        this.header.appendChild(right);
+        this.header.appendChild(left);
+        this.el.appendChild(this.header);
+      }
 
-        Calendar.prototype.forwardFill = function() {
-            var clone = this.current.clone().add('months', 1).subtract('days', 1);
-            var dayOfWeek = clone.day();
+      this.title.innerHTML = this.current.format('MMMM YYYY');
+    }
 
-            if (dayOfWeek === 6) { return; }
+    Calendar.prototype.drawMonth = function() {
+      var self = this;
 
-            for (var i = dayOfWeek; i < 6; i++) {
-                this.drawDay(clone.add('days', 1));
-            }
-        }
+      this.events.forEach(function(ev) {
+            ev.date = moment(ev.date, 'YYYY-MM-DD');
+      
+        });
 
-        Calendar.prototype.currentMonth = function() {
-            var clone = this.current.clone();
-            while (clone.month() === this.current.month()) {
-                this.drawDay(clone);
-                clone.add('days', 1);
-            }
-        }
+      if (this.month) {
+        this.oldMonth = this.month;
+        this.oldMonth.className = 'month out ' + (self.next ? 'next' : 'prev');
+        this.oldMonth.addEventListener('webkitAnimationEnd', function() {
+          self.oldMonth.parentNode.removeChild(self.oldMonth);
+          self.month = createElement('div', 'month');
+          self.backFill();
+          self.currentMonth();
+          self.forwardFill();
+          self.el.appendChild(self.month);
+          window.setTimeout(function() {
+            self.month.className = 'month in ' + (self.next ? 'next' : 'prev');
+          }, 16);
+        });
+      } else {
+        this.month = createElement('div', 'month');
+        this.el.appendChild(this.month);
+        this.backFill();
+        this.currentMonth();
+        this.forwardFill();
+        this.month.className = 'month new';
+      }
+    }
 
-        Calendar.prototype.getWeek = function(day) {
-            if (!this.week || day.day() === 0) {
-                this.week = createElement('div', 'week');
-                this.month.appendChild(this.week);
-            }
-        }
+    Calendar.prototype.backFill = function() {
+      var clone = this.current.clone();
+      var dayOfWeek = clone.day();
 
-        Calendar.prototype.drawDay = function(day) {
-            var self = this;
-            this.getWeek(day);
+      if (!dayOfWeek) { return; }
 
-            var outer = createElement('div', this.getDayClass(day));
-            outer.addEventListener('click', function() {
-                self.openDay(this);
-            });
+      clone.subtract('days', dayOfWeek + 1);
 
-            var name = createElement('div', 'day-name', day.format('ddd'));
-            var number = createElement('div', 'day-number', day.format('DD'));
-            var events = createElement('div', 'day-events');
-            this.drawEvents(day, events);
+      for (var i = dayOfWeek; i > 0; i--) {
+        this.drawDay(clone.add('days', 1));
+      }
+    }
 
-            outer.appendChild(name);
-            outer.appendChild(number);
-            outer.appendChild(events);
-            this.week.appendChild(outer);
-        }
+    Calendar.prototype.forwardFill = function() {
+      var clone = this.current.clone().add('months', 1).subtract('days', 1);
+      var dayOfWeek = clone.day();
 
-        Calendar.prototype.drawEvents = function(day, element) {
-            if (day.month() === this.current.month()) {
-                var todaysEvents = this.events.reduce(function(memo, ev) {
-                    if (ev.date === day.format('YYYY-MM-DD')) {
-                        memo.push(ev);
-                    }
-                    return memo;
-                }, []);
+      if (dayOfWeek === 6) { return; }
 
-                todaysEvents.forEach(function(ev) {
-                    var evSpan = createElement('span', ev.color);
-                    element.appendChild(evSpan);
-                });
-            }
-        }
+      for (var i = dayOfWeek; i < 6; i++) {
+        this.drawDay(clone.add('days', 1));
+      }
+    }
 
-        Calendar.prototype.getDayClass = function(day) {
-            var classes = ['day'];
-            if (day.month() !== this.current.month()) {
-                classes.push('other');
-            } else if (moment().isSame(day, 'day')) {
-                classes.push('today');
-            }
-            return classes.join(' ');
-        }
+    Calendar.prototype.currentMonth = function() {
+      var clone = this.current.clone();
 
-        Calendar.prototype.openDay = function(el) {
+      while (clone.month() === this.current.month()) {
+        this.drawDay(clone);
+        clone.add('days', 1);
+      }
+    }
+
+    Calendar.prototype.getWeek = function(day) {
+      if (!this.week || day.day() === 0) {
+        this.week = createElement('div', 'week');
+        this.month.appendChild(this.week);
+      }
+    }
+
+    Calendar.prototype.drawDay = function(day) {
+      var self = this;
+      this.getWeek(day);
+
+      // Outer Day
+      var outer = createElement('div', this.getDayClass(day));
+      outer.addEventListener('click', function() {
+        self.openDay(this);
+      });
+
+      // Day Name
+      var name = createElement('div', 'day-name', day.format('ddd'));
+
+      // Day Number
+      var number = createElement('div', 'day-number', day.format('DD'));
+
+
+      // Events
+      var events = createElement('div', 'day-events');
+      this.drawEvents(day, events);
+
+      outer.appendChild(name);
+      outer.appendChild(number);
+      outer.appendChild(events);
+      this.week.appendChild(outer);
+    }
+
+    Calendar.prototype.drawEvents = function(day, element) {
+      if (day.month() === this.current.month()) {
+        var todaysEvents = this.events.reduce(function(memo, ev) {
+          if (ev.date.isSame(day, 'day')) {
+            memo.push(ev);
+          }
+          return memo;
+        }, []);
+
+        todaysEvents.forEach(function(ev) {
+          var evSpan = createElement('span', ev.color);
+          element.appendChild(evSpan);
+        });
+      }
+    }
+
+    Calendar.prototype.getDayClass = function(day) {
+      var classes = ['day'];
+      if (day.month() !== this.current.month()) {
+        classes.push('other');
+      } else if (moment().isSame(day, 'day')) {
+        classes.push('today');
+      }
+      return classes.join(' ');
+    }
+
+    Calendar.prototype.openDay = function(el) {
       var details, arrow;
       var dayNumber = +el.querySelectorAll('.day-number')[0].innerText || +el.querySelectorAll('.day-number')[0].textContent;
       var day = this.current.clone().date(dayNumber);
@@ -257,8 +371,7 @@
       arrow.style.left = el.offsetLeft - el.parentNode.offsetLeft + -35 + 'px';
     }
 
-
-        Calendar.prototype.renderEvents = function(events, ele) {
+    Calendar.prototype.renderEvents = function(events, ele) {
       // Remove any events in the current details element
       var currentWrapper = ele.querySelector('.events');
       var wrapper = createElement('div', 'events in' + (currentWrapper ? ' new' : ''));
@@ -276,29 +389,40 @@
     div.appendChild(endTimeSpan);
     wrapper.appendChild(div);
 });
-        
-            
 
-            if (currentWrapper) {
-                currentWrapper.className = 'events out';
-                currentWrapper.addEventListener('webkitAnimationEnd', function() {
-                    currentWrapper.parentNode.removeChild(currentWrapper);
-                });
-                currentWrapper.addEventListener('oanimationend', function() {
-                    currentWrapper.parentNode.removeChild(currentWrapper);
-                });
-                currentWrapper.addEventListener('msAnimationEnd', function() {
-                    currentWrapper.parentNode.removeChild(currentWrapper);
-                });
-                currentWrapper.addEventListener('animationend', function() {
-                    currentWrapper.parentNode.removeChild(currentWrapper);
-                });
-            }
 
-            ele.appendChild(wrapper);
-        }
+      if (!events.length) {
+        var div = createElement('div', 'event empty');
+        var span = createElement('span', '', 'No Events');
 
-        Calendar.prototype.drawLegend = function() {
+        div.appendChild(span);
+        wrapper.appendChild(div);
+      }
+
+      if (currentWrapper) {
+        currentWrapper.className = 'events out';
+        currentWrapper.addEventListener('webkitAnimationEnd', function() {
+          currentWrapper.parentNode.removeChild(currentWrapper);
+          ele.appendChild(wrapper);
+        });
+        currentWrapper.addEventListener('oanimationend', function() {
+          currentWrapper.parentNode.removeChild(currentWrapper);
+          ele.appendChild(wrapper);
+        });
+        currentWrapper.addEventListener('msAnimationEnd', function() {
+          currentWrapper.parentNode.removeChild(currentWrapper);
+          ele.appendChild(wrapper);
+        });
+        currentWrapper.addEventListener('animationend', function() {
+          currentWrapper.parentNode.removeChild(currentWrapper);
+          ele.appendChild(wrapper);
+        });
+      } else {
+        ele.appendChild(wrapper);
+      }
+    }
+
+    Calendar.prototype.drawLegend = function() {
       var legend = createElement('div', 'legend');
       var calendars = this.events.map(function(e) {
         return e.calendar + '|' + e.color;
@@ -344,6 +468,6 @@
       var calendar = new Calendar('#calendar', events);
     });
   }();
-    </script>
+</script>
 </body>
 </html>

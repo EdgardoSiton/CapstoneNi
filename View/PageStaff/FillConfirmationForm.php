@@ -1,6 +1,22 @@
 <?php
+
+
+require_once '../../Model/staff_mod.php';
+require_once '../../Model/db_connection.php';
 require_once '../../Controller/fetchpending_con.php';
+require_once '../../Model/citizen_mod.php';
+
+// Initialize the Staff class
+$staff = new Staff($conn);
+$email = $_SESSION['email'];
+$nme = $_SESSION['fullname'];
+$regId = $_SESSION['citizend_id'];
+$confirmationfill_id = $_GET['id'] ?? '';
+// Get citizen ID from the URL
+$citizenId = isset($_GET['id']) ? intval($_GET['id']) : null;
+
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -100,15 +116,41 @@ small {
   <?php require_once 'header.php'?>
   <?php require_once 'sidebar.php'?>
   <div class="container">
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Approval for Schedule Baptism</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="modalForm" method="POST" action="../../Controller/addconfirmation_con.php">
+                <div class="modal-body">
+            <input type="hidden" name="confirmation_id" value="<?php echo htmlspecialchars($confirmationfill_id); ?>" />
+
+               
+                    <div class="form-group">
+                        <label for="eventTitle">Payable Amount</label>
+                        <input type="number" class="form-control" id="eventTitle" name="eventTitle" placeholder="Enter Amount">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
     <div class="page-inner">
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">ConfirmationFill-up Form</div>
+                        <div class="card-title">Confirmation View Information Form</div>
                     </div>
                     <div class="card-body">
-                    <form method="post" action="../../Controller/ccitizen_con.php" onsubmit="return validateForm()">
     <input type="hidden" name="form_type" value="confirmation">
     <div class="row">
         <div class="col-md-6 col-lg-4">
@@ -276,28 +318,50 @@ small {
         </div>
     </div>
     <div class="card-action">
-        <button type="submit" name="submit" class="btn btn-success">Approve</button>
+    <button type="submit" data-toggle="modal" data-target="#myModal" class="btn btn-success">Approve</button>
         <a href="javascript:history.back()" class="btn btn-danger">Cancel</a>
     </div>
-</form>
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"
-        integrity="sha384-KyZXEAg3QhqLMpG8r+8auK+4szKfEFbpLHsTf7iJgD/+ub2oU" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<!-- Popper.js (required for Bootstrap 4) -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <!-- Sweet Alert -->
+  <script src="../assets/js/plugin/sweetalert/sweetalert.min.js"></script>
     <!--   Core JS Files   -->
     <script src="../assets/js/core/jquery-3.7.1.min.js"></script>
     <script src="../assets/js/core/popper.min.js"></script>
     <script src="../assets/js/core/bootstrap.min.js"></script>
 
     <!-- jQuery Scrollbar -->
-    <script src="../assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script> 
+    <script src="../assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
+
+    <!-- Chart JS -->
+    <script src="../assets/js/plugin/chart.js/chart.min.js"></script>
+
+    <!-- jQuery Sparkline -->
+    <script src="../assets/js/plugin/jquery.sparkline/jquery.sparkline.min.js"></script>
+
+    <!-- Chart Circle -->
+    <script src="../assets/js/plugin/chart-circle/circles.min.js"></script>
+
+    <!-- Datatables -->
+    <script src="../assets/js/plugin/datatables/datatables.min.js"></script>
+
+
+    <!-- jQuery Vector Maps -->
+    <script src="../assets/js/plugin/jsvectormap/jsvectormap.min.js"></script>
+    <script src="../assets/js/plugin/jsvectormap/world.js"></script>
+
+
     <!-- Kaiadmin JS -->
     <script src="../assets/js/kaiadmin.min.js"></script>
-    </script>
   </body>
 </html>

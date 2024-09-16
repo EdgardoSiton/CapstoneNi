@@ -106,7 +106,7 @@ small {
 </div>
 <div class="text"> 
 
-<form method="POST" action="" onsubmit="return validateForm()">
+<form method="POST" action=""  enctype="multipart/form-data" onsubmit="return validateForm()">
     <h5>Register</h5>
 
     <div class="form-floating mb-3">
@@ -196,7 +196,7 @@ small {
     </div>
 
     <div class="form-floating mb-3">
-        <input type="file" class="form-control" id="valid_id" name="valid_id" placeholder="Valid ID">
+        <input type="file" class="form-control" id="valid_id" name="valid_id" accept="image/*" placeholder="Valid ID">
         <label for="floatingText">Valid ID</label>
         <div class="error" id="valid_id_error"></div>
     </div>
@@ -240,12 +240,6 @@ function validateForm() {
         isValid = false;
     }
 
-    // Validate middle name
-    const middleName = document.getElementById("middle_name").value.trim();
-    if (middleName === "") {
-        showError("middle_name", "Middle Name is required");
-        isValid = false;
-    }
 
     // Validate email
     const email = document.getElementById("email").value.trim();

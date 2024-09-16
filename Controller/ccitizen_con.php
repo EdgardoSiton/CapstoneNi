@@ -76,8 +76,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $church_address,
            
         );
+        $_SESSION['status'] = "success";
         
-        header("Location: success.php");
+        header('Location: ../View/PageCitizen/CitizenPage.php');
         exit();
     } else {
         // Handle error in schedule insertion

@@ -19,6 +19,7 @@
   margin: 0 auto;
   height: 772px;
   overflow: hidden;
+
   margin-top: 50px;
 }
 
@@ -173,6 +174,9 @@
 .yellow {
   background: rgba(249, 233, 0, 1);
 }
+.pink {
+  background: rgba(255, 192, 203, 1);
+}
 
 .details {
   position: relative;
@@ -301,6 +305,33 @@
 }
 .entry.yellow:after {
   background: rgba(249, 233, 0, 1);
+}
+.entry.brown:after {
+  background: rgba(165, 42, 42, 1);
+}
+.entry.violet:after {
+  background: rgba(238, 130, 238, 1);
+}
+.entry.pink:after {
+  background: rgba(255, 192, 203, 1);
+}
+.entry.redpurple:after {
+  background: rgba(228, 0, 70, 1);
+}
+.entry.bluegreen:after {
+  background: rgba(0, 128, 128, 1);
+}
+.entry.red:after {
+  background: rgba(255, 0, 0, 1);
+}
+.entry.suede:after {
+  background: rgba(162, 118, 91, 1);
+}
+.entry.brass:after {
+  background: rgba(181, 166, 66, 1);
+}
+.entry.magnolia:after {
+  background: rgba(248, 244, 255, 1);
 }
 
 /* Animations are cool!  */

@@ -1,6 +1,9 @@
 {
   "require": {
     "php": "^8.2",
-    "vlucas/phpdotenv": "^5.6"
+    "vlucas/phpdotenv": "^5.6",
+    "google/apiclient": "^2.17",
+    "infobip/infobip-api-php-client": "^5.1",
+    "paymongo/paymongo-php": "^0.0.0"
   }
 }

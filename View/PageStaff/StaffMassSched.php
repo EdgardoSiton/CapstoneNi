@@ -87,16 +87,27 @@ $pendingItems = $staff->getMassPendingCitizen();
                         <tr>
                             <td><?php echo htmlspecialchars($index + 1); ?></td>
                             <td><?php echo htmlspecialchars($item['citizen_name']); ?></td>
-                            <td><?php echo htmlspecialchars($item['Event_Name']); ?></td>
+                            <td><?php echo htmlspecialchars($item['event_name']); ?></td>
                             <td><?php echo htmlspecialchars(date('Y/m/d', strtotime($item['schedule_date']))); ?></td>
                             <td><?php echo htmlspecialchars(date('g:i A', strtotime($item['schedule_start_time']))); ?></td>
                             <td><?php echo htmlspecialchars($item['roles']); ?></td>
                             <td><?php echo htmlspecialchars($item['approval_status']); ?></td>
                             
                             <td>
-                                <button class="btn btn-primary btn-xs" style="background-color: #31ce36!important; border-color:#31ce36!important;">Approve</button> 
-                                <button class="btn btn-primary btn-xs">Delete</button>
-                            </td>
+                    <?php
+                    $viewUrl = '';
+                    if ($item['event_name'] === 'MassBaptism') {
+                        $viewUrl = 'FillMassBaptismForm.php';
+                    } elseif ($item['event_name'] === 'MassConfirmation') {
+                        $viewUrl = 'FillMassConfirmationForm.php';
+                    } elseif ($item['event_name'] === 'MassWedding') {
+                        $viewUrl = 'FillMassWeddingForm.php';
+                    } elseif ($item['event_name'] === 'MassFuneral') {
+                        $viewUrl = 'FillMassFuneralForm.php';
+                    }
+                    ?>
+                    <a href="<?php echo htmlspecialchars($viewUrl . '?id=' . $item['id']); ?>" class="btn btn-primary btn-xs" style="background-color: #31ce36!important; border-color:#31ce36!important;">View</a>
+                  </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>

@@ -1,8 +1,8 @@
 <?php
-require_once '../../Model/staff_mod.php';
+require_once '../../Model/admin_mod.php';
 require_once '../../Model/db_connection.php';
-$staff = new Staff($conn);
-$donations = $staff->getDonations();
+$admin = new Admin ($conn);
+$donations = $admin->getDonations();
 ?>
 <!DOCTYPE html>
 <html lang="en">

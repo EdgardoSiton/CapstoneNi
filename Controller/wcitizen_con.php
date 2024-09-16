@@ -91,7 +91,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         );
     
         if ($result) {
-            header("Location: success.php");
+            $_SESSION['status'] = "success";
+            header('Location: ../View/PageCitizen/CitizenPage.php');
             exit();
         } else {
             echo "Failed to insert wedding details.";

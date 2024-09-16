@@ -1,9 +1,18 @@
 <?php
+require_once '../../Model/login_mod.php';
+require_once '../../Model/db_connection.php';
+
+// Create a new User object and call the getAccount method
+$getaccount = new User($conn);
+$userInfo = $getaccount->getAccount();
+
+// Start session and retrieve session variables
 session_start();
 $email = $_SESSION['email'];
 $nme = $_SESSION['fullname'];
 $regId = $_SESSION['citizend_id'];
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -50,7 +59,7 @@ $regId = $_SESSION['citizend_id'];
       <div class="main-panel">
       <?php  require_once 'header.php'?>
        
-
+      <form method="POST">
         <div class="container">
             <div class="page-inner">
               
@@ -67,18 +76,42 @@ $regId = $_SESSION['citizend_id'];
                             <th scope="col">Citizen Name</th>
                             <th scope="col">Phone Number</th>
                             <th scope="col">Email</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Action</th>
                           </tr>
                         </thead>
                         <tbody>
-                          <tr>
-                            <td>001</td>
-                            <td>Rexy Jade YangYang</td>
-                            <td>0922121432</td>
-                            <td>rexy@gmail.com </td>
-                          </tr>
-                       
-                     
-                        </tbody>
+    <?php
+    // Check if the $userInfo array has data
+    if (!empty($userInfo)) {
+        // Loop through the result and display each record in a table row
+        foreach ($userInfo as $index => $user) {
+            $citizendId = htmlspecialchars($user['citizend_id']);
+            $fullname = htmlspecialchars($user['fullname']);
+            $phone = htmlspecialchars($user['phone']);
+            $email = htmlspecialchars($user['email']);
+            $status = htmlspecialchars($user['r_status']);
+            
+            // Create the view button with a link or JavaScript function
+            $viewButton = '<a href="viewCitizen.php?id=' . $citizendId . '" class="btn btn-primary">View</a>';
+
+            echo '<tr>';
+            echo '<td>' . ($index + 1) . '</td>'; // Display a unique index for each row
+            echo '<td>' . $fullname . '</td>'; // Safely display the fullname
+            echo '<td>' . $phone . '</td>'; // Safely display the phone
+            echo '<td>' . $email . '</td>'; // Safely display the email
+            echo '<td>' . $status . '</td>'; // Safely display the status
+            echo '<td>' . $viewButton . '</td>'; // Display the view button
+            echo '</tr>';
+        }
+    } else {
+        // If no data is returned, show a message in the table
+        echo '<tr>';
+        echo '<td colspan="6">No pending citizens found.</td>'; // Adjust colspan according to your table
+        echo '</tr>';
+    }
+    ?>
+</tbody>
                       </table>
                     </div>
                   </div>
@@ -90,7 +123,7 @@ $regId = $_SESSION['citizend_id'];
             </div>
           </div>
         </div>
-
+        <form>
 
      
     </div>

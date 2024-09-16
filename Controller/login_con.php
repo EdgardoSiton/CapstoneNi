@@ -43,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 } elseif ($accountType === 'Staff') {
                     header('Location: ../../View/PageStaff/StaffDashboard.php');
                 } elseif ($accountType === 'Priest') {
-                    header('Location: ../PriestDashboard.php');
+                    header('Location: ../../View/PagePriest/PriestDashboard.php');
                 }
              else {
                 $_SESSION['login_error'] = 'Waiting for approval by the management';

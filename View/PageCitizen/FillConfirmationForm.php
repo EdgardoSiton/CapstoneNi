@@ -55,8 +55,8 @@ require_once '../../Model/db_connection.php';
     }
 
     // Optionally, clear the session storage if you don't want to persist the data
-     sessionStorage.removeItem('selectedDate');
-     sessionStorage.removeItem('selectedTime');
+ //    sessionStorage.removeItem('selectedDate');
+ //    sessionStorage.removeItem('selectedTime');
 });
 
 
@@ -165,7 +165,7 @@ small {
                         <div class="card-title">ConfirmationFill-up Form</div>
                     </div>
                     <div class="card-body">
-                    <form method="post" action="../../Controller/ccitizen_con.php" onsubmit="return validateForm()">
+                    <form method="post" action="../../Controller/addconfirmation_con.php" onsubmit="return validateForm()">
     <input type="hidden" name="form_type" value="confirmation">
     <div class="row">
         <div class="col-md-6 col-lg-4">

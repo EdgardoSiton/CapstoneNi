@@ -58,8 +58,8 @@ $announcements = $staff->getAnnouncements();
     }
 
     // Optionally, clear the session storage if you don't want to persist the data
-     sessionStorage.removeItem('selectedDate');
-     sessionStorage.removeItem('selectedTime');
+    // sessionStorage.removeItem('selectedDate');
+   //  sessionStorage.removeItem('selectedTime');
 });
 
 

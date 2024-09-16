@@ -5,10 +5,14 @@ $regId = $_SESSION['citizend_id'];
 require_once '../../Model/db_connection.php';
 require_once '../../Model/staff_mod.php';
 
-// Initialize the Staff object
+$loggedInUserEmail = isset($_SESSION['email']) ? $_SESSION['email'] : null;
+
 $staff = new Staff($conn);
 
-// Fetch announcements
+if (!$loggedInUserEmail) {
+  header("Location: login.php");
+  exit();
+}
 $announcements = $staff->getAnnouncements(); // Fetch all announcements
 ?>
 
@@ -54,7 +58,9 @@ $announcements = $staff->getAnnouncements(); // Fetch all announcements
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/rating.css">
-    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
     <style>
       .days li{
         padding: 20px!important;
@@ -67,55 +73,7 @@ $announcements = $staff->getAnnouncements(); // Fetch all announcements
    
 
     <!-- Navbar & Hero Start -->
-    <div class="container-fluid nav-bar px-0 px-lg-4 py-lg-0">
-      <div class="container">
-        <nav class="navbar navbar-expand-lg navbar-light">
-          <a href="CitizenPage.php" class="navbar-brand p-0">
-            <img src="assets/img/argaochurch.png" alt="" />
-          </a>
-          <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarCollapse"
-          >
-            <span class="fa fa-bars"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarCollapse">
-            <div class="navbar-nav mx-0 mx-lg-auto">
-              <a href="index.html" class="nav-item nav-link active">Home</a>
-              <a href="" class="nav-item nav-link">About</a>
-              <a href="" class="nav-item nav-link">Services</a>
-              <a href="" class="nav-item nav-link">Blog</a>
-              <div class="nav-item dropdown">
-                <a href="#" class="nav-link" data-bs-toggle="dropdown">
-                  <span class="dropdown-toggle">Pages</span>
-                </a>
-                <div class="dropdown-menu">
-                  <a href="" class="dropdown-item">Our Features</a>
-                  <a href="" class="dropdown-item">Our team</a>
-                  <a href="" class="dropdown-item"
-                    >Testimonial</a
-                  >
-                  <a href="" class="dropdown-item">FAQs</a>
-                  <a href="" class="dropdown-item">404 Page</a>
-                </div>
-              </div>
-              <a href="#" id="open-modal" class="nav-item nav-link">Rate</a>
-            </div>
-          </div>
-          <div class="nav-btn px-3">
-            <a
-              href="#"
-              id="form-open"
-              class="btn btn-primary py-2 px-4 ms-3 flex-shrink-0"
-            >
-              Hi,<?php echo $nme; ?></a
-            >
-          </div>
-        </nav>
-      </div>
-    </div>
+    <?php require_once 'header.php'?>
     <!-- Navbar & Hero End -->
     
     <!-- Carousel Start -->
@@ -310,55 +268,68 @@ $announcements = $staff->getAnnouncements(); // Fetch all announcements
                 </p>
             </div>
             <div class="owl-carousel testimonial-carousel wow fadeInUp" data-wow-delay="0.2s">
-                <?php foreach ($announcements as $announcement): ?>
-                    <div class="testimonial-item bg-light rounded">
-                        <div class="row g-0">
-                            <div class="col-8 col-lg-8 col-xl-9">
-                                <div class="d-flex flex-column my-auto text-start p-4">
-                                    <div class="small">
-                                        <span class="fa fa-calendar text-primary"></span> 
-                                        <?php 
-                                            $date = htmlspecialchars(date('F j, Y', strtotime($announcement['date'])));
-                                            $startTime = htmlspecialchars(date('g:i a', strtotime($announcement['start_time'])));
-                                            echo "$date - $startTime";
-                                        ?>
-                                    </div>
-
-                                    <h4 class="text-dark mb-0">
-                                        <?php echo htmlspecialchars($announcement['title']); ?>
-                                    </h4>
-                                    <br />
-                                    <p class="mb-0">
-                                        <?php echo htmlspecialchars($announcement['description']); ?>
-                                    </p>
-
-                                    <?php
-                                        // Determine the form link based on event type
-                                        $eventType = htmlspecialchars($announcement['event_type']);
-                                        $formLink = '#'; // Default link in case none match
-
-                                        // Set form link based on event type
-                                        switch ($eventType) {
-                                            case 'MassBaptism':
-                                                $formLink = 'MassFillBaptismForm.php';
-                                                break;
-                                            case 'MassConfirmation':
-                                                $formLink = 'MassFillConfirmationForm.php';
-                                                break;
-                                            case 'MassWedding':
-                                                $formLink = 'MassFillWeddingForm.php';
-                                                break;
-                                            // Add more cases as needed for other event types
-                                        }
-                                    ?>
-
-                                    <a href="<?php echo $formLink; ?>?announcement_id=<?php echo $announcement['announcement_id']; ?>" class="btn btn-primary btn-rounded btn-sm">Register Now</a>
-
-                                </div>
-                            </div>
-                        </div>
+<?php foreach ($announcements as $announcement): ?>
+    <div class="testimonial-item bg-light rounded">
+        <div class="row g-0">
+            <div class="col-8 col-lg-8 col-xl-9">
+                <div class="d-flex flex-column my-auto text-start p-4">
+                    <div class="small">
+                        <span class="fa fa-calendar text-primary"></span> 
+                        <?php 
+                            $date = htmlspecialchars(date('F j, Y', strtotime($announcement['date'])));
+                            $startTime = htmlspecialchars(date('g:i a', strtotime($announcement['start_time'])));
+                            echo "$date - $startTime";
+                        ?>
                     </div>
-                <?php endforeach; ?>
+
+                    <h4 class="text-dark mb-0">
+                        <?php echo htmlspecialchars($announcement['title']); ?>
+                    </h4>
+                    <br />
+                    <p class="mb-0">
+                        <?php echo htmlspecialchars($announcement['description']); ?>
+                    </p>
+
+                    <h4 class="text-dark mb-0">
+                        Capacity: <span class="capacity-count" data-capacity="<?php echo htmlspecialchars($announcement['capacity']); ?>">
+                            <?php echo htmlspecialchars($announcement['capacity']); ?>
+                        </span>
+                    </h4>
+
+                    <?php
+                        // Determine the form link based on event type
+                        $eventType = htmlspecialchars($announcement['event_type']);
+                        $formLink = '#'; // Default link in case none match
+
+                        // Set form link based on event type
+                        switch ($eventType) {
+                            case 'MassBaptism':
+                                $formLink = 'MassFillBaptismForm.php';
+                                break;
+                            case 'MassConfirmation':
+                                $formLink = 'MassFillConfirmationForm.php';
+                                break;
+                            case 'MassMarriage':
+                                $formLink = 'MassFillWeddingForm.php';
+                                break;
+                            // Add more cases as needed for other event types
+                        }
+
+                        // Check if capacity is zero
+                        if ($announcement['capacity'] > 0) {
+                            // Show Register button if capacity is available
+                            echo '<a href="' . $formLink . '?announcement_id=' . htmlspecialchars($announcement['announcement_id']) . '" class="btn btn-primary btn-rounded btn-sm register-btn" data-announcement-id="' . htmlspecialchars($announcement['announcement_id']) . '">Register Now</a>';
+                        } else {
+                            // Show Fully Booked message in red if capacity is zero
+                            echo '<p class="text-danger"><strong>Fully Booked</strong></p>';
+                        }
+                    ?>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php endforeach; ?>
+
             </div>
         </div>
     </div>
@@ -391,11 +362,56 @@ $announcements = $staff->getAnnouncements(); // Fetch all announcements
     <!-- Copyright End -->
 
     <!-- Back to Top -->
+    
     <a href="#" class="btn btn-primary btn-lg-square rounded-circle back-to-top"
       ><i class="fa fa-arrow-up"></i
     ></a>
     <link rel="stylesheet" href="../assets/css/login.css" />
     <script>
+
+
+
+      document.addEventListener('DOMContentLoaded', function() {
+    <?php
+    if (isset($_SESSION['status']) && $_SESSION['status'] == 'success') {
+        echo "Swal.fire({
+            icon: 'success',
+            title: 'Form submitted successfully!',
+            text: 'Waiting for Approval.',
+        });";
+        unset($_SESSION['status']);
+    }
+    ?>
+});
+
+
+
+document.querySelectorAll('.register-btn').forEach(button => {
+    button.addEventListener('click', function (e) {
+        e.preventDefault();
+        const announcementId = this.getAttribute('data-announcement-id');
+
+        fetch('../../Controller/reserve_capacity.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                announcement_id: announcementId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = this.getAttribute('href');
+            } else {
+                alert('No capacity left');
+            }
+        });
+    });
+});
+
+
       const formOpenBtn = document.querySelector("#form-open"),
         home = document.querySelector(".home"),
         formContainer = document.querySelector(".form_container"),

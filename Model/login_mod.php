@@ -5,6 +5,87 @@ class User {
     public function __construct($conn) {
         $this->conn = $conn;
     }
+    public function getAccount() {
+        // Prepare the SQL query with ORDER BY clause for descending order
+        $sql = "SELECT `citizend_id`, `fullname`, `email`, `gender`, `phone`, `c_date_birth`, `age`, `address`, `valid_id`, `user_type`, `r_status`, `c_current_time`
+                FROM `citizen` 
+                WHERE `user_type` = 'Citizen' 
+                AND `r_status` = 'Pending'
+                ORDER BY `c_current_time` ASC";
+    
+        // Prepare the statement
+        $stmt = $this->conn->prepare($sql);
+    
+        if (!$stmt) {
+            die('Prepare failed: ' . $this->conn->error);
+        }
+    
+        // Execute the statement
+        if (!$stmt->execute()) {
+            die('Execute failed: ' . $stmt->error);
+        }
+    
+        // Get the result set
+        $result = $stmt->get_result();
+    
+        // Fetch all results as an associative array
+        $data = [];
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    
+        // Close the statement
+        $stmt->close();
+    
+        // Return the result
+        return $data;
+    }
+    public function getCitizenDetails($citizendId) {
+        // Prepare the SQL query
+        $sql = "SELECT `citizend_id`, `fullname`, `email`, `gender`, `phone`, `c_date_birth`, `age`, `address`, `valid_id`, `user_type`, `r_status`, `c_current_time`
+                FROM `citizen` 
+                WHERE `citizend_id` = ?";
+
+        // Prepare the statement
+        $stmt = $this->conn->prepare($sql);
+
+        if (!$stmt) {
+            die('Prepare failed: ' . $this->conn->error);
+        }
+
+        // Bind the parameter
+        $stmt->bind_param('i', $citizendId);
+
+        // Execute the statement
+        if (!$stmt->execute()) {
+            die('Execute failed: ' . $stmt->error);
+        }
+
+        // Get the result set
+        $result = $stmt->get_result();
+
+        // Fetch the details as an associative array
+        $data = $result->fetch_assoc();
+
+        // Close the statement
+        $stmt->close();
+
+        // Return the result
+        return $data;
+    }
+    public function approveCitizen($citizenId) {
+        $sql = "UPDATE citizens SET r_status = 'approved' WHERE citizend_id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $citizenId);
+        
+        if ($stmt->execute()) {
+            return true; // Approval successful
+        } else {
+            return false; // Approval failed
+        }
+    }
+    
+    
 
     public function login($email, $password) {
         // Sanitize input
@@ -54,6 +135,7 @@ class User {
             return 'Incorrect credentials. Please try again.';
         }
     }
+
     
     public function getUserInfo($email) {
         $email = mysqli_real_escape_string($this->conn, $email);
@@ -67,7 +149,6 @@ class User {
             'fullname' => $user['fullname']
         ];
     }
-
     public function registerUser($data) {
         // Automatically set user_type to 'Citizen'
         $data['user_type'] = 'Citizen';
@@ -85,12 +166,38 @@ class User {
             if (checkdate($month, $day, $year)) {
                 $data['c_date_birth'] = "$year-$month-$day";
             } else {
-                // Handle invalid date
                 return "Invalid date of birth";
             }
         } else {
-            // Handle missing date parts
             return "Date of birth is incomplete";
+        }
+    
+        // Check for valid ID image upload
+        if (isset($_FILES['valid_id'])) {
+            $validIdError = $_FILES['valid_id']['error'];
+            $validIdTmpName = $_FILES['valid_id']['tmp_name'];
+            $validIdName = $_FILES['valid_id']['name'];
+            $validIdUploadPath = 'img/' . $validIdName;
+    
+            // Proceed with file upload if no error
+            if ($validIdError === 0) {
+                $imageFileType = strtolower(pathinfo($validIdName, PATHINFO_EXTENSION));
+                $allowedFileTypes = ['jpg', 'jpeg', 'png', 'gif'];
+    
+                if (in_array($imageFileType, $allowedFileTypes)) {
+                    if (move_uploaded_file($validIdTmpName, $validIdUploadPath)) {
+                        $data['valid_id'] = $validIdUploadPath; // Save the image path in data
+                    } else {
+                        return "Failed to upload valid ID image";
+                    }
+                } else {
+                    return "Only JPG, JPEG, PNG, and GIF files are allowed for valid ID";
+                }
+            } else {
+                return "Error uploading valid ID image";
+            }
+        } else {
+            return "No valid ID image uploaded";
         }
     
         // Sanitize input data
@@ -137,6 +244,7 @@ class User {
             return "Registration failed";
         }
     }
+    
     
     
     private function calculateAge($birthday) {

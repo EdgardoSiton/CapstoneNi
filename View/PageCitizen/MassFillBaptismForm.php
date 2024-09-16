@@ -8,6 +8,7 @@ require_once '../../Model/staff_mod.php';
 // Initialize the Staff model
 $staff = new Staff($conn);
 
+
 // Fetch announcement data based on the announcement_id from the URL
 $announcementId = isset($_GET['announcement_id']) ? intval($_GET['announcement_id']) : 0;
 $announcementData = $staff->getAnnouncementById($announcementId);
@@ -170,12 +171,11 @@ document.getElementById('baptismForm').addEventListener('submit', function(event
                         <div class="card-title">Baptism Fill-up Form</div>
                     </div>
                     <div class="card-body">
-                    <form method="post" action="../../Controller/masscitizen_con.php" onsubmit="return validateForm()">
+                    <form method="post" action="../../Controller/addmassbaptism_con.php" onsubmit="return validateForm()">
                     <input type="hidden" name="announcement_id" value="<?php echo htmlspecialchars($announcementId); ?>">
-  
-  
     <div class="row">
         <div class="col-md-6 col-lg-4">
+        <input type="hidden" name="announcement_id" value="41">
             <div class="form-group">
                 <label for="date">Date</label>
                 <input type="text" class="form-control" id="date" name="date" value="<?php echo htmlspecialchars($announcementData['date']); ?>" readonly />
@@ -320,7 +320,7 @@ document.getElementById('baptismForm').addEventListener('submit', function(event
     </div>
     <div class="card-action">
         <button type="submit" class="btn btn-success">Submit</button>
-        <button type="button" class="btn btn-danger" onclick="window.location.href='your_cancel_url.php'">Cancel</button>
+        <button type="button" class="btn btn-danger" onclick="window.location.href='CitizenPage.php'">Cancel</button>
         <button type="button" class="btn btn-info" onclick="clearForm()">Clear</button>
     </div>
 </form>
@@ -331,6 +331,62 @@ document.getElementById('baptismForm').addEventListener('submit', function(event
     </div>
 </div>
 <script>
+document.addEventListener('DOMContentLoaded', function () {
+    let formModified = false; 
+
+    const announcementIdInput = document.querySelector('input[name="announcement_id"]');
+    const announcementId = announcementIdInput ? announcementIdInput.value : null;
+
+    const form = document.querySelector('form'); // The form element
+
+    // Set formModified to true when any input in the form is changed
+    form.addEventListener('input', () => {
+        formModified = true;
+    });
+
+    // Before unload event to release capacity if form is modified but not submitted
+    window.addEventListener('beforeunload', function (e) {
+        if (formModified && announcementId) {
+            fetch('/../../Controller/release_capacity.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    announcement_id: announcementId
+                }),
+                keepalive: true
+            }).then(response => {
+                if (response.ok) {
+                    console.log('Capacity released successfully');
+                } else {
+                    console.log('Error releasing capacity');
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    });
+
+    // Handle tab or window visibility change
+    document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'hidden' && formModified && announcementId) {
+            fetch('/../../Controller/release_capacity.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    announcement_id: announcementId
+                }),
+                keepalive: true
+            });
+        }
+    });
+});
+
+
+
 function validateForm() {
     let isValid = true;
 

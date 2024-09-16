@@ -60,6 +60,7 @@ function moveDate(direction) {
     }
     renderCalendar();
 }
+
 let initialLoad = true; // Track if this is the initial load of the calendar
 
 function renderCalendar() {
@@ -81,9 +82,14 @@ function renderCalendar() {
 
     const today = new Date();
     const oneWeekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000); // One week from today
+    const fifteenDaysFromNow = new Date(today.getTime() + 15 * 24 * 60 * 60 * 1000); // 15 days from today
     const isCurrentMonth = today.getFullYear() === currentYear && today.getMonth() === currentMonth;
 
     let hasSelectableDate = false;
+
+    // Get event type from the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const type = urlParams.get('type') || 'baptism'; // Default to 'baptism' if not set
 
     // Fill in empty days before the first day of the month
     for (let i = 0; i < firstDay; i++) {
@@ -97,9 +103,11 @@ function renderCalendar() {
 
         const dayDate = new Date(currentYear, currentMonth, i);
 
-        // Disable dates within one week from today
-        if (dayDate < oneWeekFromNow) {
-            dayElement.classList.add('past'); // Style as past date
+        // Disable dates based on the event type
+        if (type === 'Wedding' && dayDate < fifteenDaysFromNow) {
+            dayElement.classList.add('past'); // Style as past date for weddings
+        } else if (dayDate < oneWeekFromNow) {
+            dayElement.classList.add('past'); // Style as past date for other events
         } else {
             dayElement.addEventListener('click', () => selectDate(dayElement));
             hasSelectableDate = true;
@@ -121,6 +129,7 @@ function renderCalendar() {
     initialLoad = false; // Disable automatic month change after the first load
 }
 
+
 // Initialize calendar on page load
 window.addEventListener('DOMContentLoaded', () => {
     renderCalendar();
@@ -136,18 +145,28 @@ function selectDate(dayElement) {
 
     const selectedDate = new Date(currentYear, currentMonth, dayElement.textContent);
     const formattedDate = selectedDate.toLocaleDateString('en-CA'); // Format date in local time
+
+    // Deselect any previously selected radio button
     const selectedRadioButton = document.querySelector('input[type="radio"]:checked');
     if (selectedRadioButton) {
         selectedRadioButton.checked = false;
     }
 
-    // Check if the selected date is within one week from today
+    // Get event type from the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const type = urlParams.get('type') || 'baptism'; // Default to 'baptism' if not set
+
+    // Check if the selected date is within 15 days from today for weddings
     const today = new Date();
+    const fifteenDaysFromNow = new Date(today.getTime() + 15 * 24 * 60 * 60 * 1000);
     const oneWeekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
 
-    if (selectedDate < oneWeekFromNow) {
+    if (type === 'Wedding' && selectedDate < fifteenDaysFromNow) {
+        alert("Please select a wedding date that is at least 15 days from today.");
+        return; // Exit early if the selected wedding date is within 15 days from today
+    } else if (selectedDate < oneWeekFromNow) {
         alert("Please select a date that is at least one week from today.");
-        return; // Exit early if the selected date is within one week from today
+        return; // Exit early if the selected date is within one week from today for other events
     }
 
     // Make an AJAX request to fetch the schedule for the selected date
@@ -161,17 +180,21 @@ function selectDate(dayElement) {
     .then(response => response.json())
     .then(schedules => {
         console.log('Schedules:', schedules); // Debugging
-        updateAvailableTimes(schedules, selectedDate);
+        updateAvailableTimes(schedules, selectedDate, type === 'baptism'); // Pass the event type as isBaptism
     })
     .catch(error => {
         console.error('Error:', error);
     });
 }
 
-function updateAvailableTimes(schedules, selectedDate) {
+function updateAvailableTimes(schedules, selectedDate, isBaptism) {
     const timeSlots = document.querySelectorAll('.time .form-check');
-    const today = new Date();
-    const oneWeekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+    // Check the day of the selected date
+    const dayOfWeek = selectedDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    const isSunday = dayOfWeek === 0;
+    const isWeekday = dayOfWeek >= 1 && dayOfWeek <= 5; // Monday to Friday
+    const isTueThuFri = dayOfWeek === 2 || dayOfWeek === 4 || dayOfWeek === 5; // Tuesday, Thursday, Friday
 
     timeSlots.forEach(slot => {
         const timeRange = slot.querySelector('label').textContent.trim();
@@ -186,28 +209,48 @@ function updateAvailableTimes(schedules, selectedDate) {
         const radioButton = slot.querySelector('input[type="radio"]');
         const statusText = slot.querySelector('h6');
 
-        // Disable radio buttons and change text for dates within one week from today
-        if (selectedDate < oneWeekFromNow) {
-            statusText.textContent = 'Not Available';
+        // Handle Sunday availability
+        if (isSunday) {
+            if (isBaptism) {
+                statusText.textContent = 'Mass Schedule';
+                statusText.style.color = 'gray';
+                radioButton.disabled = true;
+            } else if (startTime === '1:30 PM' && endTime === '2:30 PM') {
+                statusText.textContent = isBooked ? 'Booked' : 'Available';
+                statusText.style.color = isBooked ? 'red' : 'green';
+                radioButton.disabled = isBooked;
+            } else {
+                statusText.textContent = 'Mass Schedule';
+                statusText.style.color = 'gray';
+                radioButton.disabled = true;
+            }
+        } 
+        // Handle 4:30 PM - 5:30 PM slot for weekdays (Monday to Friday)
+        else if (isWeekday && startTime === '4:30 PM' && endTime === '5:30 PM') {
+            statusText.textContent = 'Mass Schedule';
             statusText.style.color = 'gray';
-            radioButton.disabled = true; // Disable the radio button
-        } else if (isBooked) {
-            statusText.textContent = 'Booked';
-            statusText.style.color = 'red';
-            radioButton.disabled = true; // Disable the radio button
-        } else {
-            statusText.textContent = 'Available';
-            statusText.style.color = 'green';
-            radioButton.disabled = false; // Ensure the radio button is enabled if not booked
+            radioButton.disabled = true;
+        } 
+        // Handle Tuesday, Thursday, and Friday unavailability for 11:30 AM - 12:30 PM
+        else if (isTueThuFri && startTime === '11:30 AM' && endTime === '12:30 PM') {
+            statusText.textContent = 'Prayer Schedule';
+            statusText.style.color = 'gray';
+            radioButton.disabled = true;
+        } 
+        // Default behavior for other slots
+        else {
+            statusText.textContent = isBooked ? 'Booked' : 'Available';
+            statusText.style.color = isBooked ? 'red' : 'green';
+            radioButton.disabled = isBooked;
         }
     });
 }
 
-function formatTime(time) {
-    const [hours, minutes] = time.split(':');
-    const suffix = hours >= 12 ? 'PM' : 'AM';
-    const formattedHours = hours % 12 || 12;
-    return `${formattedHours}:${minutes} ${suffix}`;
+function formatTime(timeString) {
+    const [hours, minutes] = timeString.split(':');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const formattedHours = (hours % 12) || 12; // Convert 24-hour format to 12-hour format
+    return `${formattedHours}:${minutes} ${ampm}`;
 }
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -506,7 +549,7 @@ document.addEventListener('DOMContentLoaded', function() {
           type="radio"
           name="flexRadioDefault"
           id="flexRadioDefault2"
-          value="9:30 AM - 10:30 AM"
+          value="10:00 AM - 11:30 AM"
           
         />
         <label
@@ -514,7 +557,7 @@ document.addEventListener('DOMContentLoaded', function() {
           class="form-check-label"
           for="timeSlot2"
         >
-          9:30 AM - 10:30 AM
+        10:00 AM - 11:00 AM
         </label>
         <label
         style="color: red;"
@@ -533,14 +576,14 @@ document.addEventListener('DOMContentLoaded', function() {
           type="radio"
           name="flexRadioDefault"
           id="flexRadioDefault3"
-          value="10:30 AM - 11:30 AM"
+          value="11:30 AM - 12:30 PM"
         />
         <label
         style="padding-right: 115px;"
           class="form-check-label"
           for="timeSlot3"
         >
-        10:30 AM - 11:30 AM
+        11:30 AM - 12:30 PM
       </label>
       <label
         class="form-check-label"
@@ -582,14 +625,14 @@ document.addEventListener('DOMContentLoaded', function() {
           type="radio"
           name="flexRadioDefault"
           id="flexRadioDefault5"
-          value="2:30 PM - 3:30 PM"
+          value="3:00 PM - 4:00 PM"
         />
         <label
         style="padding-right: 115px;"
           class="form-check-label"
           for="timeSlot5"
         >
-          2:30 PM - 3:30 PM
+          3:00 PM - 4:00 PM
         </label>
         <label
         class="form-check-label"
@@ -614,31 +657,6 @@ document.addEventListener('DOMContentLoaded', function() {
           class="form-check-label"
           for="timeSlot6"
         >
-          3:30 PM - 4:30 PM
-        </label>
-        <label
-        class="form-check-label"
-        for="flexRadioDefault2"
-      >
-      <h6 style="font-size: 14px; color: green; padding:0; margin: 0;"></h6>
-      </label>
-      </div>
-    </div>
-    <div class="d-flex">
-     
-      <div class="form-check">
-        <input
-          class="form-check-input"
-          type="radio"
-          name="flexRadioDefault"
-          id="flexRadioDefault7"
-          value="4:30 PM - 5:30 PM"
-        />
-        <label
-        style="padding-right: 117px;"
-          class="form-check-label"
-          for="timeSlot7"
-        >
           4:30 PM - 5:30 PM
         </label>
         <label
@@ -648,6 +666,8 @@ document.addEventListener('DOMContentLoaded', function() {
       <h6 style="font-size: 14px; color: green; padding:0; margin: 0;"></h6>
       </label>
       </div>
+    </div>
+
     </div>
   </div>
 

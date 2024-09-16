@@ -57,8 +57,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $parentResident,
             $godparent
         );
-        
-        header("Location: success.php");
+        $_SESSION['status'] = "success";
+        header('Location: ../View/PageCitizen/CitizenPage.php');
         exit();
     } else {
         echo "Failed to insert schedule.";

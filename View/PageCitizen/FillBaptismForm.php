@@ -102,8 +102,8 @@ small {
     }
 
     // Optionally, clear the session storage if you don't want to persist the data
-     sessionStorage.removeItem('selectedDate');
-     sessionStorage.removeItem('selectedTime');
+  //   sessionStorage.removeItem('selectedDate');
+   //  sessionStorage.removeItem('selectedTime');
 });
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -172,8 +172,7 @@ document.getElementById('baptismForm').addEventListener('submit', function(event
         <div class="col-md-6 col-lg-4">
             <div class="form-group">
                 <label for="date">Date</label>
-                <input type="text" class="form-control" id="date" name="date" value="<?php echo htmlspecialchars($announcementData['date']); ?>" readonly />
-
+                <input type="text" class="form-control" id="date" name="date" placeholder="" readonly />
                 <span class="error" id="dateError"></span>
             </div>
             <div class="form-group">
@@ -233,8 +232,8 @@ document.getElementById('baptismForm').addEventListener('submit', function(event
         <div class="col-md-6 col-lg-4">
             <div class="form-group">
                 <label for="start_time">Start Time</label>
-                <input type="text" class="form-control" id="start_time" name="start_time"  value="<?php echo htmlspecialchars($announcementData['start_time']); ?>" readonly />
-                <span class="error" id="startTimeError"></span>
+                <input type="text" class="form-control" id="start_time" name="start_time" placeholder="" readonly />
+              <span class="error" id="startTimeError"></span>
             </div>
             <div class="form-group">
                 <label for="pbirth">Place of Birth</label>
@@ -297,8 +296,8 @@ document.getElementById('baptismForm').addEventListener('submit', function(event
         <div class="col-md-6 col-lg-4">
             <div class="form-group">
                 <label for="end_time">End Time</label>
-                <input type="text" class="form-control" id="end_time" name="end_time" value="<?php echo htmlspecialchars($announcementData['end_time']); ?>"readonly />
-                <span class="error" id="endTimeError"></span>
+                <input type="text" class="form-control" id="end_time" name="end_time" placeholder="" readonly />
+                  <span class="error" id="endTimeError"></span>
             </div>
             <div class="form-group">
                 <label for="parents_residence">Parents Residence</label>
@@ -325,6 +324,7 @@ document.getElementById('baptismForm').addEventListener('submit', function(event
     </div>
 </div>
 <script>
+    
 function validateForm() {
     let isValid = true;
 

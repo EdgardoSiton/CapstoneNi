@@ -1,7 +1,13 @@
 <?php
-session_start();
+require_once '../../Model/db_connection.php';
+require_once '../../Controller/citizen_con.php';
+
 $nme = $_SESSION['fullname'];
 $regId = $_SESSION['citizend_id'];
+require_once '../../Model/db_connection.php';
+require_once '../../Model/staff_mod.php';
+$staff = new Staff($conn);
+$announcements = $staff->getAnnouncements();
 ?>
 
 <!DOCTYPE html>
@@ -34,6 +40,65 @@ $regId = $_SESSION['citizend_id'];
           sessionStorage.fonts = true;
         },
       });
+      
+      document.addEventListener('DOMContentLoaded', function() {
+    const selectedDate = sessionStorage.getItem('selectedDate');
+    const selectedTimeRange = sessionStorage.getItem('selectedTime');
+
+    if (selectedDate) {
+        document.getElementById('date').value = selectedDate;
+    }
+
+    if (selectedTimeRange) {
+        const [startTime, endTime] = selectedTimeRange.split('-');
+        document.getElementById('start_time').value = startTime;
+        document.getElementById('end_time').value = endTime;
+    }
+
+    // Optionally, clear the session storage if you don't want to persist the data
+  //   sessionStorage.removeItem('selectedDate');
+   //  sessionStorage.removeItem('selectedTime');
+});
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('.btn-info').addEventListener('click', function() {
+        // Select all input and textarea fields within the form
+        document.querySelectorAll('.form-control').forEach(function(element) {
+            console.log('Clearing element:', element.id, element.type, element.value); // Debug info
+            // Clear text inputs, textareas, and date inputs
+            if (element.type === 'text' || element.tagName === 'TEXTAREA' || element.type === 'date') {
+                if (element.id !== 'date' && element.id !== 'start_time' && element.id !== 'end_time') {
+                    element.value = ''; // Clear the value
+                }
+            } else if (element.type === 'radio' || element.type === 'checkbox') {
+                element.checked = false; // Uncheck radio and checkbox inputs
+            }
+        });
+    });
+});
+
+document.getElementById('baptismForm').addEventListener('submit', function(event) {
+    // Get the values of the first name, last name, and middle name
+    var firstname = document.getElementById('firstname').value.trim();
+    var lastname = document.getElementById('lastname').value.trim();
+    var middlename = document.getElementById('middlename').value.trim();
+
+    // Concatenate them into a full name
+    var fullname = firstname + ' ' + middlename + ' ' + lastname;
+
+    // Set the concatenated full name into the hidden fullname input
+    document.getElementById('fullname').value = fullname;
+});
+function toggleChapelInput() {
+    const select = document.getElementById('exampleFormControlSelect1');
+    const chapelInputGroup = document.getElementById('chapelInputGroup');
+    
+    if (select.value === 'Fiesta Mass') {
+      chapelInputGroup.style.display = 'block';
+    } else {
+      chapelInputGroup.style.display = 'none';
+    }
+  }
+
     </script>
  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
  integrity="sha384-KyZXEAg3QhqLMpG8r+Knujsl7/1L_dstPt3HV5HzF6Gvk/e3s4Wz6iJgD/+ub2oU" crossorigin="anonymous">
@@ -63,80 +128,74 @@ $regId = $_SESSION['citizend_id'];
                       <div class="card-title">REQUEST FORM</div>
                     </div>
                     <div class="card-body">
-                      <div class="row">
+                    <form method="post" action="../../Controller/citizen_con.php" onsubmit="return validateForm()">
+                    <input type="hidden" name="form_type" value="requestform">
+    
+                    <div class="row">
                         <div class="col-md-6 col-lg-4">
-                            <div class="form-group">
-                                <label for="exampleFormControlSelect1"
-                                  >Select Type of Mass</label
-                                >
-                                <select
-                                  class="form-select"
-                                  id="exampleFormControlSelect1"
-                                >
-                                  <option>Fiesta Mass</option>
-                                  <option>Novena Mass</option>
-                                  <option>Wake Mass</option>
-                                  <option>Monthly Mass</option>
-                                  <option>1st Friday Mass</option>
-                                  <option>Cemetery Chapel Mass</option>
-                                  <option>Baccalaureate Mass</option>
-                                  <option>Anointing of the Sick</option>
-                                  <option>Blessing</option>
-                                  <option>Special Mass</option>
-                                </select>
-                              </div>
-                         
-                          <div class="form-group">
-                            <label for="password">Chapel</label>
-                            <input
-                              type="text"
-                              class="form-control"
-                              id="password"
-                              placeholder="Enter Chapel Name"
-                            />
-                          </div>
-                          <div class="form-group">
-                            <label for="password">Person Requesting</label>
-                            <input
-                              type="number"
-                              class="form-control"
-                              id="password"
-                              placeholder="Enter Fullname"
-                            />
-                          </div>
-                        <BR><br></BR>
                         <div class="form-group">
-                            <div class="input-group" style="height: 40px;">
-                              <span class="input-group-text">Received by:</span>
-                              <textarea
-                                class="form-control"
-                                aria-label="With textarea"
-                                style="overflow:hidden"
-                              ></textarea>
-                            </div>
-                          </div>
+  <label for="exampleFormControlSelect1">Select Type of Request Form</label>
+  <select class="form-select" id="exampleFormControlSelect1" onchange="toggleChapelInput()">
+  <option>Select</option>
+    <option>Fiesta Mass</option>
+    <option>Novena Mass</option>
+    <option>Wake Mass</option>
+    <option>Monthly Mass</option>
+    <option>1st Friday Mass</option>
+    <option>Cemetery Chapel Mass</option>
+    <option>Baccalaureate Mass</option>
+    <option>Anointing of the Sick</option>
+    <option>Blessing</option>
+    <option>Special Mass</option>
+  </select>
+</div>
+
+<div class="form-group" id="chapelInputGroup" style="display: none;">
+  <label for="chapel">Chapel</label>
+  <input
+    type="text"
+    class="form-control"
+    id="chapel"
+    placeholder="Enter Chapel Name"
+  />
+</div>
+                       <div class="form-group">
+                <label for="firstname">Firstname of Person Requesting</label>
+                <input type="text" class="form-control" id="firstname" name="firstname" placeholder="Enter Firstname"
+                    value="<?php echo isset($userDetails) ? htmlspecialchars($userDetails['firstname']) : ''; ?>" />
+                <div id="firstnameError" class="error text-danger"></div>
+            </div>
+
+            <!-- Groom Lastname -->
+            <div class="form-group">
+                <label for="lastname">Last Name of Person Requesting</label>
+                <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Enter Lastname"
+                    value="<?php echo isset($userDetails) ? htmlspecialchars($userDetails['lastname']) : ''; ?>" />
+                <div id="lastnameError" class="error text-danger"></div>
+            </div>
+
+            <!-- Groom Middlename -->
+            <div class="form-group">
+                <label for="middlename">Middle Name of Person Requesting</label>
+                <input type="text" class="form-control" id="middlename" name="middlename" placeholder="Enter Middlename"
+                    value="<?php echo isset($userDetails) ? htmlspecialchars($userDetails['middlename']) : ''; ?>" />
+                <div id="middlenameError" class="error text-danger"></div>
+            </div>
+                        <BR><br></BR>
+                       
                         </div>
 
                         <div class="col-md-6 col-lg-4">
-                            <div class="form-group">
-                                <label for="password">Date</label>
-                                <input
-                                  type="date"
-                                  class="form-control"
-                                  id="password"
-                                  placeholder="Enter Date"
-                                />
-                              </div>
+                        <div class="form-group">
+                <label for="date">Date</label>
+                <input type="text" class="form-control" id="date" name="date" placeholder="" readonly />
+                <span class="error" id="dateError"></span>
+            </div>
                              
                           
                             <div class="form-group">
                                 <label for="password">Address</label>
-                                <input
-                                type="text"
-                                class="form-control"
-                                id="password"
-                                placeholder="Enter Chapel Address"
-                              />
+                                <input type="text" class="form-control" id="password" placeholder="Enter  Address"  value="<?php echo isset($userDetails) ? htmlspecialchars($userDetails['address']) : ''; ?>"/>
                               </div>
                               
                               <div class="form-group">
@@ -149,38 +208,19 @@ $regId = $_SESSION['citizend_id'];
                                 />
                               </div>
                               <BR><br></BR>
-                              <div style="margin-bottom: 17px;" class="form-group">
-                                <div class="input-group" style="height: 40px;">
-                                  <span class="input-group-text">Date Received:</span>
-                                  <textarea
-                                  
-                                    class="form-control"
-                                    aria-label="With textarea"
-                                    style="overflow:hidden"
-                                  ></textarea>
-                                </div>
-                              </div>
+                             
                              
                             
                             </div>
                             <div class="col-md-6 col-lg-4">
-                                <div class="form-group">
-                                    <label for="password">Time</label>
-                                    <input
-                                      type="text"
-                                      class="form-control"
-                                      id="password"
-                                      placeholder="Enter Time"
-                                    />
-                                  </div>
+                            <div class="form-group">
+                <label for="start_time">Start Time</label>
+                <input type="text" class="form-control" id="start_time" name="start_time" placeholder="" readonly />
+              <span class="error" id="startTimeError"></span>
+            </div>
                                   <div class="form-group">
                                     <label for="password">Contact Number</label>
-                                    <input
-                                      type="password"
-                                      class="form-control"
-                                      id="password"
-                                      placeholder="Enter Contact Number"
-                                    />
+                                    <input type="text"class="form-control" id="cpnumber"placeholder="Enter Contact Number"  value="<?php echo isset($userDetails) ? htmlspecialchars($userDetails['phone']) : ''; ?>"/>
                                   </div>
                                  
                                 
@@ -189,6 +229,7 @@ $regId = $_SESSION['citizend_id'];
                      
                     <div class="card-action">
                       <button class="btn btn-success">Submit</button>
+                      <button type="button" class="btn btn-info" onclick="clearForm()">Clear</button>
                       <button class="btn btn-danger">Cancel</button>
                     </div>
                   </div>

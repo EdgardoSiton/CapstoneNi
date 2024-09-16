@@ -57,8 +57,8 @@ $announcements = $staff->getAnnouncements();
     }
 
     // Optionally, clear the session storage if you don't want to persist the data
-     sessionStorage.removeItem('selectedDate');
-     sessionStorage.removeItem('selectedTime');
+  //   sessionStorage.removeItem('selectedDate');
+    // sessionStorage.removeItem('selectedTime');
 });
 
 
@@ -159,19 +159,25 @@ small {
                     </div>
                     <div class="card-body">
                     <form method="post" action="../../Controller/fcitizen_con.php" onsubmit="return validateFuneralForm()">
-    <div class="row">
+                
+                    <div class="row">
+                    <input type="hidden" name="form_type" value="Funeral">
         <div class="col-md-6 col-lg-4">
             <!-- Date -->
             <div class="form-group">
                 <label for="date">Date</label>
                 <input type="text" class="form-control" id="date" name="date" placeholder="" readonly />
+                <span class="error" id="dateError"></span>
             </div>
 
             <!-- Firstname of Deceased Person -->
             <div class="form-group">
                 <label for="firstname">Firstname of Deceased Person</label>
                 <input type="text" class="form-control" id="firstname" name="firstname" placeholder="Enter Firstname"
-                    value="<?php echo isset($userDetails) ? htmlspecialchars($userDetails['firstname']) : ''; ?>" />
+                <?php
+            if (isset($userDetails)) {
+                echo 'value="' . htmlspecialchars($userDetails['firstname']) . '"';
+            } ?> />
                 <div id="firstnameError" class="error text-danger"></div>
             </div>
 
@@ -179,7 +185,11 @@ small {
             <div class="form-group">
                 <label for="lastname">Last Name of Deceased Person</label>
                 <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Enter Lastname"
-                    value="<?php echo isset($userDetails) ? htmlspecialchars($userDetails['lastname']) : ''; ?>" />
+                <?php
+            if (isset($userDetails)) {
+                echo 'value="' . htmlspecialchars($userDetails['lastname']) . '"';
+            }
+            ?> />
                 <div id="lastnameError" class="error text-danger"></div>
             </div>
 
@@ -187,7 +197,11 @@ small {
             <div class="form-group">
                 <label for="middlename">Middle Name of Deceased Person</label>
                 <input type="text" class="form-control" id="middlename" name="middlename" placeholder="Enter Middlename"
-                    value="<?php echo isset($userDetails) ? htmlspecialchars($userDetails['middlename']) : ''; ?>" />
+                <?php
+            if (isset($userDetails)) {
+                echo 'value="' . htmlspecialchars($userDetails['middlename']) . '"';
+            }
+            ?> />
                 <div id="middlenameError" class="error text-danger"></div>
             </div>
 
@@ -379,13 +393,27 @@ small {
     </div>
 </div>
 <script>
-    function validateForm() {
+ function validateFuneralForm() {
     let isValid = true;
 
-    // Helper function to validate field
+    // Helper function to validate text fields
     function validateField(id, errorId, message) {
         const field = document.getElementById(id);
-        const value = field.value.trim();
+        const value = field ? field.value.trim() : '';
+        if (value === '') {
+            document.getElementById(errorId).innerText = message;
+            field.classList.add('error');
+            isValid = false;
+        } else {
+            document.getElementById(errorId).innerText = '';
+            field.classList.remove('error');
+        }
+    }
+
+    // Helper function to validate select fields
+    function validateSelect(id, errorId, message) {
+        const field = document.getElementById(id);
+        const value = field ? field.value.trim() : '';
         if (value === '') {
             document.getElementById(errorId).innerText = message;
             field.classList.add('error');
@@ -400,50 +428,44 @@ small {
     document.querySelectorAll('.error').forEach(e => e.innerHTML = '');
     document.querySelectorAll('.form-control').forEach(e => e.classList.remove('error'));
 
-    // Validate fields
+    // Validate text fields
     validateField('firstname', 'firstnameError', 'Firstname is required');
     validateField('lastname', 'lastnameError', 'Lastname is required');
     validateField('address', 'addressError', 'Address is required');
-    validateField('d_gender', 'genderError', 'Religion is required');
     validateField('pbirth', 'placeOfBirthError', 'Place of Birth is required');
     validateField('father_name', 'fatherNameError', 'Father\'s Fullname is required');
     validateField('mother_name', 'motherNameError', 'Mother\'s Fullname is required');
     validateField('parents_residence', 'parentsResidenceError', 'Parents Residence is required');
+    validateField('place_of_death', 'placeOfDeathError', 'Place of Death is required');
     validateField('date', 'dateError', 'Date is required');
     validateField('start_time', 'startTimeError', 'Start Time is required');
     validateField('end_time', 'endTimeError', 'End Time is required');
-
-    // Validate gender
-    const gender = document.querySelector('input[name="gender"]:checked');
-    if (!gender) {
-        document.getElementById('genderError').innerText = 'Gender is required';
-        document.querySelector('input[name="gender"]').classList.add('error');
-        isValid = false;
-    } else {
-        document.getElementById('genderError').innerText = '';
-        document.querySelector('input[name="gender"]').classList.remove('error');
-    }
 
     // Validate date of birth
     const month = document.getElementById('month').value;
     const day = document.getElementById('day').value;
     const year = document.getElementById('year').value;
-    if (month === '' || day === '' || year === '') {
-        document.getElementById('dobError').innerText = 'Date of birth is required';
+    if (!month || !day || !year) {
+        document.getElementById('dobError').innerText = 'Date of Birth is required';
         isValid = false;
     } else {
         document.getElementById('dobError').innerText = '';
     }
 
-    // Check if the form is valid
-    if (!isValid) {
-        console.log('Validation failed, form not submitted.');
-        return false;  // Prevent form submission
+    // Validate date of death
+    const deathMonth = document.getElementById('months').value;
+    const deathDay = document.getElementById('days').value;
+    const deathYear = document.getElementById('years').value;
+    if (!deathMonth || !deathDay || !deathYear) {
+        document.getElementById('dodError').innerText = 'Date of Death is required';
+        isValid = false;
+    } else {
+        document.getElementById('dodError').innerText = '';
     }
 
-    console.log('Validation passed, form will be submitted.');
-    return true;  // Allow form submission
+    return isValid;
 }
+
 </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"

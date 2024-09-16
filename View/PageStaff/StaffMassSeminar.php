@@ -74,9 +74,11 @@ $pendingItems = $staff->getPendingMassAppointments();
                             <th>Event Name</th>
                             <th>Appointment Date</th>
                             <th>Appointment Time</th>
+                            <th>Seminar Date</th>
+                            <th>Seminar Time</th>
                             <th>Payable Amount</th>
                             <th>Schedule Type</th>
-                            <th>Status</th>
+                            <th>Status</th> 
                             
                           </tr>
                         </thead>
@@ -89,8 +91,10 @@ $pendingItems = $staff->getPendingMassAppointments();
                             <td><?php echo htmlspecialchars($index + 1); ?></td>
                             <td><?php echo htmlspecialchars($item['citizen_name']); ?></td>
                             <td><?php echo htmlspecialchars($item['Event_Name']); ?></td>
-                            <td><?php echo htmlspecialchars(date('Y/m/d', strtotime($item['appointment_date']))); ?></td>
-                            <td><?php echo htmlspecialchars(date('g:i A', strtotime($item['appointment_time']))); ?></td>
+                            <td><?php echo htmlspecialchars(date('Y/m/d', strtotime($item['schedule_date']))); ?></td>
+                            <td><?php echo htmlspecialchars(date('g:i A', strtotime($item['schedule_time']))); ?></td>
+                            <td><?php echo htmlspecialchars(date('Y/m/d', strtotime($item['appointment_schedule_date']))); ?></td>
+                            <td><?php echo htmlspecialchars(date('g:i A', strtotime($item['appointment_schedule_start_time']))); ?></td>
                             <td><?php echo htmlspecialchars($item['payable_amount']); ?></td>
                             <td><?php echo htmlspecialchars($item['roles']); ?></td>
                       
