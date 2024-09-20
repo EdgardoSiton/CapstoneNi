@@ -3,7 +3,6 @@ require_once __DIR__ . '/../Model/citizen_mod.php';
 require_once __DIR__ .'/../Model/db_connection.php';
 session_start();
 $email = $_SESSION['email'];
-$nme = $_SESSION['fullname'];
 $regId = $_SESSION['citizend_id'];
 $staff = new Citizen($conn);
 
@@ -11,13 +10,13 @@ $staff = new Citizen($conn);
 $pendingItem = null;
 $eventName = '';
 
-if (isset($_GET['id'])) {
-    $id = $_GET['id'];
+if (isset($_GET['appsched_id'])) {
+    $id = $_GET['appsched_id'];
     $pendingItems = $staff->getPendingCitizens(null, $regId);
 
     // Find the specific item with the provided ID
     foreach ($pendingItems as $item) {
-        if ($item['id'] == $id) {
+        if ($item['appsched_id'] == $id) {
             $pendingItem = $item;
             $eventName = $item['event_name'];
             break;

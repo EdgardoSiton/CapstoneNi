@@ -38,7 +38,7 @@ class Citizen {
                 baptismfill b ON s.schedule_id = b.schedule_id
              
             WHERE 
-                b.status IN ( 'Pending') AND c.citizend_id = ? AND p.payment_id = ?";
+                b.status IN ( 'Pending') AND c.citizend_id = ? ";
         
         $stmt = $this->conn->prepare($query);
         $stmt->bind_param("i", $regId);
@@ -78,7 +78,7 @@ class Citizen {
              
               
             WHERE 
-                cf.status IN ('Pending') AND c.citizend_id = ? AND p.payment_id = ?";
+                cf.status IN ('Pending') AND c.citizend_id = ? AND ";
         
         $stmt = $this->conn->prepare($query);
         $stmt->bind_param("i", $regId);
@@ -125,7 +125,7 @@ class Citizen {
            
        
             WHERE 
-                mf.status IN ( 'Pending') AND c.citizend_id = ? AND p.payment_id = ?";
+                mf.status IN ( 'Pending') AND c.citizend_id = ? ";
         
         $stmt = $this->conn->prepare($query);
         $stmt->bind_param("i", $regId);
@@ -137,6 +137,7 @@ class Citizen {
     public function fetchDefuctomFillss($regId) {
         $query = "
             SELECT 
+
                 df.d_fullname AS citizen_name,
                 s.date AS schedule_date,
                 s.start_time AS schedule_start_time,
@@ -167,7 +168,7 @@ class Citizen {
               
               
             WHERE 
-                df.status IN ( 'Pending') AND c.citizend_id = ? AND p.payment_id = ?";
+                df.status IN ( 'Pending') AND c.citizend_id = ? ";
         
         $stmt = $this->conn->prepare($query);
         $stmt->bind_param("i", $regId);
@@ -197,8 +198,10 @@ class Citizen {
     public function fetchBaptismFills($regId) {
         $query = "
             SELECT 
+            p.appsched_id AS appsched_id,
             p.payment_status AS p_status,
            p.amount AS pay_amount,
+           a.appsched_id AS appointment_id,
             sch.date AS seminar_date,
             sch.start_time AS seminar_starttime,
             sch.end_time AS seminar_endtime,
@@ -231,7 +234,7 @@ class Citizen {
             
                 JOIN schedule sch ON a.schedule_id = sch.schedule_id 
                 JOIN
-    payments p ON a.appsched_id = p.appointment_id 
+    payments p ON a.appsched_id = p.appsched_id 
             WHERE 
                 b.status IN ( 'Approved') AND c.citizend_id = ?";
         
@@ -244,8 +247,10 @@ class Citizen {
     public function fetchConfirmationFills($regId) {
         $query = "
             SELECT 
+            p.appsched_id AS appsched_id,
             p.payment_status AS p_status,
             p.amount AS pay_amount,
+            a.appsched_id AS appointment_id,
             sch.date AS seminar_date,
             sch.start_time AS seminar_starttime,
             sch.end_time AS seminar_endtime,
@@ -277,7 +282,7 @@ class Citizen {
                 JOIN appointment_schedule a ON cf.confirmationfill_id = a.confirmation_id
                 JOIN schedule sch ON a.schedule_id = sch.schedule_id
                 JOIN
-                payments p ON a.appsched_id = p.appointment_id 
+                payments p ON a.appsched_id = p.appsched_id 
             WHERE 
                 cf.status IN ('Approved') AND c.citizend_id = ?";
         
@@ -291,8 +296,10 @@ class Citizen {
     public function fetchMarriageFills($regId) {
         $query = "
             SELECT 
+            p.appsched_id AS appsched_id,
             p.payment_status AS p_status,
             p.amount AS pay_amount,
+            a.appsched_id AS appointment_id,
             sch.date AS seminar_date,
             sch.start_time AS seminar_starttime,
             sch.end_time AS seminar_endtime,
@@ -331,7 +338,7 @@ class Citizen {
                 appointment_schedule a ON mf.marriagefill_id = a.marriage_id
                 JOIN schedule sch ON a.schedule_id = sch.schedule_id
                 JOIN
-                payments p ON a.appsched_id = p.appointment_id 
+                payments p ON a.appsched_id = p.appsched_id 
             WHERE 
                 mf.status IN ( 'Approved') AND c.citizend_id = ?";
         
@@ -345,8 +352,10 @@ class Citizen {
     public function fetchDefuctomFills($regId) {
         $query = "
             SELECT 
+            p.appsched_id AS appsched_id,
             p.payment_status AS p_status,
             p.amount AS pay_amount,
+            a.appsched_id AS appointment_id,
             sch.date AS seminar_date,
             sch.start_time AS seminar_starttime,
             sch.end_time AS seminar_endtime,
@@ -381,7 +390,7 @@ class Citizen {
                 appointment_schedule a ON df.defuctomfill_id = a.defuctom_id
                 JOIN schedule sch ON a.schedule_id = sch.schedule_id
                 JOIN
-                payments p ON a.appsched_id = p.appointment_id 
+                payments p ON a.appsched_id = p.appsched_id 
             WHERE 
                 df.status IN ( 'Approved') AND c.citizend_id = ?";
         

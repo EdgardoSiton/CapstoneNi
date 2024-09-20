@@ -3,13 +3,16 @@ require_once '../../Model/staff_mod.php';
 require_once '../../Model/db_connection.php';
 require_once '../../Controller/profilefetchpending_con.php';
 require_once '../../Model/citizen_mod.php';
-
+$nme = $_SESSION['fullname'];
 // Initialize the Staff class
 $staff = new Staff($conn);
 $citizen = new Citizen($conn);
 
 // Get the baptismfill_id from the URL
-$baptismfill_id = isset($_GET['id']) ? intval($_GET['id']) : null;
+$appointment_id = isset($_GET['appsched_id']) ? intval($_GET['appsched_id']) : null;
+
+
+
 $step = 1;
 
 ?>
@@ -364,9 +367,9 @@ small {
             </div>
         </div>
         <div class="card-action">
-        <button type="button" class="btn btn-success" onclick="window.location.href='baptismpayment.php';">Next</button>
+        <button type="button" class="btn btn-success" onclick="window.location.href='baptismpayment.php?appsched_id=<?php echo urlencode($appointment_id); ?>';">Next</button>
 
-      
+
           
         </div>
     </div>

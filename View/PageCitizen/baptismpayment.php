@@ -1,16 +1,28 @@
 <?php
 require_once '../../Model/staff_mod.php';
 require_once '../../Model/db_connection.php';
-require_once '../../Controller/profilefetchpending_con.php';
-require_once '../../Model/citizen_mod.php';
 
-// Initialize the Staff class
-$staff = new Staff($conn);
+require_once '../../Model/citizen_mod.php';
+session_start();
+$nme = $_SESSION['fullname'];
+// Initialize the Staff and Citizen classes
 
 $citizen = new Citizen($conn);
-$citizenData = $citizen->getPendingCitizens(null, $regId);
-$baptismfill_id = isset($_GET['id']) ? intval($_GET['id']) : null;
-$step = isset($_GET['step']) ? (int)$_GET['step'] : 2;
+
+// Get the registration ID from session and appointment ID from query parameter
+$regId = $_SESSION['citizend_id'];
+$appointment_id = isset($_GET['appsched_id']) ? intval($_GET['appsched_id']) : null;
+
+// Fetch appointment details based on the provided ID
+$citizenData = [];
+if ($appointment_id) {
+    $citizenData = $citizen->getPendingCitizens(null, $regId);
+    // Filter the data to include only the selected appointment
+    $citizenData = array_filter($citizenData, function($item) use ($appointment_id) {
+        return $item['appsched_id'] == $appointment_id;
+    });
+}
+
 
 ?>
 <!DOCTYPE html>
@@ -191,164 +203,157 @@ small {
   <?php require_once 'header.php'?>
 
   <div class="container">
-
     <div class="page-inner">
         <div class="row">
             <div class="col-md-12">
-            <div class="card">
-    <div class="card-header">
-        <div class="card-title">Payment</div>
-        <div class="container mt-5">
-        <div class="stepper-wrapper">
-            <!-- Step 1 -->
-            <div class="step completed">
-                <div class="step-icon">
-                    <i class="fa fa-check"></i>
-                </div>
-                <div class="step-label">
-                    <p>Step 1</p>
-                    <p>Check Details Information</p>
-             
-                </div>
-            </div>
+                <div class="card">
+                    <div class="card-header">
+                    <form id="paymentForm" method="POST" action="../../Controller/paymentconfirm.php">
+                    <input type="hidden" name="regId" value="<?php echo htmlspecialchars($regId); ?>">
 
-            <div class="step-line"></div>
+    <input type="hidden" name="appsched_id" value="<?php echo $appointment_id; ?>">
 
-            <!-- Step 2 -->
-            <div class="step completed">
-                <div class="step-icon">
-                    <i class="fa fa-check"></i>
-                </div>
-                <div class="step-label">
-                    <p>Step 2</p>
-                    <p>Check Payment</p>
-            
-                </div>
-            </div>
-            <div class="step-line"></div>
-            <div class="step pending">
-    <div class="step-icon">
-        <i class="fa fa-circle-o"></i>
-    </div>
-    <div class="step-label">
-        <p>Step 3</p>
-        <p>Payment Method</p>
-    
-    </div>
-</div>
-        </div>
-        
-    </div>
-
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <!-- First Column -->
-            <div class="col-md-6 col-lg-4">
-                
-          
-                <div class="form-group">
-                            <label>Please choose a Payment Method</label><br>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="payment_method" id="over_the_counter" value="over_the_counter">
-                                <label class="form-check-label" for="over_the_counter">
-                                    Over the counter
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="payment_method" id="credit_card" value="credit_card" checked>
-                                <label class="form-check-label" for="credit_card">
-                                   Online /Payment
-                                </label>
+                        <div class="card-title">Payment</div>
+                        <div class="container mt-5">
+                            <div class="stepper-wrapper">
+                                <div class="step completed">
+                                    <div class="step-icon">
+                                        <i class="fa fa-check"></i>
+                                    </div>
+                                    <div class="step-label">
+                                        <p>Step 1</p>
+                                        <p>Check Details Information</p>
+                                    </div>
+                                </div>
+                                <div class="step-line"></div>
+                                <div class="step completed">
+                                    <div class="step-icon">
+                                        <i class="fa fa-check"></i>
+                                    </div>
+                                    <div class="step-label">
+                                        <p>Step 2</p>
+                                        <p>Check Payment</p>
+                                    </div>
+                                </div>
+                                <div class="step-line"></div>
+                                <div class="step pending">
+                                    <div class="step-icon">
+                                        <i class="fa fa-circle-o"></i>
+                                    </div>
+                                    <div class="step-label">
+                                        <p>Step 3</p>
+                                        <p>Payment Method</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-
-                        <div class="form-group">
-                            <input type="checkbox" id="terms_conditions" name="terms_conditions">
-                            <label for="terms_conditions">
-                                By checking this box, you agree to the <strong>terms and conditions</strong> for this service.
-                            </label>
-                        </div>
-
-                        <!-- Summary Table -->
-                        <?php if (!empty($citizenData)) : ?>
-    <div class="table-responsive">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Particulars</th>
-                    <th>Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($citizenData as $event) : ?>
-                    <tr>
-                        <td><?php echo $event['event_name']; ?></td>
-                        <td><?php echo 'PHP ' . number_format($event['pay_amount'], 2); ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th>Total Amount</th>
-                    <th>
-                        <?php 
-                            // Sum all the payment amounts from the array
-                            $totalAmount = array_sum(array_column($citizenData, 'pay_amount'));
-                            // Add a service fee of PHP 20
-                            echo 'PHP ' . number_format($totalAmount + 20, 2); 
-                        ?>
-                    </th>
-                </tr>
-            </tfoot>
-        </table>
-    </div>
-<?php else : ?>
-    <p>No records found for <?php echo $eventType; ?>.</p>
-<?php endif; ?>
-
-<!-- Additional Information -->
-<p class="text-muted">
-    Note: *If you are using online payment, a service charge will be applied.
-</p>
-
-<div class="form-group">
-    <div class="d-flex">
-        <!-- You can add form inputs or buttons here -->
-    </div>
-</div>
-
-            
-            <!-- Second Column -->
-            <div class="col-md-6 col-lg-4">
-        
-
-
-          
-            </div>
-            
-            <!-- Third Column -->
-            <div class="col-md-6 col-lg-4">
-               
-            </div>
-        </div>
-        <div class="card-action">
-        <button type="button" class="btn btn-success" onclick="window.history.back();">Back</button>
-    <button type="submit" class="btn btn-success">Pay</button>
-      
-          
-        </div>
-    </div>
-</div>
-
-    </div>
-</div>
                     </div>
+                    <div class="card-body">
+    <div class="row">
+        <div class="col-md-6 col-lg-4">
+            <div class="form-group">
+                <label>Please choose a Payment Method</label><br>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="payment_method" id="over_the_counter" value="over_the_counter" checked>
+                    <label class="form-check-label" for="over_the_counter">Over the counter</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="payment_method" id="credit_card" value="credit_card">
+                    <label class="form-check-label" for="credit_card">Online / Payment</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="checkbox" id="terms_conditions" name="terms_conditions">
+                <label for="terms_conditions">By checking this box, you agree to the <strong>terms and conditions</strong> for this service.</label>
+            </div>
+
+            <!-- Summary Table -->
+            <?php if (!empty($citizenData)) : ?>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Particulars</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($citizenData as $event) : ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($event['event_name']); ?></td>
+                                    <td class="amount"><?php echo 'PHP ' . number_format($event['pay_amount'], 2); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                            <tr id="serviceChargeRow" style="display: none;">
+                                <td>Service Charge</td>
+                                <td id="serviceChargeAmount">PHP 0.00</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Total Amount</th>
+                                <th id="totalAmount">
+                                    <?php 
+                                        $totalAmount = array_sum(array_column($citizenData, 'pay_amount'));
+                                        echo 'PHP ' . number_format($totalAmount, 2); 
+                                    ?>
+                                </th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            <?php else : ?>
+                <p>No records found for this payment.</p>
+            <?php endif; ?>
+
+            <p class="text-muted">Note: *If you are using online payment, a service charge will be applied.</p>
+
+            <div class="form-group">
+                <div class="d-flex">
+                    <!-- You can add form inputs or buttons here -->
                 </div>
             </div>
         </div>
+        <div class="col-md-6 col-lg-4">
+            <!-- Additional content -->
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <!-- Additional content -->
+        </div>
     </div>
+    <div class="card-action">
+        <button type="button" class="btn btn-success" onclick="window.history.back();">Back</button>
+        <button type="submit" class="btn btn-success" id="payButton">Pay</button>
+    </div>
+    </form>
 </div>
+
+<script>
+    // Function to update total amount and service charge based on payment method
+    function updateAmount() {
+        var paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+        var totalAmountElement = document.getElementById('totalAmount');
+        var serviceChargeRow = document.getElementById('serviceChargeRow');
+        var serviceChargeAmountElement = document.getElementById('serviceChargeAmount');
+        var totalAmount = <?php echo json_encode($totalAmount); ?>;
+        var serviceCharge = 0;
+
+        if (paymentMethod === 'credit_card') {
+            serviceCharge = totalAmount * 0.025; // 2.5% charge
+            serviceChargeRow.style.display = 'table-row';
+        } else {
+            serviceChargeRow.style.display = 'none';
+        }
+
+        totalAmount += serviceCharge;
+        totalAmountElement.textContent = 'PHP ' + totalAmount.toFixed(2);
+        serviceChargeAmountElement.textContent = 'PHP ' + serviceCharge.toFixed(2);
+    }
+
+  
+
+</script>
+
 
   <!-- Sweet Alert -->
   <script src="../assets/js/plugin/sweetalert/sweetalert.min.js"></script>

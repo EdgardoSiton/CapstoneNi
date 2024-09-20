@@ -141,14 +141,21 @@ class User {
         $email = mysqli_real_escape_string($this->conn, $email);
         $query = "SELECT citizend_id, user_type, r_status, fullname FROM citizen WHERE email = '$email'";
         $result = mysqli_query($this->conn, $query);
-        $user = mysqli_fetch_assoc($result);
-        return [
-            'citizend_id' => $user['citizend_id'],
-            'user_type' => $user['user_type'],
-            'r_status' => $user['r_status'],
-            'fullname' => $user['fullname']
-        ];
+        
+        // Check if query was successful and fetch user info
+        if ($result && mysqli_num_rows($result) > 0) {
+            $user = mysqli_fetch_assoc($result);
+            return [
+                'citizend_id' => $user['citizend_id'] ?? null,
+                'user_type' => $user['user_type'] ?? null,
+                'r_status' => $user['r_status'] ?? null,
+                'fullname' => $user['fullname'] ?? null
+            ];
+        } else {
+            return null;
+        }
     }
+    
     public function registerUser($data) {
         // Automatically set user_type to 'Citizen'
         $data['user_type'] = 'Citizen';

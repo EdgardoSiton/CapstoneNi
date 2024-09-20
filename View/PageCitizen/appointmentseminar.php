@@ -122,7 +122,7 @@ $pendingAppointments = $citizenController->getPendingCitizens(null, $regId);
         $paymentUrl = 'FuneralPayment.php';
     }
     ?>
-    <a href="<?= htmlspecialchars($paymentUrl); ?>?id=<?= $appointment['id']; ?>" class="btn btn-primary">Payment</a>
+    <a href="<?= htmlspecialchars($paymentUrl); ?>?appsched_id=<?= $appointment['appsched_id']; ?>" class="btn btn-primary">Payment</a>
 </td>
 
                 </tr>
