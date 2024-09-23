@@ -17,10 +17,11 @@ class ServiceFactory {
 
     public function get($name)
     {
-        if(\array_key_exists($name, $this->classes)) {
+        if (\array_key_exists($name, $this->classes)) {
             return $this->classes[$name];
         } else {
-            throw new \Paymongo\Exceptions\InvalidServiceException("Service ${name} does not exists.");
+            throw new \Paymongo\Exceptions\InvalidServiceException("Service {$name} does not exist.");
         }
     }
+    
 }

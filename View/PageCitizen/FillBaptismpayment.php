@@ -202,43 +202,16 @@ small {
         <div class="stepper-wrapper">
             <!-- Step 1 -->
             <div class="step completed">
-                <div class="step-icon">
-                    <i class="fa fa-check"></i>
-                </div>
+           
                 <div class="step-label">
-                    <p>Step 1</p>
-                   <p>Check Details Information</p>
+                <p>Note please see this in a counter</p>
+                    <p>REFERENCE NUMBER</p>
+                   <p><?php echo $reference_number; ?></p>
          
                 </div>
             </div>
-
-            <div class="step-line"></div>
-
-            <!-- Step 2 -->
-            <div class="step pending">
-                <div class="step-icon">
-                    <i class="fa fa-circle-o"></i>
-                </div>
-                <div class="step-label">
-                    <p>Step 2</p>
-                    <p> Check Payment</p>
-                
-                </div>
-            </div>
-
-            <div class="step-line"></div>
-
-<!-- Step 3 -->
-<div class="step pending">
-    <div class="step-icon">
-        <i class="fa fa-circle-o"></i>
-    </div>
-    <div class="step-label">
-        <p>Step 3</p>
-        <p>Payment Method</p>
     
-    </div>
-</div>
+
         </div>
   
     </div>
@@ -367,7 +340,7 @@ small {
             </div>
         </div>
         <div class="card-action">
-        <button type="button" class="btn btn-success" onclick="window.location.href='baptismpayment.php?appsched_id=<?php echo urlencode($appointment_id); ?>';">Next</button>
+        <button type="button" class="btn btn-success" onclick="window.history.back();">Back</button>
 
 
           

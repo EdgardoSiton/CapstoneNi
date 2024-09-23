@@ -165,7 +165,7 @@ small {
                         <div class="card-title">ConfirmationFill-up Form</div>
                     </div>
                     <div class="card-body">
-                    <form method="post" action="../../Controller/addconfirmation_con.php" onsubmit="return validateForm()">
+                    <form method="post" action="../../Controller/ccitizen_con.php" onsubmit="return validateForm()">
     <input type="hidden" name="form_type" value="confirmation">
     <div class="row">
         <div class="col-md-6 col-lg-4">
@@ -175,7 +175,7 @@ small {
                 <span class="error" id="dateError"></span>
             </div>
 
-            <div class="form-group">
+            <div class="form-group">    
                 <label for="firstname">Firstname of person to be baptized:</label>
                 <input type="text" class="form-control" id="firstname" name="firstname" placeholder="Enter Firstname"
                 <?php if (isset($userDetails)) echo 'value="' . htmlspecialchars($userDetails['firstname']) . '"'; ?> />

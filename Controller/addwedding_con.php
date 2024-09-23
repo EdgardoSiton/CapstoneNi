@@ -6,7 +6,7 @@ use PHPMailer\PHPMailer\Exception;
 require 'phpmailer/src/PHPMailer.php';
 require 'phpmailer/src/SMTP.php';
 require 'phpmailer/src/Exception.php';
-require __DIR__ . "/vendor/autoload.php";
+require __DIR__ . "/../vendor/autoload.php";
 require_once __DIR__ . '/../Model/staff_mod.php';
 require_once __DIR__ . '/../Model/db_connection.php'; 
 require_once __DIR__ . '/../Model/citizen_mod.php';
@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $result = $appointment->insertwAppointment($weddingffill_id, $payableAmount,$priestId,$newScheduleId);
    
    
-    $result = $appointment->approveConfirmation($weddingffill_id);
+    $result = $appointment->approveWedding($weddingffill_id);
     if ($result) {
         $contactInfo = $appointment->getWeddingContactInfoAndTitles($weddingffill_id);
 

@@ -16,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Check if registration was successful
         if ($registrationResult === "Registration successful and notification sent") {
             // Redirect to success page or login page
-            header('Location: ../../View/PageLanding/index.php');
+            header('Location: ../../index.php');
             exit();
         } else {
             // Display error message

@@ -129,17 +129,7 @@ small {
                                     <?php endforeach; ?>
                                 </select>
                             </div>
-            <div class="form-group">
-            <label for="sundays">Select Seminar</label>
-            <select class="form-control" id="sundays" name="sundays">
-                <?php
-                // Display the Sundays dropdown
-                if ($scheduleId) {
-                    $staff->displaySundaysDropdown($scheduleId); // this contain of date , start_time and end_time
-                }
-                ?>
-            </select>
-        </div>
+      
 
                  
                     <div class="form-group">

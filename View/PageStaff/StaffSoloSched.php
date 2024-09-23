@@ -99,8 +99,6 @@ $pendingItems = $staff->getPendingCitizen();
                     $viewUrl = '';
                     if ($item['event_name'] === 'Baptism') {
                         $viewUrl = 'FillBaptismForm.php';
-                    } elseif ($item['event_name'] === 'Confirmation') {
-                        $viewUrl = 'FillConfirmationForm.php';
                     } elseif ($item['event_name'] === 'Wedding') {
                         $viewUrl = 'FillWeddingForm.php';
                     } elseif ($item['event_name'] === 'Funeral') {

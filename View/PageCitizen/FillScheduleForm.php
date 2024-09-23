@@ -81,8 +81,9 @@ function renderCalendar() {
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
     const today = new Date();
-    const oneWeekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000); // One week from today
-    const fifteenDaysFromNow = new Date(today.getTime() + 15 * 24 * 60 * 60 * 1000); // 15 days from today
+    today.setHours(0, 0, 0, 0); // Set to midnight to ignore time part for comparison
+    const oneWeekFromNow = new Date(today.getTime() + 8 * 24 * 60 * 60 * 1000); // One week from today
+    const fifteenDaysFromNow = new Date(today.getTime() + 16 * 24 * 60 * 60 * 1000); // 15 days from today
     const isCurrentMonth = today.getFullYear() === currentYear && today.getMonth() === currentMonth;
 
     let hasSelectableDate = false;
@@ -102,13 +103,25 @@ function renderCalendar() {
         dayElement.textContent = i;
 
         const dayDate = new Date(currentYear, currentMonth, i);
+        dayDate.setHours(0, 0, 0, 0); // Ignore time part for comparison
 
-        // Disable dates based on the event type
-        if (type === 'Wedding' && dayDate < fifteenDaysFromNow) {
-            dayElement.classList.add('past'); // Style as past date for weddings
-        } else if (dayDate < oneWeekFromNow) {
-            dayElement.classList.add('past'); // Style as past date for other events
-        } else {
+        // Disable past dates and today
+        if (dayDate < today) {
+            dayElement.classList.add('past'); // Disable past and current date
+        }
+        // Disable today for Funeral events
+        else if (type === 'Funeral' && dayDate.getTime() === today.getTime()) {
+            dayElement.classList.add('past'); // Disable today for funerals
+        }
+        // Disable based on the event type
+        else if (type === 'Wedding' && dayDate < fifteenDaysFromNow) {
+            dayElement.classList.add('past'); // Disable for weddings if less than 15 days
+        }
+        else if (type !== 'Funeral' && dayDate < oneWeekFromNow) {
+            dayElement.classList.add('past'); // Disable for all other events except funerals if less than 7 days
+        }
+        // Enable selectable future dates
+        else {
             dayElement.addEventListener('click', () => selectDate(dayElement));
             hasSelectableDate = true;
         }
@@ -128,6 +141,8 @@ function renderCalendar() {
 
     initialLoad = false; // Disable automatic month change after the first load
 }
+
+
 
 
 // Initialize calendar on page load
@@ -161,14 +176,7 @@ function selectDate(dayElement) {
     const fifteenDaysFromNow = new Date(today.getTime() + 15 * 24 * 60 * 60 * 1000);
     const oneWeekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
 
-    if (type === 'Wedding' && selectedDate < fifteenDaysFromNow) {
-        alert("Please select a wedding date that is at least 15 days from today.");
-        return; // Exit early if the selected wedding date is within 15 days from today
-    } else if (selectedDate < oneWeekFromNow) {
-        alert("Please select a date that is at least one week from today.");
-        return; // Exit early if the selected date is within one week from today for other events
-    }
-
+ 
     // Make an AJAX request to fetch the schedule for the selected date
     fetch('../../Controller/getschedule_con.php', {
         method: 'POST',

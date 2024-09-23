@@ -6,13 +6,24 @@ use PHPMailer\PHPMailer\Exception;
 require 'phpmailer/src/PHPMailer.php';
 require 'phpmailer/src/SMTP.php';
 require 'phpmailer/src/Exception.php';
-require __DIR__ . "/vendor/autoload.php";
+require __DIR__ . "/../vendor/autoload.php";
 require_once __DIR__ . '/../Model/staff_mod.php';
 require_once __DIR__ . '/../Model/db_connection.php'; 
 require_once __DIR__ . '/../Model/citizen_mod.php';
 session_start();
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $sunday = $start_time = $end_time = $baptismfill_id = $priestId = $payableAmount = null;
 
+    // Process POST data
+    if (isset($_POST['sundays'])) {
+        $selected_sunday = explode('|', $_POST['sundays']);
+        if (count($selected_sunday) === 4) {
+            list($schedule_id, $sunday, $start_time, $end_time) = $selected_sunday;
+        } else {
+            die('Error: Expected 4 values, but received fewer.');
+        }
+    }
+    $priestId = $_POST['eventType'] ?? null;
     $payableAmount = $_POST['eventTitle']; 
     $confirmationfill_id = $_POST['confirmation_id']; 
     $appointment = new Staff($conn);

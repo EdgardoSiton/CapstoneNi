@@ -353,7 +353,7 @@ $unreadCount = $userManager->getUnreadNotificationCount();
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="#">My Profile</a>
                         <a class="dropdown-item" href="#">Account Setting</a>
-                        <a class="dropdown-item" href="../PageLanding/index.php">Logout</a>
+                        <a class="dropdown-item" href="../../index.php">Logout</a>
                       </li>
                     </div>
                   </ul>

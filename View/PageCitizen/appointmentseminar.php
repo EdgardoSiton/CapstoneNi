@@ -81,9 +81,10 @@ $pendingAppointments = $citizenController->getPendingCitizens(null, $regId);
             <th>Seminar Date</th>
             <th>Seminar Time</th>
             <th>Schedule Type</th>
-            <th>Pay Amount</th>
-            <th>Payment Status</th>
-            <th>Payment</th>
+            <th>Amount</th>
+      
+          
+            <th>View</th>
         </tr>
     </thead>
     <tbody>
@@ -107,8 +108,9 @@ $pendingAppointments = $citizenController->getPendingCitizens(null, $regId);
                     <td><?= htmlspecialchars(date('F j, Y', strtotime($appointment['seminar_date']))); ?></td>
                     <td><?= htmlspecialchars($seminarTime); ?></td>
                     <td><?= htmlspecialchars($appointment['roles']); ?></td>
-                    <td><?= htmlspecialchars($appointment['pay_amount']); ?></td>
-                    <td><?= htmlspecialchars($appointment['p_status']); ?></td>
+                    <td><?= htmlspecialchars($appointment['payable_amount']); ?></td>
+                  
+                    
                     <td>
     <?php
     $paymentUrl = ''; // Default URL
@@ -116,13 +118,13 @@ $pendingAppointments = $citizenController->getPendingCitizens(null, $regId);
         $paymentUrl = 'FillBaptismpayment.php';
     } elseif ($appointment['event_name'] === 'Confirmation') {
         $paymentUrl = 'ConfirmationPayment.php';
-    } elseif ($appointment['event_name'] === 'Marriage') {
-        $paymentUrl = 'MarriagePayment.php';
+    } elseif ($appointment['event_name'] === 'Wedding') {
+        $paymentUrl = 'FillWeddingFormpayment.php';
     } elseif ($appointment['event_name'] === 'Funeral') {
-        $paymentUrl = 'FuneralPayment.php';
+        $paymentUrl = 'FillFuneralPayment.php';
     }
     ?>
-    <a href="<?= htmlspecialchars($paymentUrl); ?>?appsched_id=<?= $appointment['appsched_id']; ?>" class="btn btn-primary">Payment</a>
+    <a href="<?= htmlspecialchars($paymentUrl); ?>?appointment_id=<?= $appointment['appointment_id']; ?>" class="btn btn-primary">View</a>
 </td>
 
                 </tr>

@@ -13,7 +13,13 @@ $nme = $_SESSION['fullname'];
 $regId = $_SESSION['citizend_id'];
 $confirmationfill_id = $_GET['id'] ?? '';
 // Get citizen ID from the URL
-$citizenId = isset($_GET['id']) ? intval($_GET['id']) : null;
+if ($confirmationfill_id) {
+    // Fetch schedule_id from baptismfill
+    $scheduleId = $staff->getcScheduleId($confirmationfill_id);
+} else {
+    echo "No baptism ID provided.";
+    $scheduleId = null;
+}
 
 ?>
 
@@ -127,9 +133,31 @@ small {
             </div>
             <form id="modalForm" method="POST" action="../../Controller/addconfirmation_con.php">
                 <div class="modal-body">
-            <input type="hidden" name="confirmation_id" value="<?php echo htmlspecialchars($confirmationfill_id); ?>" />
+                <input type="hidden" name="confirmation_id" value="<?php echo htmlspecialchars($confirmationfill_id); ?>" />  <div class="form-group">
+                                <label for="eventType">Select Priest</label>
+                                <select class="form-control" id="eventType" name="eventType">
+                                    <option value="" disabled selected>Select Priest</option>
+                                    <!-- Populate priests in the dropdown -->
+                                    <?php foreach ($priests as $priest): ?>
+                                        <option value="<?php echo htmlspecialchars($priest['citizend_id']); ?>">
+                                            <?php echo htmlspecialchars($priest['fullname']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+            <div class="form-group">
+            <label for="sundays">Select Seminar</label>
+            <select class="form-control" id="sundays" name="sundays">
+                <?php
+                // Display the Sundays dropdown
+                if ($scheduleId) {
+                    $staff->displaySundaysDropdown($scheduleId); // this contain of date , start_time and end_time
+                }
+                ?>
+            </select>
+        </div>
 
-               
+                 
                     <div class="form-group">
                         <label for="eventTitle">Payable Amount</label>
                         <input type="number" class="form-control" id="eventTitle" name="eventTitle" placeholder="Enter Amount">

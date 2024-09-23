@@ -10,20 +10,20 @@ $staff = new Citizen($conn);
 $pendingItem = null;
 $eventName = '';
 
-if (isset($_GET['appsched_id'])) {
-    $id = $_GET['appsched_id'];
+if (isset($_GET['appointment_id'])) {
+    $id = $_GET['appointment_id'];
     $pendingItems = $staff->getPendingCitizens(null, $regId);
 
     // Find the specific item with the provided ID
     foreach ($pendingItems as $item) {
-        if ($item['appsched_id'] == $id) {
+        if ($item['appointment_id'] == $id) {
             $pendingItem = $item;
             $eventName = $item['event_name'];
             break;
         }
     }
 }
-
+$reference_number = $pendingItem['reference_number'] ?? '';
 // Initialize variables common to all events
 $startTime = isset($pendingItem['schedule_start_time']) ? date('h:i A', strtotime($pendingItem['schedule_start_time'])) : '';
 $endTime = isset($pendingItem['schedule_start_time']) ? date('h:i A', strtotime($pendingItem['schedule_end_time'])) : '';

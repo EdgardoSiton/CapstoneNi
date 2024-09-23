@@ -86,8 +86,7 @@ require_once '../../Controller/getCitizen_con.php';
   <body> 
   <?php require_once 'header.php'?>
   <?php require_once 'sidebar.php'?>
-  <div class="container">
- 
+  <div class="container"> 
     <div class="page-inner">
         <div class="row">
             <div class="col-md-12">
@@ -99,7 +98,6 @@ require_once '../../Controller/getCitizen_con.php';
                         <div class="row">
                             <!-- Display Citizen Information -->
                             <div class="col-md-6 col-lg-4">
-                    
                                 <div class="form-group">
                                     <label for="fullname">Full Name:</label>
                                     <input type="text" class="form-control" id="fullname" value="<?php echo $fullname; ?>" readonly />
@@ -113,10 +111,8 @@ require_once '../../Controller/getCitizen_con.php';
                                     <input type="text" class="form-control" id="phone" value="<?php echo $phone; ?>" readonly />
                                 </div>
                             </div>
-                     
 
                             <div class="col-md-6 col-lg-4">
-                                
                                 <div class="form-group">
                                     <label for="email">Email:</label>
                                     <input type="text" class="form-control" id="email" value="<?php echo $email; ?>" readonly />
@@ -125,24 +121,26 @@ require_once '../../Controller/getCitizen_con.php';
                                     <label for="status">Birth Date:</label>
                                     <input type="text" class="form-control" id="status" value="<?php echo  $c_date_birth; ?>" readonly />
                                 </div>
-                        
-                     
+
                                 <div class="form-group">
                                     <label for="address">Address:</label>
                                     <textarea class="form-control" id="address" readonly><?php echo $address; ?></textarea>
                                 </div>
-                             
-                         
-                                <div class="form-group">
-                                <label for="address">Valid ID:</label>
-                                <img class="form-control" src="<?php echo !empty($validId) ? '../PageLanding/' . htmlspecialchars($validId) : 'img/default-placeholder.png'; ?>" alt="Valid ID" style="max-width: 200px; max-height: 200px; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#imageModal">   </div>
 
+                                <div class="form-group">
+                                    <label for="validId">Valid ID:</label>
+                                    <img class="form-control" src="<?php echo !empty($validId) ? '../PageLanding/' . htmlspecialchars($validId) : 'img/default-placeholder.png'; ?>" alt="Valid ID" style="max-width: 200px; max-height: 200px; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#imageModal">   
+                                </div>
+                            </div>
                         </div>
 
                         <div class="card-action">
-                            <button type="submit" class="btn btn-success">Approve</button>
-                            <button type="button" class="btn btn-primary">Decline</button>
-                            <button type="button" class="btn btn-danger" onclick="window.location.href='your_cancel_url.php'">Cancel</button>
+                        <button class="btn btn-success approve-btn" data-id="<?php echo $citizenId; ?>">Approve</button>
+
+                        <button class="btn btn-danger delete-btn" data-id="<?php echo $citizenId; ?>">Delete</button>
+
+                        <button type="button" class="btn btn-danger" onclick="history.back()">Cancel</button>
+
                         </div>
                     </div>
                 </div>
@@ -150,37 +148,111 @@ require_once '../../Controller/getCitizen_con.php';
         </div>
     </div>
 </div>
+
 <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-     
-                <div class="modal-body">
-                    <img src="<?php echo !empty($validId) ? '../PageLanding/' . htmlspecialchars($validId) : 'img/default-placeholder.png'; ?>" alt="Valid ID">
-                </div>
-          
+    <div class="modal-dialog">
+        <div class="modal-body">
+            <img src="<?php echo !empty($validId) ? '../PageLanding/' . htmlspecialchars($validId) : 'img/default-placeholder.png'; ?>" alt="Valid ID">
         </div>
     </div>
+</div>
+
 <script>
-    function previewImage(inputId, imageId) {
-            const input = document.getElementById(inputId);
-            const image = document.getElementById(imageId);
-            const file = input.files[0];
-            const reader = new FileReader();
+ document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('.approve-btn').addEventListener('click', function() {
+        // Existing approve functionality
+    });
 
-            reader.onloadend = function () {
-                image.src = reader.result;
-            }
+    document.querySelector('.delete-btn').addEventListener('click', function() {
+        var citizenId = this.getAttribute('data-id');
 
-            if (file) {
-                reader.readAsDataURL(file);
-            } else {
-                image.src = '';
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This action will permanently delete the account!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '../../Controller/getCitizen_con.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        Swal.fire(
+                            'Deleted!',
+                            'The citizen account has been deleted.',
+                            'success'
+                        ).then(() => {
+                            window.location.href = 'StaffCitizenAccounts.php'; // Redirect after deletion
+                        });
+                    } else {
+                        Swal.fire(
+                            'Error!',
+                            'There was an issue deleting the account.',
+                            'error'
+                        );
+                    }
+                };
+                xhr.send('citizenId=' + encodeURIComponent(citizenId) + '&action=delete');
             }
-        }
+        });
+    });
+});
+
+ document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('.approve-btn').addEventListener('click', function() {
+        var citizenId = this.getAttribute('data-id');
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, approve it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '../../Controller/getCitizen_con.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onload = function() {
+    if (xhr.status === 200) {
+        Swal.fire(
+            'Approved!',
+            'The citizen has been approved.',
+            'success'
+        ).then(() => {
+            // Redirect to StaffCitizenAccounts.php after approval
+            window.location.href = 'StaffCitizenAccounts.php';
+        });
+    } else {
+        console.error("Error response: ", xhr.responseText); // Log error response
+        Swal.fire(
+            'Error!',
+            'There was an issue approving the citizen.',
+            'error'
+        );
+    }
+};
+
+                xhr.send('citizenId=' + encodeURIComponent(citizenId));
+            }
+        });
+    });
+});
+
+
 </script>
+
 <!-- Bootstrap CSS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <!-- Popper.js (required for Bootstrap 4) -->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>

@@ -69,7 +69,7 @@
                 <li><a class="dropdown-item" href="">Need Help?</a></li>
                 <li><a class="dropdown-item" href="">Switch to User Panel</a></li>
                 <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="../PageLanding/index.php">Sign Out</a></li>
+                <li><a class="dropdown-item" href="../../index.php">Sign Out</a></li>
             </ul>
           </div>
         </div>

@@ -7,6 +7,87 @@ class Staff {
         $this->conn = $conn;
         $this->regId = $regId;
     }
+    public function updatePaymentStatus($appsched_id, $p_status) {
+        $sql = "UPDATE appointment_schedule SET p_status = ? WHERE appsched_id = ?";
+        $stmt = $this->conn->prepare($sql);
+        
+        if ($stmt) {
+            $stmt->bind_param('si', $p_status, $appsched_id);
+            return $stmt->execute();
+        }
+        return false;
+    }
+
+    // Method to update event status
+    public function updateEventStatus($cappsched_id, $c_status) {
+        $sql = "UPDATE appointment_schedule SET status = ? WHERE appsched_id = ?";
+        $stmt = $this->conn->prepare($sql);
+
+        if ($stmt) {
+            $stmt->bind_param('si', $c_status, $cappsched_id);
+            return $stmt->execute();
+        }
+        return false;
+    }
+
+    public function deleteAppointments($appsched_ids) {
+        $placeholders = implode(',', array_fill(0, count($appsched_ids), '?'));
+        $types = str_repeat('i', count($appsched_ids));
+        
+        // Combined delete from schedule based on all conditions
+        $deleteScheduleSql = "
+            DELETE FROM schedule 
+            WHERE schedule_id IN (
+                -- Based on baptismfill
+                SELECT schedule_id 
+                FROM baptismfill 
+                WHERE baptism_id IN (
+                    SELECT baptismfill_id 
+                    FROM appointment_schedule 
+                    WHERE appsched_id IN ($placeholders)
+                )
+            )
+            OR schedule_id IN (
+                -- Based on appointment_schedule directly
+                SELECT schedule_id 
+                FROM appointment_schedule 
+                WHERE appsched_id IN ($placeholders)
+            )
+            OR schedule_id IN (
+                -- Based on marriagefill
+                SELECT schedule_id 
+                FROM marriagefill 
+                WHERE marriagefill_id IN (
+                    SELECT marriage_id 
+                    FROM appointment_schedule 
+                    WHERE appsched_id IN ($placeholders)
+                )
+            )
+            OR schedule_id IN (
+                -- Based on defuctomfill
+                SELECT schedule_id 
+                FROM defuctomfill 
+                WHERE defuctomfill_id IN (
+                    SELECT defuctom_id 
+                    FROM appointment_schedule 
+                    WHERE appsched_id IN ($placeholders)
+                )
+            )";  // Corrected the missing closing parentheses for all conditions
+    
+        $stmtSchedule = $this->conn->prepare($deleteScheduleSql);
+        if ($stmtSchedule) {
+            // Bind the parameters for all sets of placeholders
+            $stmtSchedule->bind_param($types . $types . $types . $types, ...array_merge($appsched_ids, $appsched_ids, $appsched_ids, $appsched_ids));
+            if (!$stmtSchedule->execute()) {
+                echo "Error deleting from schedule: " . $stmtSchedule->error;
+                return false; // Exit if this fails
+            }
+        }
+    
+        return true; // If deletion is successful
+    }
+    
+    
     
    // Method to get the schedule_id from baptismfill
 
@@ -53,6 +134,20 @@ class Staff {
     } else {
         return null;
     }
+}
+public function getcScheduleId($confirmationfill_id) {
+ $sql = "SELECT `schedule_id` FROM `confirmationfill` WHERE `confirmationfill_id` = ?";
+ $stmt = $this->conn->prepare($sql);
+ $stmt->bind_param('i', $confirmationfill_id);
+ $stmt->execute();
+ $result = $stmt->get_result();
+
+ if ($result->num_rows > 0) {
+     $row = $result->fetch_assoc();
+     return $row['schedule_id'];
+ } else {
+     return null;
+ }
 }
 
 //--------------------------------------------------------------------------------------------------------
@@ -327,11 +422,14 @@ public function insertSchedule($date, $startTime, $endTime, $eventType) {
     }
 }
 
-public function insertAppointment($baptismfillId, $priestId, $scheduleId) {
-    $sql = "INSERT INTO appointment_schedule (baptismfill_id, priest_id, schedule_id, status, pr_status)
-            VALUES (?, ?, ?, 'Process', 'Pending')";
+public function insertAppointment($baptismfillId, $payableAmount, $priestId, $scheduleId) {
+    // Generate a random 12-letter reference number
+    $referenceNumber = $this->generateReferenceNumber();
+
+    $sql = "INSERT INTO appointment_schedule (baptismfill_id, payable_amount, priest_id, schedule_id, status, pr_status, reference_number) 
+            VALUES (?, ?, ?, ?, 'Process', 'Pending', ?)";
     $stmt = $this->conn->prepare($sql);
-    $stmt->bind_param("iii", $baptismfillId, $priestId, $scheduleId);
+    $stmt->bind_param("idiis", $baptismfillId, $payableAmount, $priestId, $scheduleId, $referenceNumber);
 
     if ($stmt->execute()) {
         // Get the last inserted ID
@@ -345,6 +443,19 @@ public function insertAppointment($baptismfillId, $priestId, $scheduleId) {
     }
 }
 
+private static $generatedReferences = [];
+
+private function generateReferenceNumber() {
+    do {
+        // Generate a random string of 12 uppercase letters and numbers
+        $referenceNumber = substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'), 0, 12);
+    } while (in_array($referenceNumber, self::$generatedReferences));
+
+    // Store the generated reference number to avoid future duplicates
+    self::$generatedReferences[] = $referenceNumber;
+
+    return $referenceNumber;
+}
 
 public function getContactInfoAndTitle($baptismfillId) {
     $sql = "SELECT 
@@ -417,12 +528,13 @@ public function insertBaptismPayment($appointmentId, $payableAmount) {
 //--------------------------------------------------------------------------//
 
 public function insertcAppointment($confirmationfill_id, $payableAmount) {
-    $sql = "INSERT INTO appointment_schedule (confirmation_id, payable_amount, status, p_status,pr_status)
-            VALUES (?, ?,  'Process', 'Unpaid',,'Pending')";
+    $referenceNumber = $this->generateReferenceNumber();
+    $sql = "INSERT INTO appointment_schedule (confirmation_id, payable_amount, status, p_status,pr_status, reference_number)
+            VALUES (?, ?,  'Process', 'Unpaid',,'Pending',?)";
     $stmt = $this->conn->prepare($sql);
 
     // Bind parameters: 'i' for integer (baptismfill_id, priest_id), 'd' for decimal/float (payable_amount)
-    $stmt->bind_param("id",$confirmationfill_id ,$payableAmount);
+    $stmt->bind_param("idiis",$confirmationfill_id ,$payableAmount);
 
     // Execute the statement and check for errors
     if ($stmt->execute()) {
@@ -479,12 +591,13 @@ public function approveConfirmation($confirmationfill_id) {
 
 //--------------------------------------------------------------------------------//
 public function insertwAppointment($weddingffill_id, $payableAmount, $priestId,$scheduleId) {
-    $sql = "INSERT INTO appointment_schedule (marriage_id, payable_amount,priest_id,schedule_id, status, p_status,pr_status)
-            VALUES (?, ?,?, ?, 'Process', 'Unpaid','Pending')";
+    $referenceNumber = $this->generateReferenceNumber();
+   $sql = "INSERT INTO appointment_schedule (marriage_id, payable_amount,priest_id,schedule_id, status, p_status,pr_status,reference_number)
+            VALUES (?, ?,?, ?, 'Process', 'Unpaid','Pending',?)";
     $stmt = $this->conn->prepare($sql);
 
     // Bind parameters: 'i' for integer (baptismfill_id, priest_id), 'd' for decimal/float (payable_amount)
-    $stmt->bind_param("idii",$weddingffill_id ,$payableAmount,$priestId,$scheduleId);
+    $stmt->bind_param("idiis",$weddingffill_id ,$payableAmount,$priestId,$scheduleId,$referenceNumber);
 
     // Execute the statement and check for errors
     if ($stmt->execute()) {
@@ -540,13 +653,14 @@ public function approveWedding($weddingffill_id) {
 }
 
 //--------------------------------------------------------------------------//
-public function insertfAppointment( $defuctomfill_id, $payableAmount,$priestId,$scheduleId) {
-    $sql = "INSERT INTO appointment_schedule (defuctom_id, payable_amount, priest_id,schedule_id, status, p_status,pr_status)
-            VALUES (?, ?,?,?, 'Process', 'Unpaid','Pending')";
+public function insertfAppointment( $defuctomfill_id, $payableAmount,$priestId) {
+    $referenceNumber = $this->generateReferenceNumber();
+   $sql = "INSERT INTO appointment_schedule (defuctom_id, payable_amount, priest_id, status, p_status,pr_status,reference_number)
+            VALUES (?, ?,?, 'Process', 'Unpaid','Pending',?)";
     $stmt = $this->conn->prepare($sql);
 
     // Bind parameters: 'i' for integer (baptismfill_id, priest_id), 'd' for decimal/float (payable_amount)
-    $stmt->bind_param("idii", $defuctomfill_id ,$payableAmount,$priestId,$scheduleId);
+    $stmt->bind_param("idis", $defuctomfill_id ,$payableAmount,$priestId, $referenceNumber);
 
     // Execute the statement and check for errors
     if ($stmt->execute()) {
@@ -587,7 +701,7 @@ public function getFuneralContactInfoAndTitles($defuctomfill_id) {
 
 public function approveFuneral( $defuctomfill_id) {
     try {
-        $sql = "UPDATE marriagefill SET status = 'Approved' WHERE marriagefill_id = ?";
+        $sql = "UPDATE defuctomfill SET status = 'Approved' WHERE defuctomfill_id = ?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("i",  $defuctomfill_id);
         
@@ -791,13 +905,14 @@ public function approveFuneral( $defuctomfill_id) {
     public function getPendingAppointments() {
         $sql = "SELECT 
       
+              a.pr_status AS approve_priest,
         b.baptism_id AS id,
         b.role AS roles,
         b.event_name AS Event_Name,
         c.fullname AS citizen_name, 
         s.date AS schedule_date,
         s.start_time AS schedule_time,
-        a.appsched_id AS appointment_schedule_id,  
+        a.appsched_id,
         a.baptismfill_id,
         a.priest_id,
         priest.fullname AS priest_name,
@@ -818,49 +933,19 @@ public function approveFuneral( $defuctomfill_id) {
     WHERE 
         a.status = 'Process' OR a.p_status = 'Unpaid'
     
-    
-                UNION ALL
-                SELECT 
-                
-                    cf.confirmationfill_id AS id,
-                    cf.role AS roles,
-                    cf.event_name AS Event_Name,
-                    c.fullname AS citizen_name,
-                    s.date AS schedule_date,
-                    s.start_time AS schedule_time,
-                    a.appsched_id AS appointment_schedule_id,
-                    a.confirmation_id,
-                    priest.fullname AS priest_name,
-                    a.priest_id,
-                    a.schedule_id AS appointment_schedule_id,
-                    a.payable_amount AS payable_amount,
-                    a.status AS c_status,
-                    a.p_status AS p_status,
-                    sch.date AS appointment_schedule_date,  -- Additional schedule details from the new join
-        sch.start_time AS appointment_schedule_start_time,
-         sch.end_time AS appointment_schedule_end_time
-              FROM citizen c
-                JOIN schedule s ON c.citizend_id = s.citizen_id
-                JOIN confirmationfill cf ON s.schedule_id = cf.schedule_id
-                JOIN appointment_schedule a ON cf.confirmationfill_id = a.confirmation_id
-                JOIN schedule sch ON a.schedule_id = sch.schedule_id
-                LEFT JOIN citizen priest ON a.priest_id = priest.citizend_id AND priest.user_type = 'Priest' 
-                WHERE a.status = 'Process' OR a.p_status = 'Unpaid'
-                
-
                  UNION ALL
                 SELECT 
-                
+                a.pr_status AS approve_priest,
                     mf.marriagefill_id AS id,
                     mf.role AS roles,
                     mf.event_name AS Event_Name,
                     c.fullname AS citizen_name,
                     s.date AS schedule_date,
                     s.start_time AS schedule_time,
-                    a.appsched_id AS appointment_schedule_id,
+                    a.appsched_id,
                     a.marriage_id,
-                    priest.fullname AS priest_name,
                     a.priest_id,
+                    priest.fullname AS priest_name,
                     a.schedule_id AS appointment_schedule_id,
                     a.payable_amount AS payable_amount,
                     a.status AS c_status,
@@ -882,23 +967,24 @@ public function approveFuneral( $defuctomfill_id) {
                     a.status = 'Process' OR a.p_status = 'Unpaid'
                 UNION ALL
            SELECT 
+        a.pr_status AS approve_priest,
             df.defuctomfill_id AS id,
             df.role AS roles,
             df.event_name AS Event_Name,
             c.fullname AS citizen_name,
             s.date AS schedule_date,
             s.start_time AS schedule_time,
-            a.appsched_id AS appointment_schedule_id,
-                    a.defuctom_id,
-                    priest.fullname AS priest_name,
+            a.appsched_id,
+                    a.defuctom_id,  
                     a.priest_id,
+                    priest.fullname AS priest_name,
                     a.schedule_id AS appointment_schedule_id,
             a.payable_amount AS payable_amount,
             a.status AS c_status,
             a.p_status AS p_status,
-            sch.date AS appointment_schedule_date,  -- Additional schedule details from the new join
-        sch.start_time AS appointment_schedule_start_time,
-         sch.end_time AS appointment_schedule_end_time
+        NULL AS appointment_schedule_date,  -- Additional schedule details from the new join
+        NULL AS appointment_schedule_start_time,
+       NULL AS appointment_schedule_end_time
         FROM 
             citizen c
         JOIN 
@@ -907,7 +993,7 @@ public function approveFuneral( $defuctomfill_id) {
             defuctomfill df ON s.schedule_id = df.schedule_id
         JOIN 
             appointment_schedule a ON df.defuctomfill_id = a.defuctom_id
-            JOIN schedule sch ON a.schedule_id = sch.schedule_id
+      
             LEFT JOIN citizen priest ON a.priest_id = priest.citizend_id AND priest.user_type = 'Priest' 
             WHERE 
                     a.status = 'Process' OR a.p_status = 'Unpaid'";

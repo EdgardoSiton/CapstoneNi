@@ -1,5 +1,13 @@
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require __DIR__ . '/../Controller/phpmailer/src/PHPMailer.php';
+require __DIR__ . '/../Controller/phpmailer/src/SMTP.php';
+require __DIR__ . '/../Controller/phpmailer/src/Exception.php';
+require __DIR__ . '/../vendor/autoload.php';
 class User {
+    
     private $conn;
 
     public function __construct($conn) {
@@ -45,46 +53,117 @@ class User {
         $sql = "SELECT `citizend_id`, `fullname`, `email`, `gender`, `phone`, `c_date_birth`, `age`, `address`, `valid_id`, `user_type`, `r_status`, `c_current_time`
                 FROM `citizen` 
                 WHERE `citizend_id` = ?";
-
+    
         // Prepare the statement
         $stmt = $this->conn->prepare($sql);
-
         if (!$stmt) {
             die('Prepare failed: ' . $this->conn->error);
         }
-
+    
         // Bind the parameter
         $stmt->bind_param('i', $citizendId);
-
+        
         // Execute the statement
         if (!$stmt->execute()) {
             die('Execute failed: ' . $stmt->error);
         }
-
+    
         // Get the result set
         $result = $stmt->get_result();
-
+    
         // Fetch the details as an associative array
         $data = $result->fetch_assoc();
-
+    
         // Close the statement
         $stmt->close();
-
+    
         // Return the result
         return $data;
     }
-    public function approveCitizen($citizenId) {
-        $sql = "UPDATE citizens SET r_status = 'approved' WHERE citizend_id = ?";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("i", $citizenId);
+    
+    private function sendEmail($email, $citizen_name, $subject, $body) {
         
-        if ($stmt->execute()) {
-            return true; // Approval successful
-        } else {
-            return false; // Approval failed
+        try {
+            
+            $mail = new PHPMailer(true);
+      
+            $mail->isSMTP();
+            $mail->Host = "smtp.gmail.com";
+            $mail->SMTPAuth = true;
+            $mail->Username = "argaoparishchurch@gmail.com";
+            $mail->Password = "xomoabhlnrlzenur";
+            $mail->SMTPSecure = 'tls';
+            $mail->Port = 587;
+
+    
+            $mail->setFrom('argaoparishchurch@gmail.com');
+            $mail->addAddress($email);
+            $mail->addEmbeddedImage('../Controller/signature.png', 'signature_img');
+            $mail->addEmbeddedImage('../Controller/logo.jpg', 'background_img');
+            $mail->isHTML(true);
+            $mail->Subject = $subject;
+            $mail->Body = "<div style='width: 100%; max-width: 400px; margin: auto; background: url(cid:background_img) no-repeat center center; background-size: cover; padding: 20px;'>
+                           <div style='background: rgba(255, 255, 255, 0.8); padding: 20px;width:100%;height:auto;'>
+                               {$body}
+                               <img src='cid:signature_img' style='width: 200px; height: auto;'>
+                           </div>
+                       </div>";
+    
+            if (!$mail->send()) {
+                error_log("Email failed: " . $mail->ErrorInfo); // Log error
+                echo "Error sending email notification: " . $mail->ErrorInfo;
+            } else {
+                echo "Email notification sent successfully.";
+            }
+        } catch (Exception $e) {
+            error_log("Error sending email notification: " . $e->getMessage()); // Log error
+            echo "Error sending email notification: " . $e->getMessage();
         }
     }
     
+    public function approveCitizen($citizenId) {
+        $sql = "UPDATE citizen SET r_status = 'Approved' WHERE citizend_id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $citizenId);
+    
+        if ($stmt->execute()) {
+            // Fetch citizen details for sending email
+            $contactInfo = $this->getCitizenDetails($citizenId);
+            if ($contactInfo) {
+                $this->sendEmail($contactInfo['email'], $contactInfo['fullname'], "Your account has been approved.", 
+                    "Dear {$contactInfo['fullname']},<br><br>Your account has been successfully approved.<br>Thank you for your patience.<br>");
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    public function deleteCitizen($citizenId) {
+        // Fetch citizen details before deletion
+        $contactInfo = $this->getCitizenDetails($citizenId);
+        if ($contactInfo) {
+            $email = $contactInfo['email'];
+            $fullname = $contactInfo['fullname'];
+        } else {
+            return false; // Citizen not found
+        }
+    
+        $sql = "DELETE FROM citizen WHERE citizend_id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $citizenId);
+    
+        if ($stmt->execute()) {
+            // Send email after successful deletion
+            $this->sendEmail($email, $fullname, "Your account has been deleted.", 
+                "Dear {$fullname},<br><br>Your account has been deleted.<br>If you have any questions, please contact us.<br>");
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+
     
 
     public function login($email, $password) {
