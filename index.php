@@ -1,10 +1,6 @@
 <?php
-
-
 require_once 'Controller/login_con.php';
-require_once 'Controller/registration_con.php';
 require_once 'Model/staff_mod.php';
-
 $staff = new Staff($conn);
 $announcements = $staff->getAnnouncements();
 ?>
@@ -136,6 +132,10 @@ $announcements = $staff->getAnnouncements();
     </div>
 </div>
 <!-- Feature End -->
+<div class="CalendarIndexContainer">
+    <!-- About calendar -->
+    <?php require_once 'Calendar.php'?>
+    </div>
   <!-- Service Start -->
 <div class="container-fluid service py-5">
   <div class="container py-5">

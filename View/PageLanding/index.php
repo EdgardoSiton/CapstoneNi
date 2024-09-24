@@ -1,10 +1,6 @@
 <?php
-
-
 require_once '../../Controller/login_con.php';
-require_once '../../Controller/registration_con.php';
 require_once '../../Model/staff_mod.php';
-
 $staff = new Staff($conn);
 $announcements = $staff->getAnnouncements();
 ?>
@@ -136,6 +132,10 @@ $announcements = $staff->getAnnouncements();
     </div>
 </div>
 <!-- Feature End -->
+<div class="CalendarIndexContainer">
+    <!-- About calendar -->
+    <?php require_once 'Calendar.php'?>
+    </div>
   <!-- Service Start -->
 <div class="container-fluid service py-5">
   <div class="container py-5">
@@ -159,7 +159,7 @@ $announcements = $staff->getAnnouncements();
             <div class="service-content-inner">
               <a href="#" class="d-inline-block h4 mb-4"><span style="font-weight: bold">Baptism</span></a>
               <p class="mb-4">Welcome your child into the Catholic faith...</p>
-              <a class="btn btn-primary rounded-pill py-2 px-4" href="#">Schedule Now</a>
+              <a class="btn btn-primary rounded-pill py-2 px-4" href="signin.php">Schedule Now</a>
             </div>
           </div>
         </div>
@@ -173,7 +173,7 @@ $announcements = $staff->getAnnouncements();
             <div class="service-content-inner">
               <a href="#" class="d-inline-block h4 mb-4"><span style="font-weight: bold">Confirmation</span></a>
               <p class="mb-4">Deepen your commitment to your faith...</p>
-              <a class="btn btn-primary rounded-pill py-2 px-4" href="#">Schedule Now</a>
+              <a class="btn btn-primary rounded-pill py-2 px-4" href="signin.php">Schedule Now</a>
             </div>
           </div>
         </div>
@@ -187,7 +187,7 @@ $announcements = $staff->getAnnouncements();
             <div class="service-content-inner">
               <a href="#" class="d-inline-block h4 mb-4"><span style="font-weight: bold">Wedding</span></a>
               <p class="mb-4">Begin your new life together...</p>
-              <a class="btn btn-primary rounded-pill py-2 px-4" href="#">Schedule Now</a>
+              <a class="btn btn-primary rounded-pill py-2 px-4" href="signin.php">Schedule Now</a>
             </div>
           </div>
         </div>
@@ -203,7 +203,7 @@ $announcements = $staff->getAnnouncements();
             <div class="service-content-inner">
               <a href="#" class="d-inline-block h4 mb-4"><span style="font-weight: bold">Funeral</span></a>
               <p class="mb-4">In times of sorrow...</p>
-              <a class="btn btn-primary rounded-pill py-2 px-4" href="#">Schedule Now</a>
+              <a class="btn btn-primary rounded-pill py-2 px-4" href="signin.php">Schedule Now</a>
             </div>
           </div>
         </div>
@@ -217,7 +217,7 @@ $announcements = $staff->getAnnouncements();
             <div class="service-content-inner">
               <a href="#" class="d-inline-block h4 mb-4"><span style="font-weight: bold">Request Form</span></a>
               <p class="mb-4">Fill out our request form for any services...</p>
-              <a class="btn btn-primary rounded-pill py-2 px-4" href="#">Schedule Now</a>
+              <a class="btn btn-primary rounded-pill py-2 px-4" href="signin.php">Schedule Now</a>
             </div>
           </div>
         </div>

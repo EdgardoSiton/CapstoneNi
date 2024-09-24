@@ -145,16 +145,21 @@ margin-LEFT:20px;
 </div>
 <BR>
 <br>
-<div class="baptismalreq">
-        <h5 style="font-weight: BOLDER; padding-left:10px;">SCHEDULE ONLINE</h5>
-        <br>
-
-        <i class="fas fa-circle"style="margin-left:10px; color:Black;font-size:7px;
-            margin-right:10px; "></i>  <a href="login.php" style="    color:#3b3b3b!important; border-bottom:2px solid #0066a8; text-align: justify; text-justify: inter-word; font-size: 15px; line-height: 1.6; margin-top: 10px; margin-left: 10px;
-">Schedule Now </a>
-    
-
-</div>
+<div class="row g-4 justify-content-center">
+      <div class="col-md-4 wow fadeInUp" data-wow-delay="0.2s">
+        <div class="service-item">
+          <div class="service-img">
+            <img src="img/baptism (1).jpg" class="img-fluid rounded-top w-100" alt="" />
+          </div>
+          <div class="service-content p-4">
+            <div class="service-content-inner">
+              <a href="#" class="d-inline-block h4 mb-4"><span style="font-weight: bold">Baptism</span></a>
+              <p class="mb-4">Welcome your child into the Catholic faith...</p>
+              <a class="btn btn-primary rounded-pill py-2 px-4" href="signin.php">Schedule Now</a>
+            </div>
+          </div>
+        </div>
+      </div>
 <BR>
 <br>
 <div class="baptismalreq">
