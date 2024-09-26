@@ -29,12 +29,12 @@ class Staff {
         }
         return false;
     }
-
-    public function deleteAppointments($appsched_ids) {
+    public function deleteAppointments($appsched_ids) { 
+        // Generate placeholders for the prepared statement
         $placeholders = implode(',', array_fill(0, count($appsched_ids), '?'));
         $types = str_repeat('i', count($appsched_ids));
-        
-        // Combined delete from schedule based on all conditions
+    
+        // Step 1: Delete from the `schedule` table based on conditions
         $deleteScheduleSql = "
             DELETE FROM schedule 
             WHERE schedule_id IN (
@@ -72,20 +72,128 @@ class Staff {
                     FROM appointment_schedule 
                     WHERE appsched_id IN ($placeholders)
                 )
-            )";  // Corrected the missing closing parentheses for all conditions
-    
+            )";
+        
+        // Prepare the SQL statement for schedule deletion
         $stmtSchedule = $this->conn->prepare($deleteScheduleSql);
+        
         if ($stmtSchedule) {
-            // Bind the parameters for all sets of placeholders
-            $stmtSchedule->bind_param($types . $types . $types . $types, ...array_merge($appsched_ids, $appsched_ids, $appsched_ids, $appsched_ids));
+            // Bind the parameters for each of the sets of placeholders
+            $stmtSchedule->bind_param($types . $types . $types . $types, 
+                ...array_merge($appsched_ids, $appsched_ids, $appsched_ids, $appsched_ids)
+            );
+            
+            // Execute the deletion for schedules and check for errors
             if (!$stmtSchedule->execute()) {
                 echo "Error deleting from schedule: " . $stmtSchedule->error;
-                return false; // Exit if this fails
+                return false; // Exit if deletion fails
             }
+        } else {
+            echo "Error preparing SQL for schedule deletion: " . $this->conn->error;
+            return false; // Exit if SQL preparation fails
         }
     
-        return true; // If deletion is successful
+        // Step 2: Delete from `baptismfill`
+        $deleteBaptismFillSql = "
+            DELETE FROM baptismfill 
+            WHERE baptism_id IN (
+                SELECT baptismfill_id 
+                FROM appointment_schedule 
+                WHERE appsched_id IN ($placeholders)
+            )";
+        
+        $stmtBaptismFill = $this->conn->prepare($deleteBaptismFillSql);
+        
+        if ($stmtBaptismFill) {
+            // Bind the parameters for baptismfill deletion
+            $stmtBaptismFill->bind_param($types, ...$appsched_ids);
+            
+            // Execute the deletion for baptismfill and check for errors
+            if (!$stmtBaptismFill->execute()) {
+                echo "Error deleting from baptismfill: " . $stmtBaptismFill->error;
+                return false; // Exit if deletion fails
+            }
+        } else {
+            echo "Error preparing SQL for baptismfill deletion: " . $this->conn->error;
+            return false; // Exit if SQL preparation fails
+        }
+    
+        // Step 3: Delete from `marriagefill`
+        $deleteMarriageFillSql = "
+            DELETE FROM marriagefill 
+            WHERE marriagefill_id IN (
+                SELECT marriage_id 
+                FROM appointment_schedule 
+                WHERE appsched_id IN ($placeholders)
+            )";
+        
+        $stmtMarriageFill = $this->conn->prepare($deleteMarriageFillSql);
+        
+        if ($stmtMarriageFill) {
+            // Bind the parameters for marriagefill deletion
+            $stmtMarriageFill->bind_param($types, ...$appsched_ids);
+            
+            // Execute the deletion for marriagefill and check for errors
+            if (!$stmtMarriageFill->execute()) {
+                echo "Error deleting from marriagefill: " . $stmtMarriageFill->error;
+                return false; // Exit if deletion fails
+            }
+        } else {
+            echo "Error preparing SQL for marriagefill deletion: " . $this->conn->error;
+            return false; // Exit if SQL preparation fails
+        }
+    
+        // Step 4: Delete from `confirmationfill`
+        $deleteConfirmationFillSql = "
+            DELETE FROM confirmationfill 
+            WHERE confirmationfill_id IN (
+                SELECT confirmation_id 
+                FROM appointment_schedule 
+                WHERE appsched_id IN ($placeholders)
+            )";
+        
+        $stmtConfirmationFill = $this->conn->prepare($deleteConfirmationFillSql);
+        
+        if ($stmtConfirmationFill) {
+            // Bind the parameters for confirmationfill deletion
+            $stmtConfirmationFill->bind_param($types, ...$appsched_ids);
+            
+            // Execute the deletion for confirmationfill and check for errors
+            if (!$stmtConfirmationFill->execute()) {
+                echo "Error deleting from confirmationfill: " . $stmtConfirmationFill->error;
+                return false; // Exit if deletion fails
+            }
+        } else {
+            echo "Error preparing SQL for confirmationfill deletion: " . $this->conn->error;
+            return false; // Exit if SQL preparation fails
+        }
+    
+        // Step 5: Delete from appointment_schedule itself after all related records are deleted
+        $deleteAppointmentSql = "
+            DELETE FROM appointment_schedule 
+            WHERE appsched_id IN ($placeholders)";
+        
+        // Prepare the SQL statement for appointment deletion
+        $stmtAppointment = $this->conn->prepare($deleteAppointmentSql);
+        
+        if ($stmtAppointment) {
+            // Bind the parameters for appointment_schedule
+            $stmtAppointment->bind_param($types, ...$appsched_ids);
+            
+            // Execute the deletion for appointment_schedule and check for errors
+            if (!$stmtAppointment->execute()) {
+                echo "Error deleting from appointment_schedule: " . $stmtAppointment->error;
+                return false; // Exit if deletion fails
+            }
+        } else {
+            echo "Error preparing SQL for appointment_schedule deletion: " . $this->conn->error;
+            return false; // Exit if SQL preparation fails
+        }
+    
+        // If everything went well, return true to indicate success
+        return true;
     }
+    
     
     
     
@@ -277,57 +385,7 @@ public function displaySundaysDropdown($schedule_id) {
         return $schedules;
     }
 
-    public function updateCapacity($announcementId, $newCapacity) {
-        $stmt = $this->conn->prepare("UPDATE announcement SET capacity = ? WHERE announcement_id = ?");
-        $stmt->bind_param("ii", $newCapacity, $announcementId);
-        return $stmt->execute();
-    }
-    
-    public function reserveCapacity($announcementId) {
-        $sql = "UPDATE announcement SET capacity = capacity - 1 WHERE announcement_id = ? AND capacity > 0";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("i", $announcementId);
-        if ($stmt->execute()) {
-            $_SESSION['reservation_time'] = time();
-            $_SESSION['announcement_id'] = $announcementId;
-            register_shutdown_function([$this, 'releaseCapacity']); // Register shutdown function to release capacity
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    
-    public function releaseCapacity() {
-        if (isset($_SESSION['announcement_id']) && isset($_SESSION['reservation_time'])) {
-            $announcementId = $_SESSION['announcement_id'];
-            $reservationTime = $_SESSION['reservation_time'];
-            $currentTime = time();
-    
-            // Define a timeout period in seconds (e.g., 10 minutes)
-            $timeout = 10 * 60; // 10 minutes
-    
-            if ($currentTime - $reservationTime > $timeout) {
-                // Release capacity if timeout has passed
-                $sql = "UPDATE announcement SET capacity = capacity + 1 WHERE announcement_id = ?";
-                $stmt = $this->conn->prepare($sql);
-                $stmt->bind_param("i", $announcementId);
-                $stmt->execute();
-            }
-    
-            // Clean up session variables
-            unset($_SESSION['reservation_time']);
-            unset($_SESSION['announcement_id']);
-        }
-    }
-    
-    
-    // Complete reservation
-    public function completeReservation($announcementId) {
-        unset($_SESSION['reservation_time']);
-        unset($_SESSION['announcement_id']);
-        return true;
-    }
+  
     
     
     public function getAnnouncementById($announcementId) {
@@ -422,7 +480,7 @@ public function insertSchedule($date, $startTime, $endTime, $eventType) {
     }
 }
 
-public function insertAppointment($baptismfillId, $payableAmount, $priestId, $scheduleId) {
+public function insertAppointment($baptismfillId = null, $payableAmount = null, $priestId  = null, $scheduleId = null) {
     // Generate a random 12-letter reference number
     $referenceNumber = $this->generateReferenceNumber();
 
@@ -442,6 +500,30 @@ public function insertAppointment($baptismfillId, $payableAmount, $priestId, $sc
         return false;  // Insertion failed
     }
 }
+public function insertMassAppointment($massbaptismfillId = null ,$massweddingffill_id = null , $payableAmount ) {
+    // Generate a random 12-letter reference number
+    $referenceNumber = $this->generateReferenceNumber();
+
+    // Update the SQL to match the parameters correctly
+    $sql = "INSERT INTO appointment_schedule (baptismfill_id,marriage_id, payable_amount,  status, p_status,reference_number)
+            VALUES (?, ?,?,'Process','Unpaid',?)";
+    $stmt = $this->conn->prepare($sql);
+    
+    // Adjust the bind_param to include the reference number
+    $stmt->bind_param("iids", $massbaptismfillId, $massweddingffill_id,$payableAmount, $referenceNumber);
+
+    if ($stmt->execute()) {
+        // Get the last inserted ID
+        $appointmentId = $this->conn->insert_id;
+        $stmt->close();
+        return $appointmentId;  // Return the ID of the newly inserted record
+    } else {
+        error_log("Insertion failed: " . $stmt->error);
+        $stmt->close();
+        return false;  // Insertion failed
+    }
+}
+
 
 private static $generatedReferences = [];
 
@@ -456,9 +538,15 @@ private function generateReferenceNumber() {
 
     return $referenceNumber;
 }
+public function getContactInfoAndTitle($baptismfillId = null, $massbaptismfillId = null) {
+    // Initialize the SQL query and the parameter
+    $sql = "";
+    $id = null;
 
-public function getContactInfoAndTitle($baptismfillId) {
-    $sql = "SELECT 
+    if ($massbaptismfillId) {
+        // Use the mass baptism fill ID
+        $sql = "
+            SELECT 
                 c.fullname,
                 c.email, 
                 c.phone, 
@@ -466,14 +554,37 @@ public function getContactInfoAndTitle($baptismfillId) {
             FROM 
                 citizen c 
             JOIN 
-                schedule s ON c.citizend_id = s.citizen_id 
-            JOIN 
-                baptismfill b ON s.schedule_id = b.schedule_id 
+                baptismfill b ON c.citizend_id = b.citizen_id  
             WHERE 
-                b.baptism_id = ?";
+            b.baptism_id = ?";
+        $id = $massbaptismfillId;
+    } elseif ($baptismfillId) {
+        // Use the baptism fill ID
+        $sql = "
+        SELECT 
+        c.fullname,
+        c.email, 
+        c.phone, 
+        b.event_name 
+    FROM 
+        citizen c 
+    JOIN 
+        schedule s ON c.citizend_id = s.citizen_id 
+    JOIN 
+        baptismfill b ON s.schedule_id = b.schedule_id 
+    WHERE 
+        b.baptism_id = ?";
+        $id = $baptismfillId;
+    }
 
+    // If neither ID is provided, return false
+    if (!$id) {
+        return false;
+    }
+
+    // Prepare and execute the SQL query
     $stmt = $this->conn->prepare($sql);
-    $stmt->bind_param("i", $baptismfillId);
+    $stmt->bind_param("i", $id);
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -484,11 +595,20 @@ public function getContactInfoAndTitle($baptismfillId) {
     }
 }
 
-public function approveBaptism($baptismfillId) {
+
+public function approveBaptism($baptismfillId = null, $massbaptismfillId = null) {
     try {
-        $sql = "UPDATE baptismfill SET status = 'Approved' WHERE baptism_id = ?";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("i", $baptismfillId);
+        if ($baptismfillId !== null) {
+            $sql = "UPDATE baptismfill SET status = 'Approved' WHERE baptism_id = ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("i", $baptismfillId);
+        } elseif ($massbaptismfillId !== null) {
+            $sql = "UPDATE baptismfill SET status = 'Approved' WHERE baptism_id = ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("i", $massbaptismfillId);
+        } else {
+            return false;  // Neither ID was provided
+        }
         
         if ($stmt->execute()) {
             return true;  // Status updated successfully
@@ -496,9 +616,11 @@ public function approveBaptism($baptismfillId) {
             return false;  // Failed to update status
         }
     } catch (Exception $e) {
+        error_log("Error approving baptism or mass baptism: " . $e->getMessage());
         return false;  // Error occurred
     }
 }
+
 public function insertBaptismPayment($appointmentId, $payableAmount) {
     try {
         $sql = "INSERT INTO payments (appointment_id, amount)
@@ -529,12 +651,12 @@ public function insertBaptismPayment($appointmentId, $payableAmount) {
 
 public function insertcAppointment($confirmationfill_id, $payableAmount) {
     $referenceNumber = $this->generateReferenceNumber();
-    $sql = "INSERT INTO appointment_schedule (confirmation_id, payable_amount, status, p_status,pr_status, reference_number)
-            VALUES (?, ?,  'Process', 'Unpaid',,'Pending',?)";
+    $sql = "INSERT INTO appointment_schedule (confirmation_id, payable_amount, status, p_status, reference_number)
+            VALUES (?, ?,  'Process', 'Unpaid',?)";
     $stmt = $this->conn->prepare($sql);
 
     // Bind parameters: 'i' for integer (baptismfill_id, priest_id), 'd' for decimal/float (payable_amount)
-    $stmt->bind_param("idiis",$confirmationfill_id ,$payableAmount);
+    $stmt->bind_param("ids",$confirmationfill_id ,$payableAmount, $referenceNumber );
 
     // Execute the statement and check for errors
     if ($stmt->execute()) {
@@ -554,10 +676,9 @@ public function getContactInfoAndTitles($confirmationfill_id) {
                 cf.event_name 
             FROM 
                 citizen c 
+
             JOIN 
-                schedule s ON c.citizend_id = s.citizen_id 
-            JOIN 
-                confirmationfill cf ON s.schedule_id = cf.schedule_id 
+                confirmationfill cf ON c.citizend_id = cf.citizen_id 
             WHERE 
                 cf.confirmationfill_id = ?";
 
@@ -609,8 +730,30 @@ public function insertwAppointment($weddingffill_id, $payableAmount, $priestId,$
 
     $stmt->close();
 }
-public function getWeddingContactInfoAndTitles($weddingffill_id) {
-    $sql = "SELECT 
+public function getWeddingContactInfoAndTitles($weddingffill_id = null, $massweddingffill_id = null) {
+    // Initialize the SQL query and the parameter
+    $sql = "";
+    $id = null;
+
+    if ($massweddingffill_id) {
+        // Use the mass baptism fill ID
+        $sql = "
+            SELECT 
+                c.fullname,
+                c.email, 
+                c.phone, 
+                mf.event_name 
+            FROM 
+                citizen c 
+            JOIN 
+                marriagefill mf ON c.citizend_id = mf.citizen_id  
+            WHERE 
+            mf.marriagefill_id = ?";
+        $id = $massweddingffill_id;
+    } elseif ($weddingffill_id) {
+        // Use the baptism fill ID
+        $sql = "
+       SELECT 
                 c.fullname,
                 c.email, 
                 c.phone, 
@@ -623,9 +766,17 @@ public function getWeddingContactInfoAndTitles($weddingffill_id) {
                 marriagefill mf ON s.schedule_id = mf.schedule_id 
             WHERE 
                 mf.marriagefill_id = ?";
+        $id = $weddingffill_id;
+    }
 
+    // If neither ID is provided, return false
+    if (!$id) {
+        return false;
+    }
+
+    // Prepare and execute the SQL query
     $stmt = $this->conn->prepare($sql);
-    $stmt->bind_param("i", $weddingffill_id);
+    $stmt->bind_param("i", $id);
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -636,11 +787,19 @@ public function getWeddingContactInfoAndTitles($weddingffill_id) {
     }
 }
 
-public function approveWedding($weddingffill_id) {
+public function approveWedding($weddingffill_id = null, $massweddingffill_id = null) {
     try {
-        $sql = "UPDATE marriagefill SET status = 'Approved' WHERE marriagefill_id = ?";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("i", $weddingffill_id);
+        if ($weddingffill_id ) {
+            $sql = "UPDATE marriagefill SET status = 'Approved' WHERE marriagefill_id = ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("i", $weddingffill_id);
+        } elseif ($massweddingffill_id ) {
+            $sql = "UPDATE marriagefill SET status = 'Approved' WHERE marriagefill_id = ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("i", $massweddingffill_id);
+        } else {
+            return false;  // Neither ID was provided
+        }
         
         if ($stmt->execute()) {
             return true;  // Status updated successfully
@@ -648,6 +807,7 @@ public function approveWedding($weddingffill_id) {
             return false;  // Failed to update status
         }
     } catch (Exception $e) {
+        error_log("Error approving marriage or mass marriage: " . $e->getMessage());
         return false;  // Error occurred
     }
 }
@@ -1012,89 +1172,95 @@ public function approveFuneral( $defuctomfill_id) {
     }
     public function getPendingMassAppointments() {
         $sql = "SELECT 
-        b.baptism_id AS id,
-        b.role AS roles,
-        b.event_name AS Event_Name,
-        c.fullname AS citizen_name,
-        s.date AS schedule_date,
-        s.start_time AS schedule_time,
-        a.payable_amount AS payable_amount,
-        a.status AS c_status,
-        a.p_status AS p_status,
-        sch.date AS appointment_schedule_date,  -- Additional schedule details from the new join
-        sch.start_time AS appointment_schedule_start_time,
-         sch.end_time AS appointment_schedule_time
-    FROM 
-        baptismfill b
-    JOIN 
-        citizen c ON b.citizen_id = c.citizend_id
-    JOIN 
-        announcement an ON b.announcement_id = an.announcement_id
-    JOIN 
-        appointment_schedule a ON b.baptism_id = a.baptismfill_id
-    JOIN 
-        schedule sch ON a.schedule_id = sch.schedule_id 
-
-    JOIN 
-        schedule s ON an.schedule_id = s.schedule_id
-    WHERE 
-        a.status = 'Process' OR a.p_status = 'Unpaid'
-    UNION ALL
-    SELECT 
-        cf.confirmationfill_id AS id,
-        cf.role AS roles,
-        cf.event_name AS Event_Name,
-        c.fullname AS citizen_name,
-        s.date AS schedule_date,
-        s.start_time AS schedule_time,
-        a.payable_amount AS payable_amount,
-        a.status AS c_status,
-        a.p_status AS p_status,
-        sch.date AS appointment_schedule_date,  -- Additional schedule details from the new join
-        sch.start_time AS appointment_schedule_start_time,
-         sch.end_time AS appointment_schedule_time
-    FROM 
-        confirmationfill cf
-    JOIN 
-        citizen c ON cf.citizen_id = c.citizend_id
-    JOIN 
-        announcement an ON cf.announcement_id = an.announcement_id
-    JOIN 
-        appointment_schedule a ON cf.confirmationfill_id = a.confirmation_id
-    JOIN 
-        schedule sch ON a.schedule_id = sch.schedule_id
-    JOIN 
-        schedule s ON an.schedule_id = s.schedule_id
-    WHERE 
-        a.status = 'Process' OR a.p_status = 'Unpaid'
-    UNION ALL
-    SELECT 
-        mf.marriagefill_id AS id,
-        mf.role AS roles,
-        mf.event_name AS Event_Name,
-        c.fullname AS citizen_name,
-        s.date AS schedule_date,
-        s.start_time AS schedule_time,
-        a.payable_amount AS payable_amount,
-        a.status AS c_status,
-        a.p_status AS p_status,
-        sch.date AS appointment_schedule_date, 
-        sch.start_time AS appointment_schedule_start_time,
-         sch.end_time AS appointment_schedule_time
-    FROM 
-        marriagefill mf
-    JOIN 
-        citizen c ON mf.citizen_id = c.citizend_id
-    JOIN 
-        announcement an ON mf.announcement_id = an.announcement_id
-    JOIN 
-        appointment_schedule a ON mf.marriagefill_id = a.marriage_id
-    JOIN 
-        schedule sch ON a.schedule_id = sch.schedule_id
-    JOIN 
-        schedule s ON an.schedule_id = s.schedule_id
-    WHERE 
-        a.status = 'Process' OR a.p_status = 'Unpaid'";
+            b.baptism_id AS id,
+            b.role AS roles,
+            b.event_name AS Event_Name,
+            c.fullname AS citizen_name,
+            s.date AS schedule_date,
+            s.start_time AS schedule_time,
+            a.payable_amount AS payable_amount,
+            a.status AS c_status,
+            a.p_status AS p_status,
+            a.appsched_id
+            -- Additional schedule details from the new join
+            -- sch.date AS appointment_schedule_date,
+            -- sch.start_time AS appointment_schedule_start_time,
+            -- sch.end_time AS appointment_schedule_time
+        FROM 
+            baptismfill b
+        JOIN 
+            citizen c ON b.citizen_id = c.citizend_id
+        JOIN 
+            announcement an ON b.announcement_id = an.announcement_id
+        JOIN 
+            appointment_schedule a ON b.baptism_id = a.baptismfill_id
+        -- JOIN schedule sch ON a.schedule_id = sch.schedule_id
+        JOIN 
+            schedule s ON an.schedule_id = s.schedule_id
+        WHERE 
+            a.status = 'Process' OR a.p_status = 'Unpaid'
+        
+        UNION ALL
+    
+        SELECT 
+            cf.confirmationfill_id AS id,
+            cf.role AS roles,
+            cf.event_name AS Event_Name,
+            c.fullname AS citizen_name,
+            s.date AS schedule_date,
+            s.start_time AS schedule_time,
+            a.payable_amount AS payable_amount,
+            a.status AS c_status,
+            a.p_status AS p_status,
+            a.appsched_id
+            -- Additional schedule details from the new join
+            -- sch.date AS appointment_schedule_date,
+            -- sch.start_time AS appointment_schedule_start_time,
+            -- sch.end_time AS appointment_schedule_time
+        FROM 
+            confirmationfill cf
+        JOIN 
+            citizen c ON cf.citizen_id = c.citizend_id
+        JOIN 
+            announcement an ON cf.announcement_id = an.announcement_id
+        JOIN 
+            appointment_schedule a ON cf.confirmationfill_id = a.confirmation_id
+        -- JOIN schedule sch ON a.schedule_id = sch.schedule_id
+        JOIN 
+            schedule s ON an.schedule_id = s.schedule_id
+        WHERE 
+            a.status = 'Process' OR a.p_status = 'Unpaid'
+        
+        UNION ALL
+    
+        SELECT 
+            mf.marriagefill_id AS id,
+            mf.role AS roles,
+            mf.event_name AS Event_Name,
+            c.fullname AS citizen_name,
+            s.date AS schedule_date,
+            s.start_time AS schedule_time,
+            a.payable_amount AS payable_amount,
+            a.status AS c_status,
+            a.p_status AS p_status,
+            a.appsched_id
+            -- Additional schedule details from the new join
+            -- sch.date AS appointment_schedule_date,
+            -- sch.start_time AS appointment_schedule_start_time,
+            -- sch.end_time AS appointment_schedule_time
+        FROM 
+            marriagefill mf
+        JOIN 
+            citizen c ON mf.citizen_id = c.citizend_id
+        JOIN 
+            announcement an ON mf.announcement_id = an.announcement_id
+        JOIN 
+            appointment_schedule a ON mf.marriagefill_id = a.marriage_id
+        -- JOIN schedule sch ON a.schedule_id = sch.schedule_id
+        JOIN 
+            schedule s ON an.schedule_id = s.schedule_id
+        WHERE 
+            a.status = 'Process' OR a.p_status = 'Unpaid'";
     
         $result = $this->conn->query($sql);
     
@@ -1108,6 +1274,7 @@ public function approveFuneral( $defuctomfill_id) {
         }
         return $pendingMassCitizen;
     }
+    
     public function getBaptismPendingCitizen($status) {
         $query = "SELECT 
                 a.title AS Event_Name,
@@ -1232,10 +1399,10 @@ public function approveFuneral( $defuctomfill_id) {
         switch ($eventType) {
             case 'MassBaptism':
                 return $this->getBaptismPendingCitizen($status);
-            case 'MassConfirmation':
-                return $this->fetchConfirmationFill($status);
-            case 'MassMarriage':
-                return $this->getMarriagePendingCitizenl($status);
+            case 'Mass Confirmation':
+                return $this->getConfirmationPendingCitizen($status);
+            case 'Mass Marriage':
+                return $this->getMarriagePendingCitizen($status);
             
             default:
                 // Combine all event types if no specific eventType is provided

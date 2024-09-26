@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($announcement) {
         // Insert data into baptismfill
-        if ($staffModel->completeReservation($announcementId)) {
+    
         $citizenModel->insertMassBaptismFill(
             $citizenId,
             $announcementId,
@@ -78,14 +78,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $eventName,
             $role
         );
-        unset($_SESSION['reserved_announcement_id']);
+    
         $_SESSION['status'] = "success";
         
         header('Location: ../View/PageCitizen/CitizenPage.php');
         exit();
-    } else {
-        echo "Failed to complete reservation.";
-    } 
+    
 } else {
         // Handle the case where the announcement_id does not exist
         echo "Announcement ID $announcementId does not exist.";

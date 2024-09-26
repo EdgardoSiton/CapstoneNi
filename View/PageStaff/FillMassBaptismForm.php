@@ -8,15 +8,8 @@ require_once '../../Model/citizen_mod.php';
 $staff = new Staff($conn);
 
 // Get the baptismfill_id from the URL
-$baptismfill_id = isset($_GET['id']) ? intval($_GET['id']) : null;
+$massbaptismfillId= isset($_GET['id']) ? intval($_GET['id']) : null;
 
-if ($baptismfill_id) {
-    // Fetch schedule_id from baptismfill
-    $scheduleId = $staff->getScheduleId($baptismfill_id);
-} else {
-    echo "No baptism ID provided.";
-    $scheduleId = null;
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -139,20 +132,7 @@ small {
             </div>
             <form id="modalForm" method="POST" action="../../Controller/addbaptism_con.php">
                 <div class="modal-body">
-            <input type="hidden" name="baptismfill_id" value="<?php echo htmlspecialchars($baptismfill_id); ?>" />
-            <div class="form-group">
-            <label for="sundays">Select Seminar</label>
-            <select class="form-control" id="sundays" name="sundays">
-                <?php
-                // Display the Sundays dropdown
-                if ($scheduleId) {
-                    $staff->displaySundaysDropdown($scheduleId); // this contain of date , start_time and end_time
-                }
-                ?>
-            </select>
-        </div>
-
-                 
+            <input type="hidden" name="massbaptismfill_id" value="<?php echo htmlspecialchars($massbaptismfillId); ?>" />
                     <div class="form-group">
                         <label for="eventTitle">Payable Amount</label>
                         <input type="number" class="form-control" id="eventTitle" name="eventTitle" placeholder="Enter Amount">

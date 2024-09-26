@@ -8,14 +8,8 @@ require_once '../../Model/citizen_mod.php';
 
 // Initialize the Staff class
 $staff = new Staff($conn);
-$weddingffill_id = isset($_GET['id']) ? intval($_GET['id']) : null;
-if ($weddingffill_id) {
-    // Fetch schedule_id from baptismfill
-    $scheduleId = $staff->getwScheduleId($weddingffill_id);
-} else {
-    echo "No baptism ID provided.";
-    $scheduleId = null;
-}
+$massweddingffill_id = isset($_GET['id']) ? intval($_GET['id']) : null;
+
 ?>
 
 <!DOCTYPE html>
@@ -128,19 +122,8 @@ small {
             </div>
             <form id="modalForm" method="POST" action="../../Controller/addwedding_con.php">
                 <div class="modal-body">
-            <input type="hidden" name="marriage_id" value="<?php echo htmlspecialchars($weddingffill_id); ?>" />
-            <div class="form-group">
-            <label for="sundays">Select Seminar</label>
-            <select class="form-control" id="sundays" name="sundays">
-                <?php
-                // Display the Sundays dropdown
-                if ($scheduleId) {
-                    $staff->displaySundaysDropdown($scheduleId); // this contain of date , start_time and end_time
-                }
-                ?>
-            </select>
-        </div>
-
+            <input type="hidden" name="massmarriage_id" value="<?php echo htmlspecialchars($massweddingffill_id); ?>" />
+    
                  
                     <div class="form-group">
                         <label for="eventTitle">Payable Amount</label>

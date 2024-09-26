@@ -386,32 +386,6 @@ $announcements = $staff->getAnnouncements(); // Fetch all announcements
 
 
 
-document.querySelectorAll('.register-btn').forEach(button => {
-    button.addEventListener('click', function (e) {
-        e.preventDefault();
-        const announcementId = this.getAttribute('data-announcement-id');
-
-        fetch('../../Controller/reserve_capacity.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: new URLSearchParams({
-                announcement_id: announcementId
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                window.location.href = this.getAttribute('href');
-            } else {
-                alert('No capacity left');
-            }
-        });
-    });
-});
-
-
       const formOpenBtn = document.querySelector("#form-open"),
         home = document.querySelector(".home"),
         formContainer = document.querySelector(".form_container"),

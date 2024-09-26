@@ -54,13 +54,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $bride_name= trim($firstnames . ' ' . $middlenames . ' ' . $lastnames);
     $announcementId = $_POST['announcement_id'] ?? '';
     $status = 'Pending';
-    $eventName = 'MassBaptism';
+    $eventName = 'MassWedding';
     $role = 'Online';
 
 
     $announcement = $staffModel->getAnnouncementById($announcementId);
     if ($announcement) {
-        if ($staffModel->completeReservation($announcementId)) {
+     
         $citizenModel->insertMassWeddingFill(
             $citizenId,
             $announcementId,
@@ -86,10 +86,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         header('Location: ../View/PageCitizen/CitizenPage.php');
            exit();
-       }      
-       else {
-        echo "Failed to complete reservation.";
-    }
+           
+    
  }
         else {
            echo "Announcement ID $announcementId does not exist.";

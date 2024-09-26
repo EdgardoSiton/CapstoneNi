@@ -170,7 +170,7 @@ small {
                         <div class="card-title">WeddingFill-up Form</div>
                     </div>
                     <div class="card-body">
-                    <form method="post" action="../../Controller/addmasswedding_con.php" onsubmit="return validateForm()">
+                    <form method="post" action="../../Controller/masswcitizen_con.php" onsubmit="return validateForm()">
                     <input type="hidden" name="announcement_id" value="<?php echo htmlspecialchars($announcementId); ?>">
     <div class="row">
         <div class="col-md-6 col-lg-4">

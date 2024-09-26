@@ -7,7 +7,6 @@ require_once '../../Model/staff_mod.php';
 // Initialize the Staff model
 $staff = new Staff($conn);
 
-$staff->releaseCapacity();
 // Fetch announcement data based on the announcement_id from the URL
 $announcementId = isset($_GET['announcement_id']) ? intval($_GET['announcement_id']) : 0;
 $announcementData = $staff->getAnnouncementById($announcementId);
@@ -171,7 +170,7 @@ small {
                         <div class="card-title">ConfirmationFill-up Form</div>
                     </div>
                     <div class="card-body">
-                    <form method="post" action="../../Controller/addmassconfirmation_con.php" onsubmit="return validateForm()">
+                    <form method="post" action="../../Controller/massccitizen_con.php" onsubmit="return validateForm()">
                     <input type="hidden" name="announcement_id" value="<?php echo htmlspecialchars($announcementId); ?>">
    <div class="row">
         <div class="col-md-6 col-lg-4">

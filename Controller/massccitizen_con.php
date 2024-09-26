@@ -27,28 +27,32 @@ $citizenId = $userDetails['citizend_id'];
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Retrieve form data with default values
-    $month = $_POST['month'] ?? '';
-    $day = $_POST['day'] ?? '';
-    $year = $_POST['year'] ?? '';
-    $dateOfBirth = ($month && $day && $year) ? "$year-$month-$day" : '';
+    $month = $_POST['months'] ?? '';
+    $day = $_POST['days'] ?? '';
+    $year = $_POST['years'] ?? '';
+    $date_of_baptism = ($month && $day && $year) ? "$year-$month-$day" : '';
  
+    $months = $_POST['month'] ?? '';
+    $days = $_POST['day'] ?? '';
+    $years = $_POST['year'] ?? '';
+    $c_date_birth = ($months && $days && $years) ? "$years-$months-$days" : '';
+
     $firstname = $_POST['firstname'] ?? '';  
     $lastname = $_POST['lastname'] ?? ''; 
     $middlename = $_POST['middlename'] ?? ''; 
     $fullname = trim($firstname . ' ' . $middlename . ' ' . $lastname);
     
-    $gender = $_POST['gender'] ?? '';
-    $address = $_POST['address'] ?? ''; 
-    $fatherFullname = $_POST['father_fullname'] ?? '';
-    $motherFullname = $_POST['mother_fullname'] ?? '';
-    $religion = $_POST['religion'] ?? '';
-    $placeOfBirth = $_POST['pbirth'] ?? '';
-    $parentResident = $_POST['parent_resident'] ?? '';
-    $godparent = $_POST['godparent'] ?? '';
+    $gender = $_POST['c_gender'] ?? '';
+    $address = $_POST['c_address'] ?? ''; 
+    $father_fullname = $_POST['father_fullname'] ?? '';
+    $mother_fullname = $_POST['mother_fullname'] ?? '';
+    $permission_to_confirm= $_POST['permission_to_confirm'] ?? '';
+    $church_address = $_POST['church_address'] ?? '';
+    $name_of_church = $_POST['name_of_church'] ?? '';
     $announcementId = $_POST['announcement_id'] ?? '';
     // Define default values for status, event_name, and role
     $status = 'Pending';
-    $eventName = 'MassBaptism';
+    $eventName = 'MassConfirmation';
     $role = 'Online';
     $announcementId = $_POST['announcement_id'] ?? '';
 
@@ -59,19 +63,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Complete the reservation if the form is filled out
        
             // Insert data into baptismfill
-            $citizenModel->insertMassBaptismFill(
+            $citizenModel->insertIntoMassConfirmFill(
                 $citizenId,
                 $announcementId,
                 $fullname,
                 $gender,
-                $address,
-                $dateOfBirth, 
-                $fatherFullname,
-                $placeOfBirth,
-                $motherFullname,
-                $religion,
-                $parentResident,
-                $godparent,
+                $c_date_birth,
+                $address, 
+                $date_of_baptism,
+                $name_of_church,
+                $father_fullname,
+                $mother_fullname,
+                $permission_to_confirm,
+                $church_address,
                 $status,
                 $eventName,
                 $role
