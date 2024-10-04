@@ -64,6 +64,7 @@ $announcements = $staff->getAnnouncements();
     <div class="modal-body">
         <div class="form-group">
             <label for="eventDate">Event Date</label>
+            <input type="hidden" name="announcement" value = "announcement">
             <input type="date" class="form-control" id="eventDate" name="eventDate" placeholder="Enter event date" >
         </div>
         <div class="form-group">
@@ -119,7 +120,7 @@ $announcements = $staff->getAnnouncements();
                     <h3 class="fw-bold mb-3">Staff Announcement</h3>
                   </div>
                   <div class="ms-md-auto py-2 py-md-0">
-                    <a href="#"  data-toggle="modal" data-target="#myModal" class="btn btn-primary btn-round">Add Announcement</a>
+                    <a href="FillScheduleForm.php?type=Announcement"   class="btn btn-primary btn-round">Add Announcement</a>
                     
 
                   </div>
@@ -131,6 +132,9 @@ $announcements = $staff->getAnnouncements();
                     <div class="card-body">
                         <div class="separator-solid"></div>
                         <p class="card-category text-info mb-1">
+                        <h3 class="card-title">
+                            <a href="#">Priest:<?php echo htmlspecialchars($announcement['fullname']) ?></a>
+                        </h3>
                         <a href="#">
         <?php 
         $date = htmlspecialchars(date('F j, Y', strtotime($announcement['date'])));

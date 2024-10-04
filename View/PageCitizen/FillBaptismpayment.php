@@ -189,7 +189,16 @@ small {
    
   </head>
   <body> 
-  <?php require_once 'header.php'?>
+ <!-- Navbar & Hero Start -->
+ <div class="container-fluid nav-bar px-0 px-lg-4 py-lg-0">
+      <div class="container">
+       
+      <?php require_once 'header.php'?>
+
+      </div>
+    </div>
+    <!-- Navbar & Hero End -->
+    
 
   <div class="container">
 
@@ -356,6 +365,7 @@ small {
         </div>
     </div>
 </div>
+<?php require_once 'footer.php'?>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <!-- Popper.js (required for Bootstrap 4) -->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>

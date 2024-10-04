@@ -15,7 +15,6 @@ if (!$loggedInUserEmail) {
 }
 $announcements = $staff->getAnnouncements(); // Fetch all announcements
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -26,8 +25,9 @@ $announcements = $staff->getAnnouncements(); // Fetch all announcements
     <meta content="" name="description" />
     <link rel="icon" href="../assets/img/mainlogo.jpg" type="image/x-icon"
     />
-    <!-- Google Web Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
+   
+  <!-- Google Web Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:slnt,wght@-10..0,100..900&display=swap"
@@ -58,6 +58,7 @@ $announcements = $staff->getAnnouncements(); // Fetch all announcements
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/rating.css">
+    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
@@ -69,212 +70,198 @@ $announcements = $staff->getAnnouncements(); // Fetch all announcements
   </head>
 
   <body>
-    <!-- Spinner End -->
-   
 
     <!-- Navbar & Hero Start -->
-    <?php require_once 'header.php'?>
+    <div class="container-fluid nav-bar px-0 px-lg-4 py-lg-0">
+      <div class="container">
+       
+      <?php require_once 'header.php'?>
+
+      </div>
+    </div>
     <!-- Navbar & Hero End -->
     
     <!-- Carousel Start -->
-    <div class="header-carousel owl-carousel">
+    <div class="header-carousel owl-carousel" disabled>
       <div class="header-carousel-item bg-primary">
-        <img src="../assets/img/coverpage.png" alt="" />
+        <img src="assets/img/cover.jpeg" alt="" />
       </div>
     </div>
 
-    <!-- Carousel End -->
-    <div class="modal" id="modal">
-      <div class="modal-content">
-        <span class="close">&times;</span>
-        <h1 style="color:#ac0727cf">Argao Church System Rating</h1>
-        <div class="rating"><span id="rating">0</span>/5</div>
-        <div class="stars" id="stars">
-          <span class="star" data-value="1">★</span>
-          <span class="star" data-value="2">★</span>
-          <span class="star" data-value="3">★</span>
-          <span class="star" data-value="4">★</span>
-          <span class="star" data-value="5">★</span>
+<!-- Feature Start -->
+<div class="container-fluid feature bg-light py-5">
+    <div class="container py-5" style="padding-bottom: 0 !important;">
+        <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.2s">
+            <h4 class="welcome-title mb-4" style="font-weight: 700;">WELCOME TO THE PARISH OFFICIAL WEBSITE</h4>
+            <p class="welcome-text mb-2" style="color:#3b3b3b; text-justify: inter-word;">
+                The Archdiocesan Shrine of San Miguel Arcangel, also known as Argao Church, is a Roman Catholic church located in Argao, Cebu, Philippines. Established as a parish in 1703 under the Augustinian order, the church stands as a significant religious site in the region. Construction of the stone church began in 1734 and was completed in 1788, serving as a center of faith and devotion dedicated to Saint Michael the Archangel.
+            </p>
         </div>
-        <p>Share your review:</p>
-        <textarea id="review" placeholder="Write your review here"> </textarea>
-        <button id="submit">Submit</button>
-        <div class="reviews" id="reviews"></div>
-      </div>
+        <hr>
     </div>
-    <div class="CalendarIndexContainer">
+</div>
+<!-- Feature End -->
+
+<!-- FAQs Start -->
+<div class="container-fluid faq-section bg-light py-5">
+            <div class="container py-5"  style="padding-top: 0 !important;">
+                <div class="row g-5 align-items-center">
+                    <div class="col-xl-6 wow fadeInLeft" data-wow-delay="0.2s">
+                        <div class="h-100">
+                            <div class="mb-5">
+                                <h4 class="text-primary">Some Important details</h4>
+                                <h1 class="display-6 mb-6">EVENTS CALENDAR</h1>
+                            </div>
+                            <div class="accordion" id="accordionExample">
+                               
+                                <p class="mb-0">
+                                Welcome to the <span style="font-weight:700;">Argao Church Event Calendar!</span> Here, you can find a comprehensive schedule of all upcoming events, services, and special celebrations happening at the Archdiocesan Shrine of San Miguel Arcangel.
+<br><br>
+Stay informed about our regular mass schedules, religious ceremonies, community gatherings, and festive occasions. Whether you're looking to participate in a sacrament, join a special event, or simply plan your visit, our calendar provides all the details you need, including dates, times, and locations.
+<br><br>
+We invite you to check back regularly to stay updated on the vibrant life of our parish community. Join us in celebrating faith and togetherness!
+          </p>
+                         
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-xl-6 wow fadeInRight" data-wow-delay="0.4s">
+                    <div class="CalendarIndexContainer">
     <!-- About calendar -->
     <?php require_once 'Calendar.php'?>
     </div>
-    
-</div>
-    <!-- About calendar -->
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; margin-right:10px; "></div>
+    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- FAQs End -->
 
-    <!-- Service Start -->
-    <div class="container-fluid service py-5">
-      <div class="container py-5">
-        <div
-          class="text-center mx-auto pb-5 wow fadeInUp"
-          data-wow-delay="0.2s"
-          style="max-width: 800px"
-        >
-          <h4 class="text-primary">Our Services</h4>
-          <h1 class="display-4 mb-4">We Provide Best Services</h1>
-          <p class="mb-0">
-            Explore our comprehensive system for managing and scheduling various
+  <!-- Service Start -->
+<div class="container-fluid service py-5">
+  <div class="container py-5">
+    <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.2s">
+      <h1 class="display-6 mb-6" >WE PROVIDE BEST SERVICES</h1>
+      <p class="mb-0" style="color:#3b3b3b; text-justify: inter-word;">
+       Explore our comprehensive system for managing and scheduling various
             church events, masses, and services. From mass events and solo
             events to feast days and special occasions, we've got you covered.
             Discover how our system can help you stay connected with your faith
             community and deepen your relationship with God.
-          </p>
-        </div>
-        <div class="row g-4 justify-content-center">
-          <div
-            class="col-md-6 col-lg-6 col-xl-3 wow fadeInUp"
-            data-wow-delay="0.2s"
-          >
-            <div class="service-item">
-              <div class="service-img">
-                <img
-                  src="img/baptism (1).jpg"
-                  class="img-fluid rounded-top w-100"
-                  alt=""
-                />
-              </div>
-              <div class="service-content p-4">
-                <div class="service-content-inner">
-                  <a href="#" class="d-inline-block h4 mb-4"
-                    ><span style="font-weight: bold">Baptism</span></a
-                  >
-                  <p class="mb-4">
-                    Welcome your child into the Catholic faith. Celebrate this
-                    sacred milestone through the baptismal process and help your
-                    child take their first steps in their spiritual journey.
-                  </p>
-                  <a class="btn btn-primary rounded-pill py-2 px-4" href="FillScheduleForm.php?type=baptism">
+      </p>
+    </div>
+    <div class="row g-4 justify-content-center">
+      <div class="col-md-4 wow fadeInUp" data-wow-delay="0.2s">
+        <div class="service-item">
+          <div class="service-img">
+            <img src="img/baptism (1).jpg" class="img-fluid rounded-top w-100" alt="" />
+          </div>
+          <div class="service-content p-4">
+            <div class="service-content-inner">
+              <a href="#" class="d-inline-block h4 mb-4"><span style="font-weight: bold">Baptism</span></a>
+              <p class="mb-4">Baptism holds a significant role within the Christian faith as it formally welcomes a new member into the church... </p>
+              <a class="btn btn-primary rounded-pill py-2 px-4" href="FillScheduleForm.php?type=baptism">
             Schedule Now
         </a>
-                </div>
-              </div>
             </div>
           </div>
-          <div
-            class="col-md-6 col-lg-6 col-xl-3 wow fadeInUp"
-            data-wow-delay="0.4s"
-          >
-            <div class="service-item">
-              <div class="service-img">
-                <img
-                  src="img/confirmation.jpg"
-                  class="img-fluid rounded-top w-100"
-                  alt=""
-                />
-              </div>
-              <div class="service-content p-4">
-                <div class="service-content-inner">
-                  <a href="#" class="d-inline-block h4 mb-4"
-                    ><span style="font-weight: bold">Confirmation</span>
-                  </a>
-                  <p class="mb-4">
-                    Deepen your commitment to your faith. This important sacrament marks a significant
-                    milestone in your spiritual journey, and we're here to
-                    support you every step of the way.
-                  </p>
-                  <a class="btn btn-primary rounded-pill py-2 px-4" href="FillScheduleForm.php?type=confirmation">
+        </div>
+      </div>
+      <div class="col-md-4 wow fadeInUp" data-wow-delay="0.4s">
+        <div class="service-item">
+          <div class="service-img">
+            <img src="img/confirmation.jpg" class="img-fluid rounded-top w-100" alt="" />
+          </div>
+          <div class="service-content p-4">
+            <div class="service-content-inner">
+              <a href="#" class="d-inline-block h4 mb-4"><span style="font-weight: bold">Confirmation</span></a>
+              <p class="mb-4">Confirmation is an important sacrament in the Christian faith that deepens a person's commitment to God...</p>
+              <a class="btn btn-primary rounded-pill py-2 px-4" href="FillScheduleForm.php?type=confirmation">
                     Schedule Now
                 </a>
-                </div>
-              </div>
             </div>
           </div>
-          <div
-            class="col-md-6 col-lg-6 col-xl-3 wow fadeInUp"
-            data-wow-delay="0.6s"
-          >
-            <div class="service-item">
-              <div class="service-img">
-                <img
-                  src="img/wedding.jpg"
-                  class="img-fluid rounded-top w-100"
-                  alt=""
-                />
-              </div>
-              <div class="service-content p-4">
-                <div class="service-content-inner">
-                  <a href="#" class="d-inline-block h4 mb-4"
-                    ><span style="font-weight: bold">Wedding</span>
-                  </a>
-                  <p class="mb-4">
-                    Begin your new life together with a sacred and joyful
-                    celebration. Our wedding services provide a beautiful and
-                    meaningful way to exchange your vows and receive God's
-                    blessing on your marriage.
-                  </p>
-                  <a class="btn btn-primary rounded-pill py-2 px-4" href="FillScheduleForm.php?type=Wedding">
+        </div>
+      </div>
+      <div class="col-md-4 wow fadeInUp" data-wow-delay="0.6s">
+        <div class="service-item">
+          <div class="service-img">
+            <img src="img/wedding.jpg" class="img-fluid rounded-top w-100" alt="" />
+          </div>
+          <div class="service-content p-4">
+            <div class="service-content-inner">
+              <a href="#" class="d-inline-block h4 mb-4"><span style="font-weight: bold">Wedding</span></a>
+              <p class="mb-4">The sacrament of matrimony is a sacred union that binds a man and a woman together in the presence of God...</p>
+              <a class="btn btn-primary rounded-pill py-2 px-4" href="FillScheduleForm.php?type=Wedding">
                     Schedule Now
                 </a>
-                </div>
-              </div>
             </div>
-          </div>
-          <div
-            class="col-md-6 col-lg-6 col-xl-3 wow fadeInUp"
-            data-wow-delay="0.8s"
-          >
-            <div class="service-item">
-              <div class="service-img">
-                <img
-                  src="img/funeral.jpg"
-                  class="img-fluid rounded-top w-100"
-                  alt=""
-                />
-              </div>
-              <div class="service-content p-4">
-                <div class="service-content-inner">
-                  <a href="#" class="d-inline-block h4 mb-4"
-                    ><span style="font-weight: bold">Funeral</span></a
-                  >
-                  <p class="mb-4">
-                    In times of sorrow, find comfort and hope in our funeral
-                    services. We're here to support you and your loved ones as
-                    you say goodbye to a cherished family member or friend, and
-                    celebrate their life and legacy.
-                  </p>
-                  <a class="btn btn-primary rounded-pill py-2 px-4" href="FillScheduleForm.php?type=Funeral">
-                    Schedule Now
-                </a>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-12 text-center wow fadeInUp" data-wow-delay="0.2s">
-            <a class="btn btn-primary rounded-pill py-3 px-5" href="#"
-              >More Services</a
-            >
           </div>
         </div>
       </div>
     </div>
-    <!-- Service End -->
+    <div class="row g-4 justify-content-center mt-4">
+      <div class="col-md-4 wow fadeInUp" data-wow-delay="0.8s">
+        <div class="service-item">
+          <div class="service-img">
+            <img src="img/funeral.jpg" class="img-fluid rounded-top w-100" alt="" />
+          </div>
+          <div class="service-content p-4">
+            <div class="service-content-inner">
+              <a href="#" class="d-inline-block h4 mb-4"><span style="font-weight: bold">Funeral</span></a>
+              <p class="mb-4">As a religious institution, the church plays a vital role in offering support and solace to the departed...</p>
+              <a class="btn btn-primary rounded-pill py-2 px-4" href="FillScheduleForm.php?type=Funeral">
+                    Schedule Now
+                </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 wow fadeInUp" data-wow-delay="0.8s">
+        <div class="service-item">
+          <div class="service-img">
+            <img src="../assets/img/open-book-near-sea.jpg" class="img-fluid rounded-top w-100" alt="" />
+          </div>
+          <div class="service-content p-4">
+            <div class="service-content-inner">
+              <a href="#" class="d-inline-block h4 mb-4"><span style="font-weight: bold">Request of Masses</span></a>
+              <p class="mb-4">The Catholic Church, as an esteemed institution, upholds the tradition of conducting Eucharistic celebrations...</p>
+              <a class="btn btn-primary rounded-pill py-2 px-4" href="FillScheduleForm.php?type=RequestForm">See More</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Service End -->
 
     <!-- Testimonial Start -->
-    <div class="container-fluid testimonial pb-5">
-        <div class="container pb-5">
-            <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.2s" style="max-width: 800px">
-                <h1 class="display-4 mb-4">ANNOUNCEMENT</h1>
-                <p class="mb-0">
-                    Upcoming Events in the Church: Mark your calendars for our upcoming
-                    Mass Wedding, Mass Confirmation, Baptism Seminar, and First Communion. Registration is required for each event.
-                </p>
-            </div>
-            <div class="owl-carousel testimonial-carousel wow fadeInUp" data-wow-delay="0.2s">
+    <div class="container-fluid testimonial pb-5"style="padding-bottom: 0 !important;" >
+      <div class="container pb-5" style="padding-bottom: 0 !important;">
+        <div
+          class="text-center mx-auto pb-5 wow fadeInUp"
+          data-wow-delay="0.2s" >
+          <h1 class="display-6 mb-6">ANNOUNCEMENT</h1>
+          <p class="mb-0">
+            Upcoming Events in the Church: Mark your calendars for our upcoming
+            Mass Wedding, Mass Confirmation, Baptism Seminar, and First
+            Communion. Registration is required for each event.
+          </p>
+        </div>
+        <div
+          class="owl-carousel testimonial-carousel wow fadeInUp"
+          data-wow-delay="0.2s"
+        >
 <?php foreach ($announcements as $announcement): ?>
-    <div class="testimonial-item bg-light rounded">
-        <div class="row g-0">
-            <div class="col-8 col-lg-8 col-xl-9">
-                <div class="d-flex flex-column my-auto text-start p-4">
-                    <div class="small">
-                        <span class="fa fa-calendar text-primary"></span> 
+  <div class="testimonial-item bg-light rounded" style="background-color: #f2f5f9 !important;">
+            <div class="row g-0">
+              <div class="col-8 col-lg-8 col-xl-9">
+                <div class="d-flex flex-column my-auto text-start p-4" style="align-items: baseline!important;">
+                  <div class="small">
+                    <span class="fa fa-calendar text-primary"></span> 
                         <?php 
                             $date = htmlspecialchars(date('F j, Y', strtotime($announcement['date'])));
                             $startTime = htmlspecialchars(date('g:i a', strtotime($announcement['start_time'])));
@@ -290,7 +277,8 @@ $announcements = $staff->getAnnouncements(); // Fetch all announcements
                         <?php echo htmlspecialchars($announcement['description']); ?>
                     </p>
 
-                    <h4 class="text-dark mb-0">
+                    <h4 class="text-dark mb-0" style="    font-size: larger;
+    padding: 5px 0 15px;">
                         Capacity: <span class="capacity-count" data-capacity="<?php echo htmlspecialchars($announcement['capacity']); ?>">
                             <?php echo htmlspecialchars($announcement['capacity']); ?>
                         </span>
@@ -332,34 +320,71 @@ $announcements = $staff->getAnnouncements(); // Fetch all announcements
 
             </div>
         </div>
+        
     </div>
     <!-- Testimonial End -->
-
-    <!-- Copyright Start -->
-    <div class="container-fluid copyright py-4">
-      <div class="container">
-        <div class="row g-4 align-items-center">
-          <div class="col-md-6 text-center text-md-end mb-md-0">
-            <span class="text-body"
-              ><a href="#" class="border-bottom text-white"
-                ><i class="fas fa-copyright text-light me-2"></i>Team Alpha Coders</a
-              >, All right reserved.</span
-            >
-          </div>
-          <div class="col-md-6 text-center text-md-start text-body">
-           Capstone Project 1
-            <a class="border-bottom text-white" href="https://htmlcodex.com"
-              ></a
-            >
-            Distributed By
-            <a class="border-bottom text-white" href="https://themewagon.com"
-              >Team Alpha Coders</a
-            >
-          </div>
-        </div>
-      </div>
+    <!-- FAQs Start -->
+ <div class="container-fluid faq-section bg-light py-5">
+            <div class="container py-5">
+                <div class="row g-5 align-items-center">
+                    <div class="col-xl-6 wow fadeInLeft" data-wow-delay="0.2s">
+                        <div class="h-100">
+                            <div class="mb-5">
+                                <h4 class="text-primary">Some Important FAQ's</h4>
+                                <h1 class="display-6 mb-6">COMMON FREQUENTLY ASKED QUESTIONS</h1>
+                            </div>
+                            <div class="accordion" id="accordionExample">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingOne">
+                                        <button class="accordion-button border-0" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                            Q: What are the different services and programs offered by the church?
+                                        </button>
+                                    </h2>
+                                    <div id="collapseOne" class="accordion-collapse collapse show active" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                        <div class="accordion-body rounded" style="color:#3b3b3b;">
+                                            A:Argao Church offers a range of services and programs including regular mass schedules, sacramental preparation (e.g., baptism, marriage), religious education, and community outreach programs. Details about these services can be found on this website or by contacting the church office.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingTwo">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                            Q: How can I donate to Argao Church?
+                                        </button>
+                                    </h2>
+                                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                                        <div class="accordion-body" style="color:#3b3b3b;">
+                                            A: Donations to Argao Church can only be made through in-person donations at the church office. For details on how to make a donation, contact the church office.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingThree">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                            Q: What should I do if I need to cancel or reschedule a booking or event at the church? 
+                                        </button>
+                                    </h2>
+                                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+                                        <div class="accordion-body" style="color:#3b3b3b;">
+                                            A: If you need to cancel or reschedule a booking or event, please inform the church office as soon as possible. They will assist you with the necessary changes and provide guidance on the next steps.
+                                        </div>
+                                    </div>  
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-6 wow fadeInRight" data-wow-delay="0.4s">
+                    <div style="position: relative; display: inline-block;">
+        <img src="assets/img/FAQ.png" class="faq-image"  style="display: block; width: 100%; height: auto;" alt="FAQ">
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #0066a8; opacity: 0.4; pointer-events: none;"></div>
     </div>
-    <!-- Copyright End -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- FAQs End -->
+    <?php require_once 'footer.php'?>
+
 
     <!-- Back to Top -->
     
@@ -383,9 +408,6 @@ $announcements = $staff->getAnnouncements(); // Fetch all announcements
     }
     ?>
 });
-
-
-
       const formOpenBtn = document.querySelector("#form-open"),
         home = document.querySelector(".home"),
         formContainer = document.querySelector(".form_container"),

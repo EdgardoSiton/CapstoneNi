@@ -41,8 +41,8 @@
   
 </div>
 <?php
-require_once  'Model/db_connection.php';
-require_once  'Model/staff_mod.php';
+include_once "Model/db_connection.php";
+include_once "Model/staff_mod.php";
 
 try {
     $eventFetcher = new Staff($conn);
@@ -53,6 +53,7 @@ try {
     $confirmationEvents = $eventFetcher->fetchConfirmationEvents();
     $defuctomEvents = $eventFetcher->fetchDefuctomEvents();
     $massEvents = $eventFetcher->fetchMassEvents();
+    $addcalendar = $eventFetcher-> fetchAddCalendar();
 
     // Process or display the events as needed
     // Example: var_dump($marriageEvents);
@@ -63,7 +64,9 @@ try {
 ?>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min.js"></script><script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min.js"></script>
+
+<script>
 !function() {
   var events = [
     <?php
@@ -83,6 +86,30 @@ try {
         date: '<?php echo $event['date']; ?>'
     },
     <?php } ?>
+   <?php
+foreach ($addcalendar as $event) {
+    // Extract month and day from the event date
+    $eventDate = new DateTime($event['cal_date']);
+    $month = $eventDate->format('m');
+    $day = $eventDate->format('d');
+    
+    // Loop through each year
+    for ($year = 2024; $year <= 2100; $year++) { // Adjust the range as needed
+        // Format the new date
+        $newDate = sprintf('%04d-%02d-%02d', $year, $month, $day);
+        ?>
+        {
+            eventName: '<?php echo $event['cal_fullname']; ?>',
+            startTime: '<?php echo $event['cal_Category']; ?>',
+            endTime: '<?php echo $event['cal_description']; ?>',
+            calendar: 'Events in Church',
+            color: 'blue',
+            date: '<?php echo $newDate; ?>'
+        },
+        <?php 
+    } 
+} 
+?>
 
     // Marriage Events
     <?php

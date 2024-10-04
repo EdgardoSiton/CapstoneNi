@@ -114,7 +114,7 @@ small {
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="modalForm" method="POST" action="../../Controller/addfuneral_con.php">
+            <form id="modalForm" method="POST" action="../../Controller/addbaptism_con.php">
                 <div class="modal-body">
             <input type="hidden" name="defuctom_id" value="<?php echo htmlspecialchars($defuctom_id); ?>" />
             <div class="form-group">
@@ -349,14 +349,65 @@ small {
     <!-- Form Actions -->
     <div class="card-action">
     <button type="submit" data-toggle="modal" data-target="#myModal" class="btn btn-success">Approve</button>
+    <button type="button" class="btn btn-danger decline-btn" data-id="<?php echo htmlspecialchars($defuctom_id); ?>" >Decline</button>
         <button type="button" class="btn btn-danger" onclick="window.location.href='your_cancel_url.php'">Cancel</button>
-        </div>
+         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('.decline-btn').addEventListener('click', function() {
+        var defuctom_id = this.getAttribute('data-id');
+       
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, decline it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '../../Controller/updatepayment_con.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        Swal.fire(
+                            'Declined!',
+                            'The baptism request has been declined.',
+                            'success'
+                        ).then(() => {
+                            // Redirect after approval
+                            window.location.href = 'StaffSoloSched.php';
+                        });
+                    } else {
+                        console.error("Error response: ", xhr.responseText); // Log error response
+                        Swal.fire(
+                            'Error!',
+                            'There was an issue declining the request.',
+                            'error'
+                        );
+                    }
+                };
+
+                // Send both baptismfill_id and citizen_id
+                xhr.send('defuctomfill_id=' + encodeURIComponent(defuctom_id));
+            }
+        });
+    });
+});
+</script>
+<script src="../assets/js/plugin/sweetalert/sweetalert.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <!-- Popper.js (required for Bootstrap 4) -->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>

@@ -2,10 +2,11 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require __DIR__ . '/../Controller/phpmailer/src/PHPMailer.php';
-require __DIR__ . '/../Controller/phpmailer/src/SMTP.php';
-require __DIR__ . '/../Controller/phpmailer/src/Exception.php';
-require __DIR__ . '/../vendor/autoload.php';
+require_once  __DIR__ . '/../Model/db_connection.php';
+require_once  __DIR__ . '/../Model/staff_mod.php'; // Ensure this uses require_once
+require_once __DIR__ . '/../Controller/phpmailer/src/PHPMailer.php'; // Ensure this uses require_once
+
+require_once  __DIR__ . '/../vendor/autoload.php';
 class User {
     
     private $conn;

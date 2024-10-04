@@ -3,7 +3,7 @@
 require_once '../../Model/db_connection.php';
 require_once '../../Controller/citizen_con.php';
 $loggedInUserEmail = isset($_SESSION['email']) ? $_SESSION['email'] : null;
-
+$nme = $_SESSION['fullname'];
 if (!$loggedInUserEmail) {
     header("Location: login.php");
     exit();
@@ -304,6 +304,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     nextPage = `FillWeddingForm.php`;
                 } else if (type === 'Funeral') {
                     nextPage = `FillFuneralForm.php`;
+                }else if (type === 'RequestForm') {
+                    nextPage = `FillRequestForm.php`;
                 } else {
                     alert('Invalid scheduling type.');
                     return;
@@ -323,31 +325,219 @@ document.addEventListener('DOMContentLoaded', function() {
 
     </script>
         <style>
- .container-cal {
-            margin: 0 auto;
+   
+   body {
+            margin: 0;
+            background-color: #f4f4f9;
         }
-        .calendar {
-            width: 80%;
+
+        .container-cal {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 10px;
+            box-sizing: border-box;
         }
+
+        /* Calendar and time selection containers */
+        .calendar, .schedule {
+            flex: 1;
+            margin: 10px;
+            padding: 20px;
+        }
+
+        /* Calendar specific styles */
+        .calendar h3 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
         .month ul {
-            list-style-type: none;
-            padding: 0;
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            padding: 0;
+            list-style-type: none;
+            margin: 0;
+            padding: 20px;
+            border: solid;
+
+    background: rgba(172, 7, 40, 0.856);
         }
+
+        .month ul li {
+            font-size: 18px;
+            cursor: pointer;
+            color: #333;
+        }
+
         .weekdays, .days {
             list-style-type: none;
             padding: 0;
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+    margin-bottom: -10px;
+    border-right-style: solid;
+    border-left-style: solid;
+    border-bottom-style: solid;
+
         }
+
         .weekdays li, .days li {
-            width: 14.28%;
+            padding: 10px;
             text-align: center;
-            margin-bottom: 10px;
+            font-weight: bold;
+            color: #555;
+            border-radius: 5px;
+            cursor: pointer;
+            
         }
-        .days li {
+      
+        .days li.active, .days li.selected {
+            background-color: #3498db;
+            color: #fff;
+            
+        }
+
+        /* Time selection styles */
+        .time h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 22px;
+            color: #333;
+        }
+
+       
+    .time-options {
+      display: flex;
+    flex-direction: row;
+    gap: 60px;
+    margin-top: 5px;
+    }
+    .time-option {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .time-selection button {
+        width: 50%;
+        padding: 10px;
+        cursor: pointer;
+        border: none;
+        border-radius: 4px;
+        background-color: #007bff;
+        color: white;
+        transition: background-color 0.3s;
+    }
+    .time-selection button:hover {
+        background-color: #0056b3;
+    }
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container-cal {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .calendar, .time{
+              width: 100%;
+       
+            }
+
+            .weekdays li, .days li {
+                padding: 8px!important;
+                font-size: 14px;
+            }
+
+            .time-options button {
+                font-size: 14px;
+                padding: 8px;
+            }
+            .form-group {
+          margin:0;  
+          }
+
+        }
+/* Style the radio button to be visible */
+.styled-radio {
+  width: 20px;
+  height: 20px;
+  accent-color: #007bff; /* Button color */
+  cursor: pointer;
+}
+.form-group {
+   /* align-items: end; */
+   width: 65%;
+	     /* border: 1px solid black; */
+	     margin: 0 auto;
+padding:0;
+}
+
+
+.radio-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  cursor: default;
+    opacity: .5;
+}
+.form-check-label.time-slot {
+  width: 150px; /* Set a fixed width for the time column */
+  text-align: left;
+}
+.form-check {
+    display: flex;
+    align-items: center;
+}
+
+/* Style the label with border and background */
+.form-check-label {
+  margin-left: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  color: #333;
+ 
+  padding: 8px;  /* Padding for button-like appearance */
+  border-radius: 4px;  /* Rounded corners */
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Optional: Hover effect for better interactivity */
+.form-check-label:hover {
+  background-color: #ff69b4;
+  color: white;
+  border-color: #ff1493;
+}
+
+/* Hover effect for radio button */
+.styled-radio:hover {
+  border-color: #0056b3;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.form-check-label {
+  margin-right: 10px; /* Space between label and h6 */
+}
+
+/* Style for the h6 element beside the label */
+.time-status {
+  font-size: 14px;
+  margin-left: 20px; /* Ensure availability text is spaced properly */
+  white-space: nowrap; /* Prevent the status text from wrapping */
+  color: green;
+  padding: 0;
+  display: inline-block;
+}
+.form-check input{
+  margin-top: 10px;
+}
+
+.days li {
             cursor: pointer;
         }
         .days li.active {
@@ -375,119 +565,22 @@ document.addEventListener('DOMContentLoaded', function() {
     <link rel="stylesheet" href="../assets/css/plugins.min.css" />
     <link rel="stylesheet" href="../assets/css/kaiadmin.min.css" />
 
-    <!-- CSS Just for demo purpose, don't include it in your project -->
-    <link rel="stylesheet" href="../assets/css/demo.css" />
-    <link rel="stylesheet" href="../assets/css/schedule.css" />
+
   </head>
   <body style="background: #9e9e9e47">
-    <div
-      class="main-header"
-      style="
-        background: #0066a8 !important;
-        width: 100% !important;
-        position: static !important;
-      "
-    >
-      <div class="main-header-logo">
-        <!-- Logo Header -->
-        <div class="logo-header" data-background-color="dark">
-          <a href="" class="logo">
-            <img
-              src="../assets/img/kaiadmin/logo_light.svg"
-              alt="navbar brand"
-              class="navbar-brand"
-              height="20"
-            />
-          </a>
-          <div class="nav-toggle">
-            <button class="btn btn-toggle toggle-sidebar">
-              <i class="gg-menu-right"></i>
-            </button>
-            <button class="btn btn-toggle sidenav-toggler">
-              <i class="gg-menu-left"></i>
-            </button>
-          </div>
-          <button class="topbar-toggler more">
-            <i class="gg-more-vertical-alt"></i>
-          </button>
-        </div>
-        <!-- End Logo Header -->
-      </div>
-      <!-- Navbar Header -->
-      <nav
-        class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom"
-      >
-        <div class="container-fluid">
-          <div class="logo-header" data-background-color="dark">
-            <a href="index.html" class="logo">
-              <img
-                src="../assets/img/argaochurch.png"
-                alt="navbar brand"
-                class="navbar-brand"
-                height="46"
-              />
-            </a>
-            <div class="nav-toggle"></div>
-          </div>
+   <!-- Navbar & Hero Start -->
+   <div class="container-fluid nav-bar px-0 px-lg-4 py-lg-0">
+      <div class="container">
+       
+      <?php require_once 'header.php'?>
 
-          <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
-            <li class="nav-item topbar-user dropdown hidden-caret">
-              <a
-                class="dropdown-toggle profile-pic"
-                data-bs-toggle="dropdown"
-                href="#"
-                aria-expanded="false"
-              >
-                <div class="avatar">
-                  <span
-                    class="avatar-title rounded-circle border border-white bg-secondary"
-                    >P</span
-                  >
-                </div>
-                <span class="profile-username">
-                  <span class="op-7" style="color: white !important"
-                    >Welcome,</span
-                  >
-                  <span class="fw-bold" style="color: white !important"
-                    >Church Citizen</span
-                  >
-                </span>
-              </a>
-              <ul class="dropdown-menu dropdown-user animated fadeIn">
-                <div class="dropdown-user-scroll scrollbar-outer">
-                  <li>
-                    <div class="user-box">
-                      <div class="avatar-lg">
-                        <img
-                          src="assets/img/profile.jpg"
-                          alt="image profile"
-                          class="avatar-img rounded"
-                        />
-                      </div>
-                      <div class="u-text">
-                        <h4>Church Admin</h4>
-                        <p class="text-muted">argaochurch@gmail.com</p>
-                        <a
-                          href="profile.html"
-                          class="btn btn-xs btn-secondary btn-sm"
-                          >View Profile</a
-                        >
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">My Profile</a>
-                    <a class="dropdown-item" href="#">Account Setting</a>
-                    <a class="dropdown-item" href="#">Logout</a>
-                  </li>
-                </div>
-              </ul>
-            </li>
-          </ul>
-        </div>
-      </nav>
-      <!-- End Navbar -->
+      </div>
+    </div>
+    <!-- Navbar & Hero End -->
+    
+
+ 
+    
     </div>
   </div>
   <form id="scheduleForm">
@@ -694,6 +787,7 @@ right: 65px;
 " class="btn btn-primary">Submit</button>
 
 </form>
+<?php require_once 'footer.php'?>
 
   <!-- container -->
     <script src="../assets/js/calendar.js"></script>

@@ -59,6 +59,25 @@ margin-top:20px;
 }.clearfix p{
     color:#3b3b3b; text-align: justify; text-justify: inter-word; font-size: 15px; line-height: 1.6; margin-top: 10px; margin-left: 10px;
 }
+.bg-breadcrumb {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(rgba(1, 94, 201, 0.616), rgba(0, 0, 0, 0.2)),
+  url(../assets/img/architecturecover.jpeg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  padding: 60px 0 60px 0;
+  transition: 0.5s;
+}
+
+.bg-breadcrumb .breadcrumb {
+  position: relative;
+}
+
+.bg-breadcrumb .breadcrumb .breadcrumb-item a {
+  color: var(--bs-white);
+}
 
     </style>
     </head>

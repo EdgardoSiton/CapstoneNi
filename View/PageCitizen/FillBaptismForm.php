@@ -67,6 +67,8 @@ small {
     .form-control.error {
         border: 1px solid red;
     }
+
+
     </style>
     <script>
       WebFont.load({
@@ -153,9 +155,16 @@ document.getElementById('baptismForm').addEventListener('submit', function(event
   </head>
   <body>
   
-     
-  <?php require_once 'header.php'?>
+   <!-- Navbar & Hero Start -->
+   <div class="container-fluid nav-bar px-0 px-lg-4 py-lg-0">
+      <div class="container">
        
+      <?php require_once 'header.php'?>
+
+      </div>
+    </div>
+    <!-- Navbar & Hero End -->
+    
   <div class="container">
     <div class="page-inner">
         <div class="row">
@@ -167,7 +176,7 @@ document.getElementById('baptismForm').addEventListener('submit', function(event
                     <div class="card-body">
                     <form method="post" action="../../Controller/citizen_con.php" onsubmit="return validateForm()">
                     
-    <input type="hidden" name="form_type" value="baptism">
+                    <input type="hidden" name="baptism_id" name="form_type" value="baptism">
     <div class="row">
         <div class="col-md-6 col-lg-4">
             <div class="form-group">
@@ -209,25 +218,7 @@ document.getElementById('baptismForm').addEventListener('submit', function(event
                 <textarea class="form-control" id="address" name="address" placeholder="Enter Address"><?php if (isset($userDetails)) echo htmlspecialchars($userDetails['address']); ?></textarea>
                 <span class="error" id="addressError"></span>
             </div>
-            <div class="form-group">
-                <label>Gender</label><br />
-                <div class="d-flex">
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="gender" id="flexRadioDefault1" value="Male" />
-                        <label class="form-check-label" for="flexRadioDefault1">Male</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="gender" id="flexRadioDefault2" value="Female" />
-                        <label class="form-check-label" for="flexRadioDefault2">Female</label>
-                    </div>
-                </div>
-                <span class="error" id="genderError"></span>
-            </div>
-            <div class="form-group">
-                <label for="religion">Religion</label>
-                <input type="text" class="form-control" id="religion" name="religion" placeholder="Enter Religion" />
-                <span class="error" id="religionError"></span>
-            </div>
+           
         </div>
         <div class="col-md-6 col-lg-4">
             <div class="form-group">
@@ -300,6 +291,20 @@ document.getElementById('baptismForm').addEventListener('submit', function(event
                   <span class="error" id="endTimeError"></span>
             </div>
             <div class="form-group">
+                <label>Gender</label><br />
+                <div class="d-flex">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="gender" id="flexRadioDefault1" value="Male" />
+                        <label class="form-check-label" for="flexRadioDefault1">Male</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="gender" id="flexRadioDefault2" value="Female" />
+                        <label class="form-check-label" for="flexRadioDefault2">Female</label>
+                    </div>
+                </div>
+                <span class="error" id="genderError"></span>
+            </div>
+            <div class="form-group">
                 <label for="parents_residence">Parents Residence</label>
                 <textarea class="form-control" id="parents_residence" name="parent_resident" placeholder="Enter Parents Residence"></textarea>
                 <span class="error" id="parentsResidenceError"></span>
@@ -308,6 +313,12 @@ document.getElementById('baptismForm').addEventListener('submit', function(event
                 <label for="godparents">List Of GodParents</label>
                 <textarea class="form-control" id="godparents" name="godparent" placeholder="Enter List Of GodParents"></textarea>
                 <span class="error" id="godparentsError"></span>
+            </div>
+            
+            <div class="form-group">
+                <label for="religion">Religion</label>
+                <input type="text" class="form-control" id="religion" name="religion" placeholder="Enter Religion" />
+                <span class="error" id="religionError"></span>
             </div>
         </div>
     </div>
@@ -323,10 +334,12 @@ document.getElementById('baptismForm').addEventListener('submit', function(event
         </div>
     </div>
 </div>
+<?php require_once 'footer.php'?>
+
 <script>
     
 function validateForm() {
-    let isValid = true;
+    let isValid = true; 
 
     // Helper function to validate field
     function validateField(id, errorId, message) {

@@ -146,8 +146,17 @@ small {
   </head>
   <body>
   
-     
-  <?php require_once 'header.php'?>
+ <!-- Navbar & Hero Start -->
+ <div class="container-fluid nav-bar px-0 px-lg-4 py-lg-0">
+      <div class="container">
+       
+      <?php require_once 'header.php'?>
+
+      </div>
+    </div>
+    <!-- Navbar & Hero End -->
+    
+
        
   <div class="container">
     <div class="page-inner">
@@ -158,10 +167,10 @@ small {
                         <div class="card-title">FuneralFill-up Form</div>
                     </div>
                     <div class="card-body">
-                    <form method="post" action="../../Controller/fcitizen_con.php" onsubmit="return validateFuneralForm()">
+                    <form method="post" action="../../Controller/citizen_con.php" onsubmit="return validateFuneralForm()">
                 
                     <div class="row">
-                    <input type="hidden" name="form_type" value="Funeral">
+                    <input type="hidden" name="funeral_id" name="form_type" value="Funeral">
         <div class="col-md-6 col-lg-4">
             <!-- Date -->
             <div class="form-group">
@@ -392,6 +401,7 @@ small {
         </div>
     </div>
 </div>
+<?php require_once 'footer.php'?>
 <script>
  function validateFuneralForm() {
     let isValid = true;

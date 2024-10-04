@@ -160,7 +160,16 @@ document.getElementById('baptismForm').addEventListener('submit', function(event
   <body>
   
      
-  <?php require_once 'header.php'?>
+ <!-- Navbar & Hero Start -->
+ <div class="container-fluid nav-bar px-0 px-lg-4 py-lg-0">
+      <div class="container">
+       
+      <?php require_once 'header.php'?>
+
+      </div>
+    </div>
+    <!-- Navbar & Hero End -->
+
        
   <div class="container">
     <div class="page-inner">
@@ -171,11 +180,11 @@ document.getElementById('baptismForm').addEventListener('submit', function(event
                         <div class="card-title">Baptism Fill-up Form</div>
                     </div>
                     <div class="card-body">
-                    <form method="post" action="../../Controller/masscitizen_con.php" onsubmit="return validateForm()">
+                    <form method="post" action="../../Controller/citizen_con.php" onsubmit="return validateForm()">
                     <input type="hidden" name="announcement_id" value="<?php echo htmlspecialchars($announcementId); ?>">
     <div class="row">
         <div class="col-md-6 col-lg-4">
- 
+        <input type="hidden" name="baptismannouncement_id" value = "Baptism">
             <div class="form-group">
                 <label for="date">Date</label>
                 <input type="text" class="form-control" id="date" name="date" value="<?php echo htmlspecialchars($announcementData['date']); ?>" readonly />
@@ -330,8 +339,61 @@ document.getElementById('baptismForm').addEventListener('submit', function(event
         </div>
     </div>
 </div>
+<?php require_once 'footer.php'?>
 <script>
+document.addEventListener('DOMContentLoaded', function () {
+    let formModified = false; 
 
+    const announcementIdInput = document.querySelector('input[name="announcement_id"]');
+    const announcementId = announcementIdInput ? announcementIdInput.value : null;
+
+    const form = document.querySelector('form'); // The form element
+
+    // Set formModified to true when any input in the form is changed
+    form.addEventListener('input', () => {
+        formModified = true;
+    });
+
+    // Before unload event to release capacity if form is modified but not submitted
+    window.addEventListener('beforeunload', function (e) {
+        if (formModified && announcementId) {
+            fetch('/../../Controller/release_capacity.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    announcement_id: announcementId
+                }),
+                keepalive: true
+            }).then(response => {
+                if (response.ok) {
+                    console.log('Capacity released successfully');
+                } else {
+                    console.log('Error releasing capacity');
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    });
+
+    // Handle tab or window visibility change
+    document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'hidden' && formModified && announcementId) {
+            fetch('/../../Controller/release_capacity.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    announcement_id: announcementId
+                }),
+                keepalive: true
+            });
+        }
+    });
+});
 
 
 

@@ -88,6 +88,26 @@ margin-LEFT:20px;
             margin-right:15px;
             color:black;
         }
+        .bg-breadcrumb {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(rgba(1, 94, 201, 0.616), rgba(0, 0, 0, 0.2)),
+  url(../assets/img/con4.jpg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  padding: 60px 0 60px 0;
+  transition: 0.5s;
+}
+
+.bg-breadcrumb .breadcrumb {
+  position: relative;
+}
+
+.bg-breadcrumb .breadcrumb .breadcrumb-item a {
+  color: var(--bs-white);
+}
+
     </style>
     </head>
 
@@ -115,7 +135,6 @@ margin-LEFT:20px;
         </div>
         <!-- Header End -->
 <!-- Service Start -->
-<a href="history.php" class="back-button">Back</a>
 
 <div class="container-fluid service py-5">
   
@@ -125,10 +144,10 @@ margin-LEFT:20px;
 
           <div class="gallery">
             
-          <img src="assets/img/faq.png" alt="Etymology Image" class="float-right"> 
-          <img src="assets/img/faq.png" alt="Etymology Image" class="float-right">
-          <img src="assets/img/faq.png" alt="Etymology Image" class="float-right">
-          <img src="assets/img/faq.png" alt="Etymology Image" class="float-right">
+          <img src="../assets/img/con1.jpg" alt="Etymology Image" class="float-right"> 
+          <img src="../assets/img/con2.jpg" alt="Etymology Image" class="float-right">
+          <img src="../assets/img/con3.jpg" alt="Etymology Image" class="float-right">
+          <img src="../assets/img/con4.jpg" alt="Etymology Image" class="float-right">
           </div>
             <P>Baptism holds a significant role within the Christian faith as it formally welcomes a new member into the church. It serves as the cornerstone of the entire Christian journey, acting as the entryway to a life guided by the Holy Spirit and granting access to other sacred sacraments. Through this sacred ritual, individuals are cleansed of their sins and spiritually reborn as children of God. They become an integral part of the body of Christ, joining the church and participating in its mission.
 </P>

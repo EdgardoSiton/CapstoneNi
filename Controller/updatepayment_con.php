@@ -1,10 +1,34 @@
 <?php
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Include your database connection
-    require_once '../Model/db_connection.php';
-    require_once '../Model/staff_mod.php';
 
-    $staff = new Staff($conn);
+require_once '../Model/db_connection.php';
+require_once '../Model/staff_mod.php';
+$staff = new Staff($conn);
+if ($_SERVER['REQUEST_METHOD'] == 'POST' ) { 
+    $baptismfill_id = $_POST['baptismfill_id'];
+    $confirmationfill_id = $_POST['confirmationfill_id']; 
+    $weddingffill_id  =$_POST['marriagefill_id'];
+    $defuctom_id =$_POST['defuctomfill_id'];
+    $massbaptismfillId = $_POST['baptism_id'];
+    $massweddingffill_id = $_POST['massmarriage_id'];
+   if($baptismfill_id){
+    $decline = $staff->deleteBaptism($baptismfill_id);
+    echo $decline; // Output the result for client-side handling
+   }else if($confirmationfill_id){
+    $decline = $staff->deleteConfirmation($confirmationfill_id);
+    echo $decline;
+   }else if($weddingffill_id){
+    $declines = $staff->deleteWedding($weddingffill_id);
+    echo $declines;
+   }else if($defuctom_id){
+    $decline =$staff->deleteDefuctom($defuctom_id);
+   }else if ($massbaptismfillId){
+    $declines = $staff->deleteMassBaptism($massbaptismfillId);
+    echo $declines;
+   }else if($massweddingffill_id){
+    $declines = $staff->deleteMassWedding($massweddingffill_id);
+    echo $declines;
+   }
+   
    if (isset($_POST['appsched_ids'])) {
     $appsched_ids = $_POST['appsched_ids']; 
     if ($staff->deleteAppointments($appsched_ids)) {
@@ -69,4 +93,5 @@ if (isset($_POST['p_status']) && isset($_POST['appsched_id'])) {
         }
     }
 }
+
 ?>

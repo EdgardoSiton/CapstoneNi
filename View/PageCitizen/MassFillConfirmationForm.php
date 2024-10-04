@@ -158,8 +158,17 @@ small {
   </head>
   <body>
   
-     
-  <?php require_once 'header.php'?>
+ <!-- Navbar & Hero Start -->
+ <div class="container-fluid nav-bar px-0 px-lg-4 py-lg-0">
+      <div class="container">
+       
+      <?php require_once 'header.php'?>
+
+      </div>
+    </div>
+    <!-- Navbar & Hero End -->
+    
+
        
   <div class="container">
     <div class="page-inner">
@@ -170,9 +179,10 @@ small {
                         <div class="card-title">ConfirmationFill-up Form</div>
                     </div>
                     <div class="card-body">
-                    <form method="post" action="../../Controller/massccitizen_con.php" onsubmit="return validateForm()">
+                    <form method="post" action="../../Controller/citizen_con.php" onsubmit="return validateForm()">
                     <input type="hidden" name="announcement_id" value="<?php echo htmlspecialchars($announcementId); ?>">
    <div class="row">
+   <input type="hidden" name="confirmationannouncement_id" value="Confirmation">
         <div class="col-md-6 col-lg-4">
             <div class="form-group">
                 <label for="date">Date</label>
@@ -351,6 +361,7 @@ small {
         </div>
     </div>
 </div>
+<?php require_once 'footer.php'?>
 <script>
 function validateForm() {
     var isValid = true;

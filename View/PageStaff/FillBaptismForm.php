@@ -1,16 +1,22 @@
 <?php
+// FillBaptismForm.php
+
 require_once '../../Model/staff_mod.php';
-require_once '../../Model/db_connection.php';
 require_once '../../Controller/fetchpending_con.php';
+require_once '../../Model/db_connection.php';
 require_once '../../Model/citizen_mod.php';
 
-// Initialize the Staff class
-$staff = new Staff($conn);
-$citizen = new Citizen($conn);
-$priests = $citizen->getPriests();
-// Get the baptismfill_id from the URL
-$baptismfill_id = isset($_GET['id']) ? intval($_GET['id']) : null;
+$nme = $_SESSION['fullname'];
+$regId = $_SESSION['citizend_id'];
 
+$citizen = new Citizen($conn);
+$staff = new Staff($conn);
+
+// Fetch the available priests based on the selected date, start time, and end time
+$priests = $citizen->getPriests();
+
+
+$baptismfill_id = isset($_GET['id']) ? intval($_GET['id']) : null;
 if ($baptismfill_id) {
     // Fetch schedule_id from baptismfill
     $scheduleId = $staff->getScheduleId($baptismfill_id);
@@ -18,7 +24,11 @@ if ($baptismfill_id) {
     echo "No baptism ID provided.";
     $scheduleId = null;
 }
+
+// Define the getTimeRange function
+
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -96,21 +106,6 @@ small {
           sessionStorage.fonts = true;
         },
       });
-      document.addEventListener('DOMContentLoaded', function() {
-    const selectedDate = sessionStorage.getItem('selectedDate');
-    const selectedTimeRange = sessionStorage.getItem('selectedTime');
-
-    if (selectedDate) {
-        document.getElementById('date').value = selectedDate;
-    }
-
-    if (selectedTimeRange) {
-        const [startTime, endTime] = selectedTimeRange.split('-');
-        document.getElementById('start_time').value = startTime;
-        document.getElementById('end_time').value = endTime;
-    }
-});
-
 
     </script>
  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -142,17 +137,22 @@ small {
                 <div class="modal-body">
             <input type="hidden" name="baptismfill_id" value="<?php echo htmlspecialchars($baptismfill_id); ?>" />
             <div class="form-group">
-                                <label for="eventType">Select Priest</label>
-                                <select class="form-control" id="eventType" name="eventType">
-                                    <option value="" disabled selected>Select Priest</option>
-                                    <!-- Populate priests in the dropdown -->
-                                    <?php foreach ($priests as $priest): ?>
-                                        <option value="<?php echo htmlspecialchars($priest['citizend_id']); ?>">
-                                            <?php echo htmlspecialchars($priest['fullname']); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
+    <label for="eventType">Select Priest</label>
+    <select class="form-control" id="eventType" name="eventType">
+        <option value="" disabled selected>Select Priest</option>
+        <!-- Populate priests in the dropdown -->
+        <?php if (!empty($priests)): ?>
+            <?php foreach ($priests as $priest): ?>
+                <option value="<?php echo htmlspecialchars($priest['citizend_id']); ?>">
+                    <?php echo htmlspecialchars($priest['fullname']); ?>
+                </option>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <option value="" disabled>No priests available for the selected time</option>
+        <?php endif; ?>
+    </select>
+</div>
+
             <div class="form-group">
             <label for="sundays">Select Seminar</label>
             <select class="form-control" id="sundays" name="sundays">
@@ -193,7 +193,7 @@ small {
                 
                 <div class="form-group">
                     <label for="date">Date</label>
-                    <input type="text" class="form-control" id="date" name="date" value="<?php echo $pendingItem['schedule_date'] ?? ''; ?>" readonly />
+                    <input type="text" class="form-control" id="date" name="date" value="<?php echo htmlspecialchars($date); ?>" readonly />
                 </div>
                 <div class="form-group">
     <label for="firstname">Firstname of person to be baptized:</label>
@@ -236,7 +236,7 @@ small {
             <div class="col-md-6 col-lg-4">
                 <div class="form-group">
                     <label for="start_time">Start Time</label>
-                    <input type="text" class="form-control" id="date" name="date" value="<?php echo $startTime; ?>" readonly /> 
+                    <input type="text" class="form-control" id="start_time" name="start_time" value="<?php echo htmlspecialchars($startTime); ?>" readonly /> 
  </div>
                 <div class="form-group">
                     <label for="pbirth">Place of Birth</label>
@@ -299,7 +299,7 @@ small {
             <div class="col-md-6 col-lg-4">
                 <div class="form-group">
                     <label for="end_time">End Time</label>
-                    <input type="text" class="form-control" id="date" name="date" value="<?php echo $endTime; ?>" readonly /> 
+                    <input type="text" class="form-control" id="end_time" name="end_time" value="<?php echo htmlspecialchars($endTime); ?>" readonly /> 
                 <div class="form-group">
                     <label for="parents_residence">Parents Residence</label>
                     <textarea class="form-control" id="parents_residence" name="parent_resident"><?php echo $pendingItem['parent_resident'] ?? ''; ?></textarea>
@@ -312,8 +312,8 @@ small {
         </div>
         <div class="card-action">
         <button type="submit" data-toggle="modal" data-target="#myModal" class="btn btn-success">Approve</button>
-        <button class="btn btn-primary ">Delete</button>
-            <button type="button" class="btn btn-danger" onclick="window.location.href='your_cancel_url.php'">Cancel</button>
+        <button type="button" class="btn btn-danger decline-btn" data-id="<?php echo htmlspecialchars($baptismfill_id); ?>" >Decline</button>
+        <button type="button" class="btn btn-danger" onclick="window.location.href='your_cancel_url.php'">Cancel</button>
         </div>
     </div>
 </div>
@@ -326,6 +326,55 @@ small {
         </div>
     </div>
 </div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('.decline-btn').addEventListener('click', function() {
+        var baptismfill_id = this.getAttribute('data-id');
+       
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, decline it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '../../Controller/updatepayment_con.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        Swal.fire(
+                            'Declined!',
+                            'The baptism request has been declined.',
+                            'success'
+                        ).then(() => {
+                            // Redirect after approval
+                            window.location.href = 'StaffSoloSched.php';
+                        });
+                    } else {
+                        console.error("Error response: ", xhr.responseText); // Log error response
+                        Swal.fire(
+                            'Error!',
+                            'There was an issue declining the request.',
+                            'error'
+                        );
+                    }
+                };
+
+                // Send both baptismfill_id and citizen_id
+                xhr.send('baptismfill_id=' + encodeURIComponent(baptismfill_id));
+            }
+        });
+    });
+});
+</script>
+<script src="../assets/js/plugin/sweetalert/sweetalert.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <!-- Popper.js (required for Bootstrap 4) -->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>

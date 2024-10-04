@@ -95,7 +95,25 @@ margin-LEFT:20px;
             color:black;
             font-style: normal;
         }
-       
+        .bg-breadcrumb {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(rgba(1, 94, 201, 0.616), rgba(0, 0, 0, 0.2)),
+  url(../assets/img/wedding3.jpg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  padding: 60px 0 60px 0;
+  transition: 0.5s;
+}
+
+.bg-breadcrumb .breadcrumb {
+  position: relative;
+}
+
+.bg-breadcrumb .breadcrumb .breadcrumb-item a {
+  color: var(--bs-white);
+}
     </style>
     </head>
 
@@ -123,7 +141,6 @@ margin-LEFT:20px;
         </div>
         <!-- Header End -->
 <!-- Service Start -->
-<a href="history.php" class="back-button">Back</a>
 
 <div class="container-fluid service py-5">
   
@@ -133,10 +150,10 @@ margin-LEFT:20px;
 
           <div class="gallery">
             
-          <img src="assets/img/faq.png" alt="Etymology Image" class="float-right"> 
-          <img src="assets/img/faq.png" alt="Etymology Image" class="float-right">
-          <img src="assets/img/faq.png" alt="Etymology Image" class="float-right">
-          <img src="assets/img/faq.png" alt="Etymology Image" class="float-right">
+          <img src="../assets/img/wedding4.jpg" alt="Etymology Image" class="float-right"> 
+          <img src="../assets/img/wedding 1.jpg" alt="Etymology Image" class="float-right">
+          <img src="../assets/img/wedding2.jpg" alt="Etymology Image" class="float-right">
+          <img src="../assets/img/wedding3.jpg" alt="Etymology Image" class="float-right">
           </div>
             <P>The sacrament of matrimony is a sacred union that binds a man and a woman together in the presence of God and their community. Just like many other Catholic churches, the parish offers the sacrament of matrimony to eligible couples who are eager to embark on their journey as husband and wife.
 </P>

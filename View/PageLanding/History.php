@@ -177,8 +177,8 @@ margin-top:20px;
   position: relative;
   overflow: hidden;
   background: linear-gradient(rgba(1, 94, 201, 0.616), rgba(0, 0, 0, 0.2)),
-  url(assets/img/servicebg.png);
-  background-position: center center;
+  url(../assets/img/historycover.jpeg);
+  background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
   padding: 60px 0 60px 0;
@@ -192,6 +192,7 @@ margin-top:20px;
 .bg-breadcrumb .breadcrumb .breadcrumb-item a {
   color: var(--bs-white);
 }
+
 /*** Single Page Hero Header End ***/
 
     </style>
@@ -231,10 +232,10 @@ margin-top:20px;
 
           <div class="gallery">
             
-          <img src="assets/img/faq.png" alt="Etymology Image" class="float-right"> 
-          <img src="assets/img/faq.png" alt="Etymology Image" class="float-right">
-          <img src="assets/img/faq.png" alt="Etymology Image" class="float-right">
-          <img src="assets/img/faq.png" alt="Etymology Image" class="float-right">
+          <img src="../assets/img/historycover.jpeg" alt="Etymology Image" class="float-right"> 
+          <img src="../assets/img/history2.jpg" alt="Etymology Image" class="float-right">
+          <img src="../assets/img/history3.jpg" alt="Etymology Image" class="float-right">
+          <img src="../assets/img/history4.jpg" alt="Etymology Image" class="float-right">
           </div>
             <p class="mb-0" style="color:#3b3b3b; text-align: justify; text-justify: inter-word; font-size: 16px; line-height: 1.6; margin-top:10px; margin-left: 10px;">
                 This overview explores the historical journey of the Archdiocesan Shrine of San Miguel Arcangel in Argao, Cebu, from its etymological roots and Spanish colonial origins to its role during the Philippine Revolution, American period, and World War II. It highlights the church's transformation and ongoing significance as a key religious and cultural landmark in the region.

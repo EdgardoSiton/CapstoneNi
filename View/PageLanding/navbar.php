@@ -41,7 +41,7 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarCollapse">
         <div class="navbar-nav mx-auto">
-            <a href="../../index.php" class="nav-item nav-link active">Home</a>
+            <a href="index.php" class="nav-item nav-link active">Home</a>
             <div class="nav-item dropdown">
             <a href="#" data-bs-toggle="dropdown" style="color:white;">
                   <span class="dropdown-toggle">About Us</span>

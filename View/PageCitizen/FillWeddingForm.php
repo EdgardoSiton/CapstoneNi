@@ -43,6 +43,8 @@ $announcements = $staff->getAnnouncements();
       });
 
 
+
+
       document.addEventListener('DOMContentLoaded', function() {
     const selectedDate = sessionStorage.getItem('selectedDate');
     const selectedTimeRange = sessionStorage.getItem('selectedTime');
@@ -58,11 +60,9 @@ $announcements = $staff->getAnnouncements();
     }
 
     // Optionally, clear the session storage if you don't want to persist the data
-    // sessionStorage.removeItem('selectedDate');
+  //   sessionStorage.removeItem('selectedDate');
    //  sessionStorage.removeItem('selectedTime');
 });
-
-
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('.btn-info').addEventListener('click', function() {
         // Select all input and textarea fields within the form
@@ -79,6 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
 document.getElementById('baptismForm').addEventListener('submit', function(event) {
     // Get the values of the first name, last name, and middle name
     var firstname = document.getElementById('firstname').value.trim();
@@ -156,8 +157,16 @@ small {
   </head>
   <body>
   
-     
-  <?php require_once 'header.php'?>
+ <!-- Navbar & Hero Start -->
+ <div class="container-fluid nav-bar px-0 px-lg-4 py-lg-0">
+      <div class="container">
+       
+      <?php require_once 'header.php'?>
+
+      </div>
+    </div>
+    <!-- Navbar & Hero End -->
+
        
   <div class="container">
     <div class="page-inner">
@@ -168,15 +177,19 @@ small {
                         <div class="card-title">WeddingFill-up Form</div>
                     </div>
                     <div class="card-body">
-                    <form method="post" action="../../Controller/wcitizen_con.php" onsubmit="return validateForm()">
+                    <form method="post" action="../../Controller/citizen_con.php" onsubmit="return validateForm()">
     <div class="row">
+    <input type="hidden" name="wedding_id" name="form_type" value="Wedding">
         <div class="col-md-6 col-lg-4">
             <!-- Date -->
+  
             <div class="form-group">
                 <label for="date">Date</label>
                 <input type="text" class="form-control" id="date" name="date" placeholder="" readonly />
                 <div id="dateError" class="error text-danger"></div>
             </div>
+            <div class="card-title" ><label style="font-size:15px!important;font-weight:700; margin-left:10px;  border-bottom: 1px solid black;
+">Fillup Groom Details</label></div>
 
             <!-- Groom Firstname -->
             <div class="form-group">
@@ -255,17 +268,8 @@ small {
                 <textarea class="form-control" id="parents_residence" name="groom_address" placeholder="Enter Address"></textarea>
                 <div id="groomAddressError" class="error text-danger"></div>
             </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4">
-            <!-- Start Time -->
-            <div class="form-group">
-                <label for="start_time">Start Time</label>
-                <input type="text" class="form-control" id="start_time" name="start_time" placeholder="" readonly />
-            </div>
-
-            <!-- Groom Religion -->
-            <div class="form-group">
+             <!-- Groom Religion -->
+             <div class="form-group">
                 <label for="groom_religion">Groom Religion</label>
                 <input type="text" class="form-control" id="groom_religion" name="groom_religion" placeholder="Enter Groom Religion" />
                 <div id="groomReligionError" class="error text-danger"></div>
@@ -281,9 +285,30 @@ small {
                 </select>
                 <div id="groomPreviouslyMarriedError" class="error text-danger"></div>
             </div>
+        </div>
 
-            <!-- Bride Firstname -->
+        <div class="col-md-6 col-lg-4">
+            <!-- Start Time -->
             <div class="form-group">
+                <label for="start_time">Start Time</label>
+                <input type="text" class="form-control" id="start_time" name="start_time" placeholder="" readonly />
+            </div>
+
+           
+
+        
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <!-- End Time -->
+            <div class="form-group">
+                <label for="end_time">End Time</label>
+                <input type="text" class="form-control" id="end_time" name="end_time" placeholder="" readonly />
+            </div>
+            <div class="card-title" ><label style="font-size:15px!important;font-weight:700; margin-left:10px;  border-bottom: 1px solid black;
+">Fillup Bride Details</label></div>
+    <!-- Bride Firstname -->
+    <div class="form-group">
                 <label for="firstnames">Firstname of Bride</label>
                 <input type="text" class="form-control" id="firstnames" name="firstnames" placeholder="Enter Firstname"
                     value="<?php echo isset($userDetails) ? htmlspecialchars($userDetails['firstname']) : ''; ?>" />
@@ -352,15 +377,6 @@ small {
                 <input type="text" class="form-control" id="bride_citizenship" name="bride_citizenship" placeholder="Enter Bride Citizenship" />
                 <div id="brideCitizenshipError" class="error text-danger"></div>
             </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4">
-            <!-- End Time -->
-            <div class="form-group">
-                <label for="end_time">End Time</label>
-                <input type="text" class="form-control" id="end_time" name="end_time" placeholder="" readonly />
-            </div>
-
             <!-- Bride Address -->
             <div class="form-group">
                 <label for="bride_address">Bride Address</label>
@@ -400,7 +416,7 @@ small {
         </div>
     </div>
 </div>
-
+<?php require_once 'footer.php'?>
 <script>
     function validateForm() {
     var isValid = true;

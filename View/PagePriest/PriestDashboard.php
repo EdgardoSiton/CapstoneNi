@@ -144,7 +144,7 @@ $appointmentSchedule = $appointments->getPriestAppointmentSchedule($priestId);
         <tr>
             <th>Date</th>
             <th>Time</th>
-            <th>Citizen Name</th>
+  
             <th>Event</th>
             <th>Action</th>
         </tr>
@@ -169,7 +169,7 @@ $appointmentSchedule = $appointments->getPriestAppointmentSchedule($priestId);
             foreach ($appointmentSchedule as $appointment):
                 $currentDate = date('Y-m-d', strtotime($appointment['schedule_date']));
                 $currentTime = date('h:i A', strtotime($appointment['schedule_time']));
-                $citizenName = htmlspecialchars($appointment['citizen_name']);
+          
                 $eventName = htmlspecialchars($appointment['Event_Name']);
             ?>
                 <tr>
@@ -180,7 +180,7 @@ $appointmentSchedule = $appointments->getPriestAppointmentSchedule($priestId);
                         </td>
                     <?php endif; ?>
                     <td><?= $currentTime ?></td>
-                    <td><?= $citizenName ?></td>
+               
                     <td><?= $eventName ?></td>
                     <td>
                     <button class="btn btn-primary btn-xs approve-btn" data-id="<?= htmlspecialchars($appointment['appsched_id'], ENT_QUOTES, 'UTF-8') ?>" style="background-color: #31ce36!important; border-color:#31ce36!important;">Approve</button>
@@ -282,7 +282,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }).then((result) => {
                 if (result.isConfirmed) {
                     var xhr = new XMLHttpRequest();
-                    xhr.open('POST', '../../Controller/approve_priest_con.php', true);
+                    xhr.open('POST', '../../Controller/priest_con.php', true);
                     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
                     xhr.onload = function() {
                         if (xhr.status === 200) {

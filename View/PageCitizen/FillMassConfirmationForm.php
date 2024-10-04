@@ -113,8 +113,16 @@ small {
    
   </head>
   <body>  
-  <?php require_once 'header.php'?>
-  <?php require_once 'sidebar.php'?>
+ <!-- Navbar & Hero Start -->
+ <div class="container-fluid nav-bar px-0 px-lg-4 py-lg-0">
+      <div class="container">
+       
+      <?php require_once 'header.php'?>
+
+      </div>
+    </div>
+    <!-- Navbar & Hero End -->
+    
   <div class="container">
   <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -125,7 +133,7 @@ small {
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="modalForm" method="POST" action="../../Controller/addconfirmation_con.php">
+            <form id="modalForm" method="POST" action="../../Controller/citizen_con.php">
                 <div class="modal-body">
             <input type="hidden" name="confirmation_id" value="<?php echo htmlspecialchars($confirmationfill_id); ?>" />
 
@@ -328,6 +336,7 @@ small {
         </div>
     </div>
 </div>
+<?php require_once 'footer.php'?>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <!-- Popper.js (required for Bootstrap 4) -->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>

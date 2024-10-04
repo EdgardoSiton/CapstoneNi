@@ -41,7 +41,21 @@ $pendingAppointments = $citizenController->getPendingCitizenss(null, $regId);
         },
       });
     </script>
-
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="icon" href="../assets/img/mainlogo.jpg" type="image/x-icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:slnt,wght@-10..0,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+   <!-- Bootstrap CSS -->
+   <link href="css/bootstrap.min.css" rel="stylesheet" />
+    <link href="css/style.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/rating.css">
     <!-- CSS Files -->
     <link rel="stylesheet" href="../assets/css/bootstrap.min.css" />
     <link rel="stylesheet" href="../assets/css/plugins.min.css" />
@@ -51,7 +65,16 @@ $pendingAppointments = $citizenController->getPendingCitizenss(null, $regId);
     <link rel="stylesheet" href="assets/css/demo.css" />
   </head>
   <body>
-  <?php require_once 'header.php'?>
+ <!-- Navbar & Hero Start -->
+ <div class="container-fluid nav-bar px-0 px-lg-4 py-lg-0">
+      <div class="container">
+       
+      <?php require_once 'header.php'?>
+
+      </div>
+    </div>
+    <!-- Navbar & Hero End -->
+    
   <?php require_once 'profheader.php'?>
 
         <div class="container">
@@ -148,61 +171,40 @@ $pendingAppointments = $citizenController->getPendingCitizenss(null, $regId);
     <!-- Kaiadmin DEMO methods, don't include it in your project! -->
     <script src="../assets/js/setting-demo2.js"></script>
     <script>
-      $(document).ready(function () {
-        $("#basic-datatables").DataTable({});
+  $(document).ready(function () {
+  $("#multi-filter-select").DataTable({
+    pageLength: 5,
+    columnDefs: [
+      { targets: '_all', orderable: false }  // Disable sorting for all columns
+    ],
+    initComplete: function () {
+      this.api()
+        .columns()
+        .every(function () {
+          var column = this;
+          var select = $('<select class="form-select"><option value=""></option></select>')
+            .appendTo($(column.footer()).empty())
+            .on("change", function () {
+              var val = $.fn.dataTable.util.escapeRegex($(this).val());
 
-        $("#multi-filter-select").DataTable({
-          pageLength: 5,
-          initComplete: function () {
-            this.api()
-              .columns()
-              .every(function () {
-                var column = this;
-                var select = $(
-                  '<select class="form-select"><option value=""></option></select>'
-                )
-                  .appendTo($(column.footer()).empty())
-                  .on("change", function () {
-                    var val = $.fn.dataTable.util.escapeRegex($(this).val());
+              column
+                .search(val ? "^" + val + "$" : "", true, false)
+                .draw();
+            });
 
-                    column
-                      .search(val ? "^" + val + "$" : "", true, false)
-                      .draw();
-                  });
-
-                column
-                  .data()
-                  .unique()
-                  .sort()
-                  .each(function (d, j) {
-                    select.append(
-                      '<option value="' + d + '">' + d + "</option>"
-                    );
-                  });
-              });
-          },
+          column
+            .data()
+            .unique()
+            .sort()
+            .each(function (d, j) {
+              select.append('<option value="' + d + '">' + d + "</option>");
+            });
         });
+    },
+  });
+});
 
-        // Add Row
-        $("#add-row").DataTable({
-          pageLength: 5,
-        });
 
-        var action =
-          '<td> <div class="form-button-action"> <button type="button" data-bs-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task"> <i class="fa fa-edit"></i> </button> <button type="button" data-bs-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove"> <i class="fa fa-times"></i> </button> </div> </td>';
-
-        $("#addRowButton").click(function () {
-          $("#add-row")
-            .dataTable()
-            .fnAddData([
-              $("#addName").val(),
-              $("#addPosition").val(),
-              $("#addOffice").val(),
-              action,
-            ]);
-          $("#addRowModal").modal("hide");
-        });
-      });
     </script>
   </body>
 </html>

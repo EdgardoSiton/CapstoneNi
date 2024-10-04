@@ -23,10 +23,11 @@ if (isset($_GET['id'])) {
         }
     }
 }
-
+$citizend_id = isset($pendingItem['citizend_id']) ? ($pendingItem['citizend_id']) : '';
 // Initialize variables common to all events
+$date = isset($pendingItem['schedule_date']) ? date(($pendingItem['schedule_date'])) : '';
 $startTime = isset($pendingItem['schedule_start_time']) ? date('h:i A', strtotime($pendingItem['schedule_start_time'])) : '';
-$endTime = isset($pendingItem['schedule_start_time']) ? date('h:i A', strtotime($pendingItem['schedule_end_time'])) : '';
+$endTime = isset($pendingItem['schedule_end_time']) ? date('h:i A', strtotime($pendingItem['schedule_end_time'])) : '';
 
 // Initialize date variables
 $dateOfBirth = '';

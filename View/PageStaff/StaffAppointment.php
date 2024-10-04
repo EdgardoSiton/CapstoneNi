@@ -46,7 +46,7 @@ $pendingItems = $staff->getPendingAppointments();
     <link rel="stylesheet" href="../assets/css/bootstrap.min.css" />
     <link rel="stylesheet" href="../assets/css/plugins.min.css" />
     <link rel="stylesheet" href="../assets/css/kaiadmin.min.css" />
-
+    <link rel="stylesheet" href="../css/table.css" />
     <!-- CSS Just for demo purpose, don't include it in your project -->
     <link rel="stylesheet" href="../assets/css/demo.css" />
   </head>
@@ -99,12 +99,29 @@ $pendingItems = $staff->getPendingAppointments();
                                 <input type="checkbox" class="select-row" name="appsched_ids[]" value="<?php echo htmlspecialchars($item['appsched_id']); ?>">
                             </td>
                             <td><?php echo htmlspecialchars($index + 1); ?></td>
-                            <td><?php echo htmlspecialchars($item['citizen_name']); ?></td>
+                            <td><?php echo htmlspecialchars($item['fullnames']); ?></td>
                             <td><?php echo htmlspecialchars($item['Event_Name']); ?></td>
                             <td><?php echo htmlspecialchars(date('Y/m/d', strtotime($item['schedule_date']))); ?></td>
                             <td><?php echo htmlspecialchars(date('g:i A', strtotime($item['schedule_time']))); ?></td>
-                            <td><?php echo htmlspecialchars(date('Y/m/d', strtotime($item['appointment_schedule_date']))); ?></td>
-                            <td><?php echo htmlspecialchars(date('g:i A', strtotime($item['appointment_schedule_start_time']))); ?></td>
+                            <td>
+                              <?php 
+                              if (!empty($item['appointment_schedule_date']) && $item['appointment_schedule_date'] !== '1970-01-01') {
+                                  echo htmlspecialchars(date('Y/m/d', strtotime($item['appointment_schedule_date'])));
+                              } else {
+                                  echo "No Seminar";
+                              }
+                              ?>
+                          </td>
+                          <td>
+                              <?php 
+                              if (!empty($item['appointment_schedule_start_time']) && $item['appointment_schedule_start_time'] !== '00:00:00') {
+                                  echo htmlspecialchars(date('g:i A', strtotime($item['appointment_schedule_start_time'])));
+                              } else {
+                                  echo "No Seminar";
+                              }
+                              ?>
+                          </td>
+
                             <td><?php echo htmlspecialchars($item['payable_amount']); ?></td>
                             <td><?php echo htmlspecialchars($item['roles']); ?></td>
                             <td><?php echo htmlspecialchars($item['approve_priest'] == 'Approved' ? $item['priest_name'] : 'Not approved yet'); ?></td>

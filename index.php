@@ -134,7 +134,7 @@ $announcements = $staff->getAnnouncements();
 <!-- Feature End -->
 <div class="CalendarIndexContainer">
     <!-- About calendar -->
-    <?php require_once 'Calendar.php'?>
+    <?php require 'Calendar.php'?>
     </div>
   <!-- Service Start -->
 <div class="container-fluid service py-5">

@@ -50,7 +50,12 @@ $regId = $_SESSION['citizend_id'];
   </head>
   <body>
       <!-- Modal -->
-      <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <!-- jQuery -->
+
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -61,6 +66,7 @@ $regId = $_SESSION['citizend_id'];
             </div>
             <form id="modalForm">
                 <div class="modal-body">
+                    <input type="hidden" name="addcalendar" value="addcalendar">
                     <div class="form-group">
                         <label for="eventName">Event Name</label>
                         <input type="text" class="form-control" id="eventName" name="cal_fullname" placeholder="Enter event name" required>
@@ -77,10 +83,6 @@ $regId = $_SESSION['citizend_id'];
                         <label for="eventDescription">Description</label>
                         <input type="text" class="form-control" id="eventDescription" name="cal_description" placeholder="Enter description" required>
                     </div>
-                    <div class="form-group">
-    <label for="eventEmail">Email</label>
-    <input type="email" class="form-control" id="eventEmail" name="cal_email" placeholder="Enter email" required>
-</div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -237,18 +239,27 @@ $regId = $_SESSION['citizend_id'];
     var form = document.getElementById('modalForm');
     var formData = new FormData(form);
 
-    fetch('../../Controller/insert_event.php', { // Update with your PHP script's path
+    fetch('../../Controller/addannounce_con.php', { // Update with your PHP script's path
         method: 'POST',
         body: formData
     })
     .then(response => response.text())
     .then(data => {
-        alert(data); // Show the response from the PHP script
-        $('#myModal').modal('hide'); // Hide the modal after submission
-        form.reset(); // Reset the form fields
+        if (data.includes('successfully')) {
+            alert('Event added successfully!'); // Show a success message
+            form.reset(); // Reset the form fields
+            // Optionally refresh or update the calendar to reflect the new event
+        } else {
+            alert('Error: ' + data); // Show the error message from the PHP script
+        }
     })
-    .catch(error => console.error('Error:', error));
+    .catch(error => console.error('Error:', error))
+    .finally(() => {
+        $('#myModal').modal('hide'); // Ensure the modal is hidden regardless of the outcome
+    });
 });
+
+
     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 

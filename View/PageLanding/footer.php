@@ -241,7 +241,7 @@
             <div class="col-md-6 col-lg-6 col-xl-5">
                 <div class="footer-item">
                     <a href="index.html" class="p-0">
-                        <img src="assets/img/argaochurch.png" alt="" style="width: 300px;" />
+                        <img src="img/argaochurch.png" alt="" style="width: 300px;" />
                     </a>
                     <p class="text-white mb-4">
                         <span style="font-weight: 700;">Parish Office Hours</span> <br>

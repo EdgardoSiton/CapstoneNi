@@ -153,20 +153,27 @@ small {
   </head>
   <body>
   
-     
-  <?php require_once 'header.php'?>
+ <!-- Navbar & Hero Start -->
+ <div class="container-fluid nav-bar px-0 px-lg-4 py-lg-0">
+      <div class="container">
        
+      <?php require_once 'header.php'?>
+
+      </div>
+    </div>
+    <!-- Navbar & Hero End -->
+    
   <div class="container">
     <div class="page-inner">
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">ConfirmationFill-up Form</div>
+                        <div class="card-title">Confirmation Fill-up Form</div>
                     </div>
                     <div class="card-body">
-                    <form method="post" action="../../Controller/ccitizen_con.php" onsubmit="return validateForm()">
-    <input type="hidden" name="form_type" value="confirmation">
+                    <form method="post" action="../../Controller/citizen_con.php" onsubmit="return validateForm()">
+                    <input type="hidden" name="confirmation_id" name="form_type" value="confirmation">
     <div class="row">
         <div class="col-md-6 col-lg-4">
             <div class="form-group">
@@ -176,21 +183,21 @@ small {
             </div>
 
             <div class="form-group">    
-                <label for="firstname">Firstname of person to be baptized:</label>
+                <label for="firstname">Firstname of person to be Confirmed:</label>
                 <input type="text" class="form-control" id="firstname" name="firstname" placeholder="Enter Firstname"
                 <?php if (isset($userDetails)) echo 'value="' . htmlspecialchars($userDetails['firstname']) . '"'; ?> />
                 <span class="error" id="firstnameError"></span>
             </div>
 
             <div class="form-group">
-                <label for="lastname">Last Name of person to be baptized:</label>
+                <label for="lastname">Last Name of person to be Confirmed:</label>
                 <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Enter Lastname"
                 <?php if (isset($userDetails)) echo 'value="' . htmlspecialchars($userDetails['lastname']) . '"'; ?> />
                 <span class="error" id="lastnameError"></span>
             </div>
 
             <div class="form-group">
-                <label for="middlename">Middle Name of person to be baptized:</label>
+                <label for="middlename">Middle Name of person to be Confirmed:</label>
                 <input type="text" class="form-control" id="middlename" name="middlename" placeholder="Enter Middlename"
                 <?php if (isset($userDetails)) echo 'value="' . htmlspecialchars($userDetails['middlename']) . '"'; ?> />
                 <span class="error" id="middlenameError"></span>
@@ -221,41 +228,7 @@ small {
                 <span class="error" id="genderError"></span>
             </div>
 
-            <div class="form-group">
-                <div class="birthday-input">
-                    <label for="month">Date of Person Who Baptism</label>
-                    <div class="birthday-selectors">
-                        <select id="month" name="months">
-                            <option value="">Month</option>
-                            <option value="01">January</option>
-                            <option value="02">February</option>
-                            <option value="03">March</option>
-                            <option value="04">April</option>
-                            <option value="05">May</option>
-                            <option value="06">June</option>
-                            <option value="07">July</option>
-                            <option value="08">August</option>
-                            <option value="09">September</option>
-                            <option value="10">October</option>
-                            <option value="11">November</option>
-                            <option value="12">December</option>
-                        </select>
-                        <select id="day" name="days">
-                            <option value="">Day</option>
-                            <?php for ($i = 1; $i <= 31; $i++): ?>
-                                <option value="<?php echo sprintf('%02d', $i); ?>"><?php echo $i; ?></option>
-                            <?php endfor; ?>
-                        </select>
-                        <select id="year" name="years">
-                            <option value="">Year</option>
-                            <?php for ($i = date('Y'); $i >= 1900; $i--): ?>
-                                <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
-                            <?php endfor; ?>
-                        </select>
-                    </div>
-                    <span class="error" id="dobError"></span>
-                </div>
-            </div>
+           
         </div>
 
         <div class="col-md-6 col-lg-4">
@@ -332,6 +305,43 @@ small {
                 <textarea class="form-control" id="godparents" name="church_address" placeholder="Enter Church Address"></textarea>
                 <span class="error" id="churchAddressError"></span>
             </div>
+            <div class="form-group">
+                <div class="birthday-input">
+                    <label for="month">Date of Baptismal</label>
+                    <div class="birthday-selectors">
+                        <select id="month" name="months">
+                            <option value="">Month</option>
+                            <option value="01">January</option>
+                            <option value="02">February</option>
+                            <option value="03">March</option>
+                            <option value="04">April</option>
+                            <option value="05">May</option>
+                            <option value="06">June</option>
+                            <option value="07">July</option>
+                            <option value="08">August</option>
+                            <option value="09">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                        <select id="day" name="days">
+                            <option value="">Day</option>
+                            <?php for ($i = 1; $i <= 31; $i++): ?>
+                                <option value="<?php echo sprintf('%02d', $i); ?>"><?php echo $i; ?></option>
+                            <?php endfor; ?>
+                        </select>
+                        <select id="year" name="years">
+                            <option value="">Year</option>
+                            <?php for ($i = date('Y'); $i >= 1900; $i--): ?>
+                                <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+                            <?php endfor; ?>
+                        </select>
+                    </div>
+                    <span class="error" id="dobError"></span>
+                </div>
+            </div>
+        </div>
+
         </div>
     </div>
     <div class="card-action">
@@ -346,6 +356,7 @@ small {
         </div>
     </div>
 </div>
+<?php require_once 'footer.php'?>
 <script>
 function validateForm() {
     var isValid = true;

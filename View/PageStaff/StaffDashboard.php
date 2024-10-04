@@ -65,11 +65,51 @@ $approvedCount = count($approvedRegistrations);
             >
               <div>
                 <h3 class="fw-bold mb-3">Staff Dashboard</h3>
+                <div class="dropdown">
+        <button class="btn btn-primary btn-round dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+          Request Form
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <li><a class="dropdown-item" href="FillRequestSchedule.php?type=FIESTAMASS">FIESTA MASS</a></li>
+            <li><a class="dropdown-item" href="FillRequestForm.php">NOVENA MASS</a></li>
+            <li><a class="dropdown-item" href="FillRequestForm.php">WAKE MASS</a></li>
+            <li><a class="dropdown-item" href="FillRequestForm.php">MONTHLY MASS</a></li>
+            <li><a class="dropdown-item" href="FillRequestForm.php">1ST FRIDAY MASS</a></li>
+            <li><a class="dropdown-item" href="FillRequestSchedule?type=ccmass">CEMETERY CHAPEL MASS</a></li>
+            <li><a class="dropdown-item" href="FillRequestForm.php">BACCALAUREATE MASS</a></li>
+            <li><a class="dropdown-item" href="FillRequestForm.php">ANNOINTING OF THE SICK</a></li>
+            <li><a class="dropdown-item" href="FillRequestSchedule.php?type=>BLESSING">BLESSING</a></li>
+            <li><a class="dropdown-item" href="FillRequestForm.php">MASS INTENTION</a></li>
+            <li><a class="dropdown-item" href="FillRequestForm.php">THANKSGIVING</a></li>
+            <li><a class="dropdown-item" href="FillRequestForm.php">MASS INTENTION </a></li>
+            <li><a class="dropdown-item" href="FillRequestForm.php">SOUL & PETITION </a></li>
+            <li><a class="dropdown-item" href="FillRequestForm.php">REUNION </a></li>
+            <li><a class="dropdown-item" href="FillRequestForm.php">FAMILY DEVOTION</a></li>
+        </ul>
+    </div>
               </div>
               <div class="ms-md-auto py-2 py-md-0">
-                <a href="#" class="btn btn-primary btn-round">Add Walkin Schedule</a>
-              </div>
+                
+    <div class="dropdown">
+        <button class="btn btn-primary btn-round dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+            Add Walkin Schedule
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <li><a class="dropdown-item" href="FillScheduleForm.php?type=baptism">Baptism</a></li>
+            <li><a class="dropdown-item" href="FillScheduleForm.php?type=confirmation">Confirmation</a></li>
+            <li><a class="dropdown-item" href="FillScheduleForm.php?type=Funeral">Funeral</a></li>
+            <li><a class="dropdown-item" href="FillScheduleForm.php?type=Wedding">Wedding</a></li>
+
+        </ul>
+        
+    </div>
+    
+    
+</div>
+
+
             </div>
+            
             <div class="row">
               <div class="col-sm-6 col-md-3">
                 <div class="card card-stats card-round">
@@ -217,162 +257,7 @@ $approvedCount = count($approvedRegistrations);
                   </div>
                 </div>
               </div>
-              <div class="col-md-8">
-                <div class="card card-round">
-                  <div class="card-header">
-                    <div class="card-head-row card-tools-still-right">
-                      <div class="card-title">Transaction History</div>
-                      <div class="card-tools">
-                        <div class="dropdown">
-                          <button
-                            class="btn btn-icon btn-clean me-0"
-                            type="button"
-                            id="dropdownMenuButton"
-                            data-bs-toggle="dropdown"
-                            aria-haspopup="true"
-                            aria-expanded="false"
-                          >
-                            <i class="fas fa-ellipsis-h"></i>
-                          </button>
-                          <div
-                            class="dropdown-menu"
-                            aria-labelledby="dropdownMenuButton"
-                          >
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <a class="dropdown-item" href="#"
-                              >Something else here</a
-                            >
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="card-body p-0">
-                    <div class="table-responsive">
-                      <!-- Projects table -->
-                      <table class="table align-items-center mb-0">
-                        <thead class="thead-light">
-                          <tr>
-                            <th scope="col">Payment Number</th>
-                            <th scope="col" class="text-end">Date & Time</th>
-                            <th scope="col" class="text-end">Amount</th>
-                            <th scope="col" class="text-end">Status</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <th scope="row">
-                              <button
-                                class="btn btn-icon btn-round btn-success btn-sm me-2"
-                              >
-                                <i class="fa fa-check"></i>
-                              </button>
-                              Payment from #10231
-                            </th>
-                            <td class="text-end">July 20, 2024, 2.45pm</td>
-                            <td class="text-end"><span>&#8369;</span>
-                              3,500.00</td>                            <td class="text-end">
-                              <span class="badge badge-success">Completed</span>
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope="row">
-                              <button
-                                class="btn btn-icon btn-round btn-success btn-sm me-2"
-                              >
-                                <i class="fa fa-check"></i>
-                              </button>
-                              Payment from #10231
-                            </th>
-                            <td class="text-end">July 20, 2024, 2.45pm</td>
-                            <td class="text-end"><span>&#8369;</span>
-                              3,500.00</td>                            <td class="text-end">
-                              <span class="badge badge-success">Completed</span>
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope="row">
-                              <button
-                                class="btn btn-icon btn-round btn-success btn-sm me-2"
-                              >
-                                <i class="fa fa-check"></i>
-                              </button>
-                              Payment from #10231
-                            </th>
-                            <td class="text-end">July 20, 2024, 2.45pm</td>
-                            <td class="text-end"><span>&#8369;</span>
-                              3,500.00</td>                            <td class="text-end">
-                              <span class="badge badge-success">Completed</span>
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope="row">
-                              <button
-                                class="btn btn-icon btn-round btn-success btn-sm me-2"
-                              >
-                                <i class="fa fa-check"></i>
-                              </button>
-                              Payment from #10231
-                            </th>
-                            <td class="text-end">July 20, 2024, 2.45pm</td>
-                            <td class="text-end"><span>&#8369;</span>
-                              3,500.00</td>                            <td class="text-end">
-                              <span class="badge badge-success">Completed</span>
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope="row">
-                              <button
-                                class="btn btn-icon btn-round btn-success btn-sm me-2"
-                              >
-                                <i class="fa fa-check"></i>
-                              </button>
-                              Payment from #10231
-                            </th>
-                            <td class="text-end">July 20, 2024, 2.45pm</td>
-                            <td class="text-end"><span>&#8369;</span>
-                              3,500.00</td>                            <td class="text-end">
-                              <span class="badge badge-success">Completed</span>
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope="row">
-                              <button
-                                class="btn btn-icon btn-round btn-success btn-sm me-2"
-                              >
-                                <i class="fa fa-check"></i>
-                              </button>
-                              Payment from #10231
-                            </th>
-                            <td class="text-end">July 20, 2024, 2.45pm</td>
-                            <td class="text-end"><span>&#8369;</span>
-                              3,500.00</td>                            <td class="text-end">
-                              <span class="badge badge-success">Completed</span>
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope="row">
-                              <button
-                                class="btn btn-icon btn-round btn-success btn-sm me-2"
-                              >
-                                <i class="fa fa-check"></i>
-                              </button>
-                              Payment from #10231
-                            </th>
-                            <td class="text-end">July 20, 2024, 2.45pm</td>
-                            <td class="text-end"><span>&#8369;</span>
-                              3,500.00</td>
-                            <td class="text-end">
-                              <span class="badge badge-success">Completed</span>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>
+      
             </div>
           </div>
         </div>

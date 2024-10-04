@@ -42,11 +42,21 @@ require_once '../../Controller/login_con.php';
         color: red;
         font-size: 14px;
         margin-top: 5px;
+        color: red;            /* Text color for error messages */
+    font-size: 12px;      /* Font size for error messages */
+    margin-top: 5px;      /* Space above the error message */
+    display: block;        /* Ensures the error message is on a new line */
+    line-height: 1.2;     /* Adjusts line height for better readability */
     }
              .error-message {
         color: red;
         font-size: 14px;
         margin-top: 5px;
+        color: red;            /* Text color for error messages */
+    font-size: 12px;      /* Font size for error messages */
+    margin-top: 5px;      /* Space above the error message */
+    display: block;        /* Ensures the error message is on a new line */
+    line-height: 1.2;     /* Adjusts line height for better readability */
     }
     .input-error {
         border: 1px solid red;
@@ -65,6 +75,7 @@ require_once '../../Controller/login_con.php';
 .birthday-selectors {
     display: flex;
     gap: 5px;
+    width: 20px;
 }
 
 
@@ -130,7 +141,7 @@ margin-top:20px;
 }
 .input_box {
   position: relative;
-  margin-top: 30px;
+  margin-top: 35px;
   width: 100%;
   height: 40px;
   display: flex;
@@ -222,10 +233,10 @@ gap:25px;
   text-decoration: underline;
 }
 .input_group {
-  display: flex;
-    flex-direction: column;
+      /* display: flex; */
+      flex-direction: column;
     /* position: relative; */
-    margin-top: -21px;
+    /* margin-top: -21px; */
     width: 100%;
     height: 40px;
     /* display: flex; */
@@ -235,10 +246,8 @@ gap:25px;
 
   /* Label styling */
   .input_group label {
-    font-size: 14px;
-    
-    margin-left: 35px;
-    margin-top: 10px;
+    font-size: 15px;
+    font-weight: 500;
   }
 
   /* Input styling */
@@ -247,7 +256,7 @@ gap:25px;
     padding: 10px;
     font-size: 14px;
     height: 100%;
-  width: 100%;
+    width: 90%;
   border: none;
   outline: none;
   color: #333;
@@ -312,30 +321,42 @@ gap:25px;
           <input type="hidden" name="signup_form" value="1">
             <h2 class="title">Sign up</h2>
             <div class="input_box">
+            <div class="input_group">
             <input type="text" class="form-control" name="first_name" id="first_name" placeholder="First Name">
             <div class="error" id="first_name_error"></div>  
-            <i class="uil uil-envelope-alt email"></i>
+            </div>
+            <div class="input_group">
               <input type="text" class="form-control" name="last_name" id="last_name" placeholder="Last Name">
               <div class="error" id="last_name_error"></div>
-              <i class="uil uil-envelope-alt email"></i>
+              </div>
+              <div class="input_group">
               <input type="text" class="form-control" name="middle_name" id="middle_name" placeholder="Middle Name">
               <div class="error" id="middle_name_error"></div>
-              <i class="uil uil-envelope-alt email"></i>
-
+              
+              </div>
             </div>
            
             <div class="input_box">
+            <div class="input_group">
+
             <select class="form-control" name="gender"  class="input_box" id="gender" placeholder="name@example.com">
             <option value="" disabled selected>Select gender</option>
             <option>Male</option>
             <option>Female</option>
         </select>
         <div class="error" id="gender_error"></div>
+
+        </div>
+      
+        <div class="input_group">
         <input type="text" class="form-control" id="address" name="address" placeholder="Address">
         <div class="error" id="address_error"></div>
+
+        </div>
       </div>
+
             <div class="input_box">
-  <div class="input_group">
+  <div class="input_group" style=" margin-top: -8px;">
   <div class="birthday-input">
  <label for="month">Date of Birth</label>
   <div class="birthday-selectors">
@@ -372,33 +393,41 @@ gap:25px;
   </div>
   <div class="error" id="c_date_birth_error"></div>
   </div>
-  <div class="input_group">
+  <div class="input_group" style=" margin-top: -8px;"> 
     <label for="validID">Valid ID</label>
     <input type="file" class="form-control" id="valid_id" name="valid_id" accept="image/*" placeholder="Valid ID">
     <div class="error" id="valid_id_error"></div>
   </div>
 </div>
 
-
             <div class="input_box">
+            <div class="input_group">
 
             <input type="tel" class="form-control" name="phone" id="phone" placeholder="Phone number ">
               <i class="uil uil-envelope-alt email"></i>
               <div class="error" id="phone_error"></div>
+              </div>
+              <div class="input_group">
               <input type="text" class="form-control" name="email" id="emails" placeholder="name@example.com">
               <div class="error" id="email_error"></div>
               <i class="uil uil-envelope-alt email"></i>
-             
-            </div>
+              </div>
+              </div>
+          
             <div class="input_box">
+            <div class="input_group">
 
             <input type="password" class="form-control" id="passwords" name="password" placeholder="Password">
             <div class="error" id="password_error"></div>
             <i class="uil uil-envelope-alt email"></i>
+            </div>
+            <div class="input_group">
+
           <input type="password" class="form-control" id="confirmpassword" name="confirmpassword" placeholder="Confirm Password">
           <div class="error" id="confirmpassword_error"></div>
           <i class="uil uil-envelope-alt email"></i>
-         
+          </div>
+
             </div>
             <br>
             <button type="submit" class="button" >Register</button>

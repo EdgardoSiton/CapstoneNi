@@ -121,7 +121,6 @@
   opacity: 1;
 }
 /*** Topbar End ***/
-
 /*** Navbar Start ***/
 .nav-bar {
   background: #0066a8;
@@ -134,7 +133,6 @@
 }
 
 .nav-bar .navbar-light .navbar-brand img {
-  max-height: 50px;
 }
 
 .navbar .navbar-nav .nav-item .nav-link {
@@ -151,7 +149,9 @@
 .navbar-light .navbar-nav .nav-item.active,
 .navbar-light .navbar-nav .nav-item:hover .nav-link,
 .navbar-light .navbar-nav .nav-item.active .nav-link {
-  color: #ac0727cf;
+  color: #fafafa !important;
+  font-weight: bolder;
+  border-bottom: 2px solid #ffffff; /* Add this line */
 }
 
 @media (max-width: 991px) {
@@ -161,14 +161,15 @@
 
   .navbar .navbar-nav .nav-link {
     padding: 0;
+    font-size: 1.2rem; /* Larger font size for better readability */
   }
 
   .navbar .navbar-nav .nav-item {
     display: flex;
-    padding: 20px;
+    padding: 15px 0; /* Reduced padding */
     flex-direction: column;
     justify-content: start;
-    align-items: start;
+    align-items: flex-start; /* Changed to flex-start for alignment */
   }
 
   .navbar .navbar-nav .nav-btn {
@@ -181,7 +182,6 @@
     display: flex;
     margin-top: 20px;
     padding-bottom: 20px;
-    background: var(--bs-light);
     border-radius: 10px;
   }
 
@@ -208,7 +208,7 @@
 
 @media (min-width: 992px) {
   .navbar {
-    padding: 20px 0;
+    padding: 5px 0;
   }
 
   .navbar .nav-btn {
@@ -222,7 +222,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background: var(--bs-light);
     border-radius: 10px;
   }
 
@@ -253,8 +252,24 @@
     opacity: 1;
   }
 }
-/*** Navbar End ***/
 
+/* Additional media queries for better responsiveness */
+@media (max-width: 576px) {
+  .navbar .navbar-nav .nav-item {
+    padding: 10px; /* Less padding for smaller screens */
+  }
+
+  .navbar .navbar-nav .nav-link {
+    font-size: 1rem; /* Adjust font size for mobile */
+  }
+
+  .nav-btn {
+    justify-content: center; /* Center the button on small screens */
+    width: 100%; /* Full width for button */
+  }
+}
+
+/*** Navbar End ***/
 /*** Carousel Hero Header Start ***/
 .header-carousel .header-carousel-item {
   height: 90%;
@@ -328,29 +343,46 @@
 }
 /*** Carousel Hero Header End ***/
 
-/*** Single Page Hero Header Start ***/
-.bg-breadcrumb {
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(rgba(1, 95, 201, 0.9), rgba(0, 0, 0, 0.2)),
-    url(../img/bg-breadcrumb.jpg);
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  padding: 60px 0 60px 0;
-  transition: 0.5s;
-}
-
-.bg-breadcrumb .breadcrumb {
-  position: relative;
-}
-
-.bg-breadcrumb .breadcrumb .breadcrumb-item a {
-  color: var(--bs-white);
-}
-/*** Single Page Hero Header End ***/
-
 /*** Feature Start ***/
+.welcome-title {
+  font-size: 2.5rem; /* Default size for larger screens */
+}
+
+.welcome-text {
+  font-size: 1.2rem; /* Default size for larger screens */
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .welcome-title {
+    font-size: 2rem; /* Medium screens */
+  }
+
+  .welcome-text {
+    font-size: 1rem; /* Medium screens */
+  }
+}
+
+@media (max-width: 992px) {
+  .welcome-title {
+    font-size: 1.75rem; /* Smaller screens */
+  }
+
+  .welcome-text {
+    font-size: 0.9rem; /* Smaller screens */
+  }
+}
+
+@media (max-width: 576px) {
+  .welcome-title {
+    font-size: 1.5rem; /* Extra small screens */
+  }
+
+  .welcome-text {
+    font-size: 0.8rem; /* Extra small screens */
+  }
+}
+
 .feature .feature-item {
   border-radius: 10px;
   background: var(--bs-white);
@@ -424,9 +456,30 @@
 /*** Feature End ***/
 
 /*** Service Start ***/
+/*** Service Start ***/
 .service .service-item {
   border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Ensures items are evenly spaced */
 }
+
+/* Other styles remain unchanged */
+
+/* Media Query for small screens */
+@media (max-width: 576px) {
+  .service .service-item {
+    margin-bottom: 20px; /* Add margin for smaller screens */
+  }
+}
+
+/* Adjust margins for larger screens if needed */
+@media (min-width: 768px) {
+  .service .service-item {
+    margin-bottom: 30px; /* Adjust margin for medium screens */
+  }
+}
+
 .service .service-item .service-img {
   position: relative;
   overflow: hidden;
@@ -799,7 +852,7 @@
 
 /*** Footer Start ***/
 .footer {
-  background: var(--bs-dark);
+  background: #0066a8;
 }
 
 .footer .footer-item {

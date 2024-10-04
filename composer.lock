@@ -341,16 +341,16 @@
     },
     {
       "name": "google/apiclient-services",
-      "version": "v0.373.0",
+      "version": "v0.374.0",
       "source": {
         "type": "git",
         "url": "https://github.com/googleapis/google-api-php-client-services.git",
-        "reference": "88ee17077a2048ba0b2c637754b599be0523fe36"
+        "reference": "5f6060df419f4f72dcc970197f9a9b1613cecc62"
       },
       "dist": {
         "type": "zip",
-        "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/88ee17077a2048ba0b2c637754b599be0523fe36",
-        "reference": "88ee17077a2048ba0b2c637754b599be0523fe36",
+        "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/5f6060df419f4f72dcc970197f9a9b1613cecc62",
+        "reference": "5f6060df419f4f72dcc970197f9a9b1613cecc62",
         "shasum": ""
       },
       "require": {
@@ -379,9 +379,9 @@
       ],
       "support": {
         "issues": "https://github.com/googleapis/google-api-php-client-services/issues",
-        "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.373.0"
+        "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.374.0"
       },
-      "time": "2024-09-16T00:56:51+00:00"
+      "time": "2024-09-23T01:02:23+00:00"
     },
     {
       "name": "google/auth",
@@ -1523,16 +1523,16 @@
     },
     {
       "name": "phpstan/phpdoc-parser",
-      "version": "1.30.1",
+      "version": "1.32.0",
       "source": {
         "type": "git",
         "url": "https://github.com/phpstan/phpdoc-parser.git",
-        "reference": "51b95ec8670af41009e2b2b56873bad96682413e"
+        "reference": "6ca22b154efdd9e3c68c56f5d94670920a1c19a4"
       },
       "dist": {
         "type": "zip",
-        "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/51b95ec8670af41009e2b2b56873bad96682413e",
-        "reference": "51b95ec8670af41009e2b2b56873bad96682413e",
+        "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/6ca22b154efdd9e3c68c56f5d94670920a1c19a4",
+        "reference": "6ca22b154efdd9e3c68c56f5d94670920a1c19a4",
         "shasum": ""
       },
       "require": {
@@ -1564,9 +1564,9 @@
       "description": "PHPDoc parser with support for nullable, intersection and generic types",
       "support": {
         "issues": "https://github.com/phpstan/phpdoc-parser/issues",
-        "source": "https://github.com/phpstan/phpdoc-parser/tree/1.30.1"
+        "source": "https://github.com/phpstan/phpdoc-parser/tree/1.32.0"
       },
-      "time": "2024-09-07T20:13:05+00:00"
+      "time": "2024-09-26T07:23:32+00:00"
     },
     {
       "name": "psr/cache",
@@ -1926,16 +1926,16 @@
     },
     {
       "name": "symfony/cache",
-      "version": "v6.4.11",
+      "version": "v6.4.12",
       "source": {
         "type": "git",
         "url": "https://github.com/symfony/cache.git",
-        "reference": "36daef8fce88fe0b9a4f8cf4c342ced5c05616dc"
+        "reference": "a463451b7f6ac4a47b98dbfc78ec2d3560c759d8"
       },
       "dist": {
         "type": "zip",
-        "url": "https://api.github.com/repos/symfony/cache/zipball/36daef8fce88fe0b9a4f8cf4c342ced5c05616dc",
-        "reference": "36daef8fce88fe0b9a4f8cf4c342ced5c05616dc",
+        "url": "https://api.github.com/repos/symfony/cache/zipball/a463451b7f6ac4a47b98dbfc78ec2d3560c759d8",
+        "reference": "a463451b7f6ac4a47b98dbfc78ec2d3560c759d8",
         "shasum": ""
       },
       "require": {
@@ -2002,7 +2002,7 @@
         "psr6"
       ],
       "support": {
-        "source": "https://github.com/symfony/cache/tree/v6.4.11"
+        "source": "https://github.com/symfony/cache/tree/v6.4.12"
       },
       "funding": [
         {
@@ -2018,7 +2018,7 @@
           "type": "tidelift"
         }
       ],
-      "time": "2024-08-05T07:40:31+00:00"
+      "time": "2024-09-16T16:01:33+00:00"
     },
     {
       "name": "symfony/cache-contracts",
@@ -2800,16 +2800,16 @@
     },
     {
       "name": "symfony/serializer",
-      "version": "v6.4.11",
+      "version": "v6.4.12",
       "source": {
         "type": "git",
         "url": "https://github.com/symfony/serializer.git",
-        "reference": "a75d03d7720417f8a654e73e8f02acdea8779cd0"
+        "reference": "10ae9c1b90f4809ccb7277cc8fe8d80b3af4412c"
       },
       "dist": {
         "type": "zip",
-        "url": "https://api.github.com/repos/symfony/serializer/zipball/a75d03d7720417f8a654e73e8f02acdea8779cd0",
-        "reference": "a75d03d7720417f8a654e73e8f02acdea8779cd0",
+        "url": "https://api.github.com/repos/symfony/serializer/zipball/10ae9c1b90f4809ccb7277cc8fe8d80b3af4412c",
+        "reference": "10ae9c1b90f4809ccb7277cc8fe8d80b3af4412c",
         "shasum": ""
       },
       "require": {
@@ -2878,7 +2878,7 @@
       "description": "Handles serializing and deserializing data structures, including object graphs, into array structures or other formats like XML and JSON.",
       "homepage": "https://symfony.com",
       "support": {
-        "source": "https://github.com/symfony/serializer/tree/v6.4.11"
+        "source": "https://github.com/symfony/serializer/tree/v6.4.12"
       },
       "funding": [
         {
@@ -2894,7 +2894,7 @@
           "type": "tidelift"
         }
       ],
-      "time": "2024-08-17T07:51:47+00:00"
+      "time": "2024-09-20T08:15:52+00:00"
     },
     {
       "name": "symfony/service-contracts",
@@ -2981,16 +2981,16 @@
     },
     {
       "name": "symfony/string",
-      "version": "v7.1.4",
+      "version": "v7.1.5",
       "source": {
         "type": "git",
         "url": "https://github.com/symfony/string.git",
-        "reference": "6cd670a6d968eaeb1c77c2e76091c45c56bc367b"
+        "reference": "d66f9c343fa894ec2037cc928381df90a7ad4306"
       },
       "dist": {
         "type": "zip",
-        "url": "https://api.github.com/repos/symfony/string/zipball/6cd670a6d968eaeb1c77c2e76091c45c56bc367b",
-        "reference": "6cd670a6d968eaeb1c77c2e76091c45c56bc367b",
+        "url": "https://api.github.com/repos/symfony/string/zipball/d66f9c343fa894ec2037cc928381df90a7ad4306",
+        "reference": "d66f9c343fa894ec2037cc928381df90a7ad4306",
         "shasum": ""
       },
       "require": {
@@ -3048,7 +3048,7 @@
         "utf8"
       ],
       "support": {
-        "source": "https://github.com/symfony/string/tree/v7.1.4"
+        "source": "https://github.com/symfony/string/tree/v7.1.5"
       },
       "funding": [
         {
@@ -3064,7 +3064,7 @@
           "type": "tidelift"
         }
       ],
-      "time": "2024-08-12T09:59:40+00:00"
+      "time": "2024-09-20T08:28:38+00:00"
     },
     {
       "name": "symfony/translation-contracts",
@@ -3146,16 +3146,16 @@
     },
     {
       "name": "symfony/type-info",
-      "version": "v7.1.1",
+      "version": "v7.1.5",
       "source": {
         "type": "git",
         "url": "https://github.com/symfony/type-info.git",
-        "reference": "60b28eb733f1453287f1263ed305b96091e0d1dc"
+        "reference": "9f6094aa900d2c06bd61576a6f279d4ac441515f"
       },
       "dist": {
         "type": "zip",
-        "url": "https://api.github.com/repos/symfony/type-info/zipball/60b28eb733f1453287f1263ed305b96091e0d1dc",
-        "reference": "60b28eb733f1453287f1263ed305b96091e0d1dc",
+        "url": "https://api.github.com/repos/symfony/type-info/zipball/9f6094aa900d2c06bd61576a6f279d4ac441515f",
+        "reference": "9f6094aa900d2c06bd61576a6f279d4ac441515f",
         "shasum": ""
       },
       "require": {
@@ -3208,7 +3208,7 @@
         "type"
       ],
       "support": {
-        "source": "https://github.com/symfony/type-info/tree/v7.1.1"
+        "source": "https://github.com/symfony/type-info/tree/v7.1.5"
       },
       "funding": [
         {
@@ -3224,20 +3224,20 @@
           "type": "tidelift"
         }
       ],
-      "time": "2024-05-31T14:59:31+00:00"
+      "time": "2024-09-19T21:48:23+00:00"
     },
     {
       "name": "symfony/validator",
-      "version": "v6.4.11",
+      "version": "v6.4.12",
       "source": {
         "type": "git",
         "url": "https://github.com/symfony/validator.git",
-        "reference": "4ff41cf10af1de99ad92895411b55c9f309bc2d8"
+        "reference": "6da1f0a1ee73d060a411d832cbe0539cfe9bbaa0"
       },
       "dist": {
         "type": "zip",
-        "url": "https://api.github.com/repos/symfony/validator/zipball/4ff41cf10af1de99ad92895411b55c9f309bc2d8",
-        "reference": "4ff41cf10af1de99ad92895411b55c9f309bc2d8",
+        "url": "https://api.github.com/repos/symfony/validator/zipball/6da1f0a1ee73d060a411d832cbe0539cfe9bbaa0",
+        "reference": "6da1f0a1ee73d060a411d832cbe0539cfe9bbaa0",
         "shasum": ""
       },
       "require": {
@@ -3305,7 +3305,7 @@
       "description": "Provides tools to validate values",
       "homepage": "https://symfony.com",
       "support": {
-        "source": "https://github.com/symfony/validator/tree/v6.4.11"
+        "source": "https://github.com/symfony/validator/tree/v6.4.12"
       },
       "funding": [
         {
@@ -3321,7 +3321,7 @@
           "type": "tidelift"
         }
       ],
-      "time": "2024-08-30T15:57:55+00:00"
+      "time": "2024-09-20T08:18:25+00:00"
     },
     {
       "name": "symfony/var-exporter",

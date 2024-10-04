@@ -7,7 +7,8 @@
 }
 
 .cal-container {
-  width: 700px;
+  width: 100%;
+  max-width: 700px;
   margin: 0 auto;
 }
 
@@ -16,16 +17,101 @@
   -moz-transform: translate3d(0, 0, 0);
   transform: translate3d(0, 0, 0);
   width: 100%;
-  margin: 0 auto;
-  height: 772px;
+  height: auto;
   overflow: hidden;
-
   margin-top: 50px;
 }
 
+/* Responsive styles */
+@media (max-width: 768px) {
+  /* Reduce container size */
+  .cal-container {
+    width: 100%;
+    padding: 0 10px;
+  }
+
+  /* Adjust header font size and padding */
+  .header h1 {
+    font-size: 16px;
+    padding: 5px;
+  }
+
+  /* Adjust day width and padding */
+  .day {
+    width: 13%; /* slightly more to fit mobile view */
+    padding: 5px 2px;
+  }
+
+  .day-name {
+    font-size: 10px;
+  }
+
+  .day-number {
+    font-size: 16px;
+  }
+
+  /* Adjust the position of the arrows */
+  .left,
+  .right {
+    top: 40%;
+    margin-top: -5px;
+  }
+
+  /* Adjust the details section */
+  .details {
+    height: 60px;
+    padding: 5px;
+  }
+
+  .events {
+    height: 60px;
+    padding: 5px 0;
+  }
+
+  .event {
+    font-size: 14px;
+  }
+
+  /* Adjust the legend */
+  .legend {
+    height: 25px;
+    font-size: 12px;
+  }
+}
+
+/* Further adjustments for very small screens */
+@media (max-width: 480px) {
+  .day {
+    width: 100%; /* Full width for small screens */
+    margin-bottom: 5px;
+  }
+
+  .day-number {
+    font-size: 14px;
+  }
+
+  .day-name {
+    font-size: 8px;
+  }
+
+  .details {
+    height: 40px;
+  }
+
+  .event {
+    font-size: 12px;
+  }
+
+  /* Hide the legend on very small screens if necessary */
+  .legend {
+    display: none;
+  }
+}
+
+/* Header */
 .header {
-  padding: 20px 25px;
-  background: rgba(172, 7, 40, 0.856);
+  padding: 10px 15px;
+  background: #ac0727cf;
   text-align: center;
   position: relative;
   z-index: 100;
@@ -33,34 +119,29 @@
 
 .header h1 {
   margin: 0;
-  padding: 0;
-  font-size: 20px;
-  line-height: 50px;
-  font-weight: 100;
-  letter-spacing: 1px;
+  font-size: 18px;
   color: white;
 }
-
+/* Navigation arrows */
 .left,
 .right {
   position: absolute;
-  width: 0px;
-  height: 0px;
+  width: 0;
+  height: 0;
   border-style: solid;
   top: 50%;
   margin-top: -7.5px;
   cursor: pointer;
 }
-
 .left {
   border-width: 7.5px 10px 7.5px 0;
-  border-color: transparent rgb(255, 255, 255) transparent transparent;
+  border-color: transparent white transparent transparent;
   left: 20px;
 }
 
 .right {
   border-width: 7.5px 0 7.5px 10px;
-  border-color: transparent transparent transparent rgb(255, 255, 255);
+  border-color: transparent transparent transparent white;
   right: 20px;
 }
 
@@ -103,45 +184,37 @@
 }
 
 .week {
-  background: #4a4a4a;
-  width: 100%;
+  background: transparent;
   text-align: center;
-  padding-top: 20px;
+  border-right: 2px solid red;
+  border-left: 2px solid red;
+  border-bottom: 1px solid red;
 }
-
 .day {
   display: inline-block;
-  width: 90px;
-  padding: 10px;
+  width: 13%;
+  padding: 5px;
   text-align: center;
-  vertical-align: top;
-  cursor: pointer;
-  background: #4a4a4a;
-  position: relative;
-  z-index: 100;
+  background: transparent;
+  color: black;
+  padding-top: 10px;
 }
-
 .day.other {
-  color: rgba(255, 255, 255, 0.3);
+  color: rgb(33 150 243 / 64%);
 }
 
 .day.today {
-  color: rgba(156, 202, 235, 1);
+  color: rgb(3, 71, 119);
 }
 
 .day-name {
-  font-size: 9px;
-  text-transform: uppercase;
+  font-size: 12px;
   margin-bottom: 5px;
-  color: rgba(255, 255, 255, 0.5);
-  letter-spacing: 0.7px;
 }
 
 .day-number {
-  font-size: 24px;
-  letter-spacing: 1.5px;
+  font-size: 20px;
 }
-
 .day .day-events {
   list-style: none;
   margin-top: 8px;
@@ -174,16 +247,11 @@
 .yellow {
   background: rgba(249, 233, 0, 1);
 }
-.pink {
-  background: rgba(255, 192, 203, 1);
-}
 
 .details {
   position: relative;
-  height: 75px;
-  background: rgba(164, 164, 164, 1);
-  margin-top: 5px;
-  border-radius: 4px;
+  height: 55px;
+  background: #ac0727a8;
 }
 
 .details.in {
@@ -201,7 +269,7 @@
 .arrow {
   position: absolute;
   top: -5px;
-  left: 50%;
+
   margin-left: 13px;
   width: 0px;
   height: 0px;
@@ -222,14 +290,22 @@
   -webkit-animation: fadeIn 0.3s ease both;
   -moz-animation: fadeIn 0.3s ease both;
   animation: fadeIn 0.3s ease both;
+  position: relative; /* Change this if it's absolute or fixed */
+  z-index: 0; /* Ensure it is below .legend */
 }
 
 .events.in {
   -webkit-animation-delay: 0.3s;
   -moz-animation-delay: 0.3s;
   animation-delay: 0.3s;
+  position: relative; /* Change this if it's absolute or fixed */
+  z-index: 0; /* Ensure it is below .legend */
 }
-
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
 .details.out .events {
   -webkit-animation: fadeOutShrink 0.4s ease both;
   -moz-animation: fadeOutShink 0.4s ease both;
@@ -243,8 +319,8 @@
 }
 
 .event {
-  font-size: 16px;
-  line-height: 22px;
+  font-size: 13px;
+  /* line-height: 22px; */
   letter-spacing: 0.5px;
   padding: 2px 16px;
   vertical-align: top;
@@ -268,12 +344,12 @@
 }
 
 .legend {
-  position: absolute;
+  position: relative; /* Change this if it's absolute or fixed */
+  z-index: 1; /* Ensure it is above .events-in */
   bottom: 0;
   width: 100%;
   height: 30px;
-  background: rgba(60, 60, 60, 1);
-  line-height: 30px;
+  background: #ac0727cf;
 }
 
 .entry {
@@ -282,7 +358,9 @@
   font-size: 13px;
   display: inline-block;
   line-height: 30px;
-  background: transparent;
+  background: #f97da7;
+  width: 35%;
+  color: black;
 }
 
 .entry:after {
@@ -305,33 +383,6 @@
 }
 .entry.yellow:after {
   background: rgba(249, 233, 0, 1);
-}
-.entry.brown:after {
-  background: rgba(165, 42, 42, 1);
-}
-.entry.violet:after {
-  background: rgba(238, 130, 238, 1);
-}
-.entry.pink:after {
-  background: rgba(255, 192, 203, 1);
-}
-.entry.redpurple:after {
-  background: rgba(228, 0, 70, 1);
-}
-.entry.bluegreen:after {
-  background: rgba(0, 128, 128, 1);
-}
-.entry.red:after {
-  background: rgba(255, 0, 0, 1);
-}
-.entry.suede:after {
-  background: rgba(162, 118, 91, 1);
-}
-.entry.brass:after {
-  background: rgba(181, 166, 66, 1);
-}
-.entry.magnolia:after {
-  background: rgba(248, 244, 255, 1);
 }
 
 /* Animations are cool!  */
@@ -507,5 +558,57 @@
     opacity: 0;
     padding: 0px;
     height: 0px;
+  }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  /* Reduce container size */
+  .cal-container {
+    width: 100%;
+  }
+
+  /* Adjust header padding and font size */
+  .header h1 {
+    font-size: 16px;
+  }
+
+  /* Adjust day width and padding */
+  .day {
+    width: 14%;
+    padding: 5px 2px;
+  }
+
+  .day-name {
+    font-size: 10px;
+  }
+
+  .day-number {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Stack days vertically */
+  .day {
+    box-sizing: border-box;
+  }
+
+  /* Center header text and remove arrows for mobile */
+  .header {
+    padding: 5px 10px;
+  }
+
+  .header h1 {
+    font-size: 14px;
+  }
+
+  /* Adjust day font size */
+  .day-name {
+    font-size: 8px;
+  }
+
+  .day-number {
+    font-size: 10px;
   }
 }

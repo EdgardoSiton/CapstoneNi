@@ -82,7 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($registrationResult === "Registration successful and notification sent") {
             // Redirect to success page or login page
             $_SESSION['status'] = "success";
-            header('Location: ../../View/PageLanding/index.php');
+            header('Location: ../../index.php');
             exit();
         } else {
             // Display error message

@@ -88,6 +88,25 @@ margin-LEFT:20px;
             margin-right:15px;
             color:black;
         }
+        .bg-breadcrumb {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(rgba(1, 94, 201, 0.616), rgba(0, 0, 0, 0.2)),
+  url(../assets/img/funeral.jpeg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  padding: 60px 0 60px 0;
+  transition: 0.5s;
+}
+
+.bg-breadcrumb .breadcrumb {
+  position: relative;
+}
+
+.bg-breadcrumb .breadcrumb .breadcrumb-item a {
+  color: var(--bs-white);
+}
     </style>
     </head>
 
@@ -115,7 +134,6 @@ margin-LEFT:20px;
         </div>
         <!-- Header End -->
 <!-- Service Start -->
-<a href="history.php" class="back-button">Back</a>
 
 <div class="container-fluid service py-5">
   
@@ -125,10 +143,7 @@ margin-LEFT:20px;
 
           <div class="gallery">
             
-          <img src="assets/img/faq.png" alt="Etymology Image" class="float-right"> 
-          <img src="assets/img/faq.png" alt="Etymology Image" class="float-right">
-          <img src="assets/img/faq.png" alt="Etymology Image" class="float-right">
-          <img src="assets/img/faq.png" alt="Etymology Image" class="float-right">
+         
           </div>
             <P>As a religious institution, the church plays a vital role in offering support and solace to the departed and their grieving families through a range of religious services. These services encompass the hosting of wakes, conducting liturgical ceremonies for the deceased, and managing the Barasoain Catholic Cemetery, a sacred resting place for burials.
 </P>

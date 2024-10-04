@@ -7,18 +7,7 @@ require 'google_auth.php'; // Ensure Google OAuth
 
 try {
     // Create an instance of the Staff class
-    $staff = new Staff($conn);
-
-    // Get POST data
-    $cal_fullname = $_POST['cal_fullname'];
-    $cal_Category = $_POST['cal_Category'];
-    $cal_date = $_POST['cal_date'];
-    $cal_description = $_POST['cal_description'];
-    $cal_email = $_POST['cal_email'];
-
-    // Insert event into the local event calendar database
-    $result = $staff->insertEventCalendar($cal_fullname, $cal_Category, $cal_date, $cal_description, $cal_email);
-    echo $result;
+   
 
     // Initialize Google Calendar service
     $client = getGoogleClient();

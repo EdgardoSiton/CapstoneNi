@@ -130,6 +130,26 @@ margin-LEFT:20px;
     display: flex;
     justify-content: space-between;
 }
+.bg-breadcrumb {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(rgba(1, 94, 201, 0.616), rgba(0, 0, 0, 0.2)),
+  url(../assets/img/map.jpeg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  padding: 60px 0 60px 0;
+  transition: 0.5s;
+}
+
+.bg-breadcrumb .breadcrumb {
+  position: relative;
+}
+
+.bg-breadcrumb .breadcrumb .breadcrumb-item a {
+  color: var(--bs-white);
+}
+
     </style>
     </head>
 
@@ -157,7 +177,6 @@ margin-LEFT:20px;
         </div>
         <!-- Header End -->
 <!-- Service Start -->
-<a href="history.php" class="back-button">Back</a>
 
 <div class="container-fluid service py-5"style="padding-bottom:0!important;" >
   
