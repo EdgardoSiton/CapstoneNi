@@ -11,12 +11,18 @@ $regId = $_SESSION['citizend_id'];
 
 $citizen = new Citizen($conn);
 $staff = new Staff($conn);
-
-// Fetch the available priests based on the selected date, start time, and end time
-$priests = $citizen->getPriests();
-
-
 $baptismfill_id = isset($_GET['id']) ? intval($_GET['id']) : null;
+// FillBaptismForm.php
+
+if (isset($_GET['id'])) {
+    $baptismfill_id = intval($_GET['id']);
+    // Fetch schedule details
+    $scheduleDetails = $staff->getScheduleDetails($baptismfill_id); // Fetch date, start_time, end_time based on baptism ID
+    $scheduleDate = $scheduleDetails['schedule_date'];
+    $startTime = $scheduleDetails['schedule_start_time'];
+    $endTime = $scheduleDetails['schedule_end_time'];
+    $priests = $citizen->getAvailablePriests($scheduleDate, $startTime, $endTime);
+} 
 if ($baptismfill_id) {
     // Fetch schedule_id from baptismfill
     $scheduleId = $staff->getScheduleId($baptismfill_id);
@@ -24,8 +30,6 @@ if ($baptismfill_id) {
     echo "No baptism ID provided.";
     $scheduleId = null;
 }
-
-// Define the getTimeRange function
 
 ?>
 
@@ -124,51 +128,36 @@ small {
   <?php require_once 'header.php'?>
   <?php require_once 'sidebar.php'?>
   <div class="container">
-  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel1" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Approval for Schedule Baptism</h5>
+                <h5 class="modal-title" id="modalLabel1">Approval for Schedule Baptism</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="modalForm" method="POST" action="../../Controller/addbaptism_con.php">
+            <form id="modalForm1" method="POST" action="../../Controller/addbaptism_con.php">
                 <div class="modal-body">
-            <input type="hidden" name="baptismfill_id" value="<?php echo htmlspecialchars($baptismfill_id); ?>" />
-            <div class="form-group">
-    <label for="eventType">Select Priest</label>
-    <select class="form-control" id="eventType" name="eventType">
-        <option value="" disabled selected>Select Priest</option>
-        <!-- Populate priests in the dropdown -->
-        <?php if (!empty($priests)): ?>
-            <?php foreach ($priests as $priest): ?>
-                <option value="<?php echo htmlspecialchars($priest['citizend_id']); ?>">
-                    <?php echo htmlspecialchars($priest['fullname']); ?>
-                </option>
-            <?php endforeach; ?>
-        <?php else: ?>
-            <option value="" disabled>No priests available for the selected time</option>
-        <?php endif; ?>
-    </select>
-</div>
-
-            <div class="form-group">
-            <label for="sundays">Select Seminar</label>
-            <select class="form-control" id="sundays" name="sundays">
-                <?php
-                // Display the Sundays dropdown
-                if ($scheduleId) {
-                    $staff->displaySundaysDropdown($scheduleId); // this contain of date , start_time and end_time
-                }
-                ?>
-            </select>
-        </div>
-
-                 
+                    <input type="hidden" name="baptismfill_id" value="<?php echo htmlspecialchars($baptismfill_id); ?>" />
+                    
+                    
                     <div class="form-group">
-                        <label for="eventTitle">Payable Amount</label>
-                        <input type="number" class="form-control" id="eventTitle" name="eventTitle" placeholder="Enter Amount">
+                        <label for="sundays">Select Seminar</label>
+                        <select class="form-control" id="sundays" name="sundays">
+                            <?php
+                            // Display the Sundays dropdown
+                            if ($scheduleId) {
+                                $staff->displaySundaysDropdown($scheduleId); // contains date, start_time, and end_time
+                            }
+                            ?>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventTitle1">Payable Amount</label>
+                        <input type="number" class="form-control" id="eventTitle1" name="eventTitle" placeholder="Enter Amount">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -179,13 +168,88 @@ small {
         </div>
     </div>
 </div>
+
+<!-- Second Modal -->
+<div class="modal fade" id="myModals" tabindex="-1" role="dialog" aria-labelledby="modalLabel2" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel2">Approval for Schedule Baptism</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="modalForm2" method="POST" action="../../Controller/updatepayment_con.php">
+                <div class="modal-body">
+                    <input type="hidden" name="bpriest_id" value="<?php echo htmlspecialchars($baptismfill_id); ?>" />
+                    <div class="form-group">
+                        <label for="priestSelect2">Select Priest</label>
+                        <select class="form-control" id="priestSelect2" name="eventType">
+                            <option value="" disabled selected>Select Priest</option>
+                            <!-- Populate priests in the dropdown -->
+                            <?php if (!empty($priests)): ?>
+                                <?php foreach ($priests as $priest): ?>
+                                    <option value="<?php echo htmlspecialchars($priest['citizend_id']); ?>">
+                                        <?php echo htmlspecialchars($priest['fullname']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <option value="" disabled>No priests available for the selected time</option>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
     <div class="page-inner">
+        
         <div class="row">
             <div class="col-md-12">
             <div class="card">
     <div class="card-header">
-        <div class="card-title">Baptism View Information Form</div>
+        <div class="card-title">Baptism View Information Form</div>  
     </div>
+
+    <div class="col-md-6 col-lg-4">
+    <!-- Priest Name Section -->
+    <div class="form-group">
+    <label for="priestName">Priest Name</label>
+    <div class="d-flex align-items-center">
+        <input type="text" class="form-control" id="priestName" name="priestName" value="<?php echo $Priest; ?>" readonly />
+
+        <?php if ($Pending == 'Pending'): ?>
+            <!-- If the priest is pending, show a disabled button -->
+            <button type="button" class="btn btn-warning" disabled>Waiting for Approval</button>
+
+        <?php elseif ($Pending == 'Approved'): ?>
+            <!-- If the priest is accepted, display a message instead of a button -->
+            <span class="text-success">Has been Approved</span>
+
+        <?php elseif ($Pending == 'Declined'): ?>
+            <!-- If the priest is declined, enable the button to trigger the modal -->
+            <button type="button" data-toggle="modal" data-target="#myModals" class="btn btn-danger">Priest Declined - Click to Reassign</button>
+        
+        
+            <?php else: ?>
+            <!-- Default button state (e.g., if no status is set) -->
+            <button type="button" data-toggle="modal" data-target="#myModals" class="btn btn-success">Priest Assign </button>
+             
+        <?php endif; ?>
+    </div>
+</div>
+</div>
+
+
+
+
     <div class="card-body">
         <div class="row">
             <!-- First Column -->
@@ -311,8 +375,9 @@ small {
             </div>
         </div>
         <div class="card-action">
-        <button type="submit" data-toggle="modal" data-target="#myModal" class="btn btn-success">Approve</button>
-        <button type="button" class="btn btn-danger decline-btn" data-id="<?php echo htmlspecialchars($baptismfill_id); ?>" >Decline</button>
+
+<button type="button" data-toggle="modal" data-target="#myModal" class="btn btn-success">Approve</button>      
+<button type="button" class="btn btn-danger decline-btn" data-id="<?php echo htmlspecialchars($baptismfill_id); ?>" >Decline</button>
         <button type="button" class="btn btn-danger" onclick="window.location.href='your_cancel_url.php'">Cancel</button>
         </div>
     </div>

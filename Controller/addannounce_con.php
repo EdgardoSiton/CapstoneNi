@@ -9,47 +9,66 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $announcement = isset($_POST['announcement']);
     $addcalendar = isset($_POST['addcalendar']);
     // You might want to add validation logic here to populate $errors if needed
-if($announcement){
-    if (empty($errors)) {
-        // Instantiate Staff class
-        $staff = new Staff($conn);
-        
-        // Prepare schedule data
-        $scheduleData = [
-            'date' => $_POST['date'],
-            'start_time' => $_POST['start_time'],
-            'end_time' => $_POST['end_time']
-        ];
+    if ($announcement) {
+        if (empty($errors)) {
+            // Instantiate Staff class
+            $staff = new Staff($conn);
 
-        // Prepare announcement data
-        $announcementData = [
-            'event_type' => $_POST['eventType'],
-            'title' => $_POST['eventTitle'],
-            'description' => $_POST['description'],
-            'date_created' => date('Y-m-d H:i:s'),
-            'capacity' => $_POST['capacity'],
-            'priest_id' => $_POST['priest_id']
-        ];
+            // Function to convert time to military format
+            function formatToMilitaryTime($time) {
+                $dateTime = DateTime::createFromFormat('g:i A', $time);
+                return $dateTime ? $dateTime->format('H:i') : null; // Handle invalid time input
+            }
 
-        // Call the addAnnouncement method
-        $announcementResult = $staff->addAnnouncement($announcementData, $scheduleData);
+            // Schedule data for announcement
+            $scheduleData = [
+                'date' => $_POST['date'],
+                'start_time' => formatToMilitaryTime($_POST['start_time']),
+                'end_time' => formatToMilitaryTime($_POST['end_time'])
+            ];
 
-        // Check if the insertion was successful
-        if ($announcementResult) {
-            // Redirect to a success page or display success message
-            header('Location: ../View/PageStaff/StaffAnnouncement.php');
-            exit();
+            $startTime = $_POST['start_times'] ?? null; // This will contain the 24-hour format time
+            $endTime = $_POST['end_times'] ?? null; // This will also be in 24-hour format
+            
+            // Check if the values are valid
+            if ($startTime && $endTime) {
+                $scheduleDatas = [
+                    'date' => $_POST['date'] ?? '',
+                    'start_time' => $startTime, // Use the value directly from the dropdown
+                    'end_time' => $endTime // Same for end_time
+                ];
+            
+                // Now you can proceed with your database insertions using the $scheduleData
+            }
+            // Prepare announcement data
+            $announcementData = [
+                'event_type' => $_POST['eventType'],
+                'title' => $_POST['eventTitle'],
+                'description' => $_POST['description'],
+                'date_created' => date('Y-m-d H:i:s'),
+                'capacity' => $_POST['capacity'],
+                'priest_id' => $_POST['priest_id']
+            ];
+
+            // Call the addAnnouncement method
+            $announcementResult = $staff->addAnnouncement($announcementData, $scheduleData, $scheduleDatas);
+
+            // Check if the insertion was successful
+            if ($announcementResult) {
+                // Redirect to a success page or display success message
+                header('Location: ../View/PageStaff/StaffAnnouncement.php');
+                exit();
+            } else {
+                // Display error message
+                echo '<script>alert("Error adding announcement.");</script>';
+            }
         } else {
-            // Display error message
-            echo '<script>alert("Error adding announcement.");</script>';
+            // Display error messages
+            foreach ($errors as $error) {
+                echo '<script>alert("' . $error . '");</script>';
+            }
         }
-    } else {
-        // Display error messages
-        foreach ($errors as $error) {
-            echo '<script>alert("' . $error . '");</script>';
-        }
-    }
-}else if ($addcalendar){
+    }else if ($addcalendar){
 // Create an instance of the Staff class
 $staff = new Staff($conn);
 

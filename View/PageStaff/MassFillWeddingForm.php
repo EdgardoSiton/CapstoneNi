@@ -1,23 +1,15 @@
 <?php
 require_once '../../Model/db_connection.php';
 require_once '../../Controller/citizen_con.php';
-require_once '../../Model/citizen_mod.php';
-// Retrieve date and time from session
-$scheduleDate = $_SESSION['selectedDate'] ?? null;
-$startTime = $_SESSION['startTime'] ?? null;
-$endTime = $_SESSION['endTime'] ?? null;
-
-// Assuming you're storing session data for the user's name and citizen ID
 $nme = $_SESSION['fullname'];
 $regId = $_SESSION['citizend_id'];
-
-// Create instances of the required classes
-$citizen = new Citizen($conn);
+require_once '../../Model/staff_mod.php';
+// Initialize the Staff model
 $staff = new Staff($conn);
 
-// Fetch available priests based on the selected schedule
-$priests = $citizen->getAvailablePriests($scheduleDate, $startTime, $endTime);
-
+// Fetch announcement data based on the announcement_id from the URL
+$announcementId = isset($_GET['announcement_id']) ? intval($_GET['announcement_id']) : 0;
+$announcementData = $staff->getAnnouncementById($announcementId);
 
 ?>
 
@@ -53,127 +45,42 @@ $priests = $citizen->getAvailablePriests($scheduleDate, $startTime, $endTime);
       });
 
 
-      const selectedDate = sessionStorage.getItem('selectedDate');
-const startTime = sessionStorage.getItem('startTime');
-const endTime = sessionStorage.getItem('endTime');
-
-// Use the retrieved data as needed
-console.log('Selected Date:', selectedDate);
-console.log('Start Time:', startTime);
-console.log('End Time:', endTime);
-
-document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener('DOMContentLoaded', function() {
     const selectedDate = sessionStorage.getItem('selectedDate');
-    const selectedTimeRange = sessionStorage.getItem('selectedTimeRange');
-    console.log('Selected Date:', selectedDate);  // Check if date is properly stored
-    console.log('Selected Time Range:', selectedTimeRange);  // Check if time range is stored correctly
+    const selectedTimeRange = sessionStorage.getItem('selectedTime');
+
     if (selectedDate) {
         document.getElementById('date').value = selectedDate;
     }
 
     if (selectedTimeRange) {
-        const [startTime, endTime] = selectedTimeRange.split(' - ');
-        document.getElementById('start_time').value = startTime.trim();
-        document.getElementById('end_time').value = endTime.trim();
+        const [startTime, endTime] = selectedTimeRange.split('-');
+        document.getElementById('start_time').value = startTime;
+        document.getElementById('end_time').value = endTime;
     }
+
+    // Optionally, clear the session storage if you don't want to persist the data
+     sessionStorage.removeItem('selectedDate');
+     sessionStorage.removeItem('selectedTime');
 });
+
 
 document.addEventListener('DOMContentLoaded', function() {
-    const dateInput = document.getElementById('date');
-
-    // Validate the date input
-    if (dateInput.value) {
-        const selectedDate = new Date(dateInput.value);  // Get the provided date
-
-        // Ensure the selected date is valid
-        if (!isNaN(selectedDate.getTime())) {
-            const saturdays = getSecondAndFourthSaturdays(new Date(), selectedDate);  // Get 2nd and 4th Saturdays from now until selected date
-            populateSaturdaysDropdown(saturdays, selectedDate);  // Populate dropdown with those Saturdays
-        } else {
-            console.error("Error: Invalid date.");
-            clearSaturdaysDropdown();  // Clear dropdown on invalid date
-        }
-    } else {
-        console.error("Error: No date provided.");
-        clearSaturdaysDropdown();  // Clear dropdown if no date
-    }
-});
-
-function getSecondAndFourthSaturdays(startDate, endDate) {
-    const saturdays = [];
-    let currentDate = new Date(startDate.getFullYear(), startDate.getMonth(), 1);  // Start from the beginning of the current month
-
-    // Loop through months until the end date is reached
-    while (currentDate <= endDate) {
-        const saturdaysInMonth = getSaturdaysInMonth(currentDate);
-        const secondAndFourthSaturdays = saturdaysInMonth.filter((_, index) => index === 1 || index === 3);  // 2nd and 4th Saturdays
-        saturdays.push(...secondAndFourthSaturdays);  // Add to the main list of Saturdays
-
-        // Move to the next month
-        currentDate.setMonth(currentDate.getMonth() + 1);
-        currentDate.setDate(1);  // Reset to the first day of the new month
-    }
-
-    // Return only Saturdays up until the selected date
-    return saturdays.filter(saturday => saturday <= endDate);
-}
-
-function getSaturdaysInMonth(date) {
-    const saturdays = [];
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    let currentDate = new Date(year, month, 1);  // Start at the beginning of the month
-
-    // Find the first Saturday of the month
-    while (currentDate.getDay() !== 6) {
-        currentDate.setDate(currentDate.getDate() + 1);
-    }
-
-    // Collect all Saturdays in the month
-    while (currentDate.getMonth() === month) {
-        saturdays.push(new Date(currentDate));  // Add Saturday to the list
-        currentDate.setDate(currentDate.getDate() + 7);  // Move to the next Saturday
-    }
-
-    return saturdays;
-}
-
-// Function to populate dropdown with 2nd and 4th Saturdays before the selected date
-function populateSaturdaysDropdown(saturdays, selectedDate) {
-    const saturdaysDropdown = document.getElementById('saturdays');  // Correct ID for the dropdown
-    saturdaysDropdown.innerHTML = '';  // Clear any previous options
-
-    saturdays.forEach(saturday => {
-        const selectedDateFormatted = formatDateToYYYYMMDD(selectedDate);
-        const saturdayFormatted = formatDateToYYYYMMDD(saturday);
-
-        // Only show the Saturday if it's before the selected date and NOT the selected date itself
-        if (saturdayFormatted !== selectedDateFormatted && saturday < selectedDate) {
-            const option = document.createElement('option');
-            const formattedDate = formatDateToYYYYMMDD(saturday);  // Change to YYYY-MM-DD format
-            const schedule_id = Math.random().toString(36).substr(2, 9);  // Random schedule ID for demo
-
-            option.value = `${schedule_id}|${formattedDate}|8:00 AM|5:00 PM`;  // Four parts separated by '|'
-            option.textContent = `${formattedDate} - 8:00 AM to 5:00 PM`;  // Displayed text
-            saturdaysDropdown.appendChild(option);
-        }
+    document.querySelector('.btn-info').addEventListener('click', function() {
+        // Select all input and textarea fields within the form
+        document.querySelectorAll('.form-control').forEach(function(element) {
+            console.log('Clearing element:', element.id, element.type, element.value); // Debug info
+            // Clear text inputs, textareas, and date inputs
+            if (element.type === 'text' || element.tagName === 'TEXTAREA' || element.type === 'date') {
+                if (element.id !== 'date' && element.id !== 'start_time' && element.id !== 'end_time') {
+                    element.value = ''; // Clear the value
+                }
+            } else if (element.type === 'radio' || element.type === 'checkbox') {
+                element.checked = false; // Uncheck radio and checkbox inputs
+            }
+        });
     });
-}
-
-// Function to clear the Saturdays dropdown
-function clearSaturdaysDropdown() {
-    const saturdaysDropdown = document.getElementById('saturdays');
-    saturdaysDropdown.innerHTML = '';  // Clear any previous options
-}
-
-// Helper function to format date as 'YYYY-MM-DD'
-function formatDateToYYYYMMDD(date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');  // Month is 0-indexed, so add 1
-    const day = String(date.getDate()).padStart(2, '0');  // Pad day with leading zero if necessary
-    return `${year}-${month}-${day}`;  // Format as 'YYYY-MM-DD'
-}
-
+});
 document.getElementById('baptismForm').addEventListener('submit', function(event) {
     // Get the values of the first name, last name, and middle name
     var firstname = document.getElementById('firstname').value.trim();
@@ -251,13 +158,18 @@ small {
   </head>
   <body>
   
+     
  <!-- Navbar & Hero Start -->
  <div class="container-fluid nav-bar px-0 px-lg-4 py-lg-0">
       <div class="container">
+       
+   
+
       </div>
     </div>
-    <?php require_once 'header.php'?> 
+    <?php require_once 'header.php'?>
     <?php require_once 'sidebar.php'?>
+       
   <div class="container">
     <div class="page-inner">
         <div class="row">
@@ -268,23 +180,22 @@ small {
                     </div>
                     <div class="card-body">
                     <form method="post" action="../../Controller/citizen_con.php" onsubmit="return validateForm()">
+                    <input type="hidden" name="announcement_id" value="<?php echo htmlspecialchars($announcementId); ?>">
     <div class="row">
-        <input type="hidden" name ="walkinwedding_id" value = "walkinwedding_id">
+    <input type="hidden" name="walkinweddingannouncement_id" value="Wedding">
         <div class="col-md-6 col-lg-4">
             <!-- Date -->
             <div class="form-group">
                 <label for="date">Date</label>
-                <input type="text" class="form-control" id="date" name="date" placeholder="" readonly />
+                <input type="text" class="form-control" id="date" name="date" placeholder=""  value="<?php echo htmlspecialchars($announcementData['date']); ?>" readonly />
                 <div id="dateError" class="error text-danger"></div>
             </div>
-            <div class="card-title" ><label style="font-size:15px!important;font-weight:700; margin-left:10px;  border-bottom: 1px solid black;
-">Fillup Groom Details</label></div>
 
             <!-- Groom Firstname -->
             <div class="form-group">
                 <label for="firstname">Firstname of Groom</label>
                 <input type="text" class="form-control" id="firstname" name="firstname" placeholder="Enter Firstname"
-                />
+                    value="" />
                 <div id="firstnameError" class="error text-danger"></div>
             </div>
 
@@ -292,7 +203,7 @@ small {
             <div class="form-group">
                 <label for="lastname">Last Name of Groom</label>
                 <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Enter Lastname"
-                   />
+                    value="" />
                 <div id="lastnameError" class="error text-danger"></div>
             </div>
 
@@ -300,7 +211,7 @@ small {
             <div class="form-group">
                 <label for="middlename">Middle Name of Groom</label>
                 <input type="text" class="form-control" id="middlename" name="middlename" placeholder="Enter Middlename"
-                 />
+                    value="" />
                 <div id="middlenameError" class="error text-danger"></div>
             </div>
 
@@ -355,8 +266,17 @@ small {
                 <textarea class="form-control" id="parents_residence" name="groom_address" placeholder="Enter Address"></textarea>
                 <div id="groomAddressError" class="error text-danger"></div>
             </div>
-             <!-- Groom Religion -->
-             <div class="form-group">
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <!-- Start Time -->
+            <div class="form-group">
+                <label for="start_time">Start Time</label>
+                <input type="text" class="form-control" id="start_time" name="start_time" placeholder=""value="<?php echo htmlspecialchars($announcementData['start_time']); ?>" readonly />
+            </div>
+
+            <!-- Groom Religion -->
+            <div class="form-group">
                 <label for="groom_religion">Groom Religion</label>
                 <input type="text" class="form-control" id="groom_religion" name="groom_religion" placeholder="Enter Groom Religion" />
                 <div id="groomReligionError" class="error text-danger"></div>
@@ -372,33 +292,12 @@ small {
                 </select>
                 <div id="groomPreviouslyMarriedError" class="error text-danger"></div>
             </div>
-        </div>
 
-        <div class="col-md-6 col-lg-4">
-            <!-- Start Time -->
+            <!-- Bride Firstname -->
             <div class="form-group">
-                <label for="start_time">Start Time</label>
-                <input type="text" class="form-control" id="start_time" name="start_time" placeholder="" readonly />
-            </div>
-
-           
-
-        
-        </div>
-
-        <div class="col-md-6 col-lg-4">
-            <!-- End Time -->
-            <div class="form-group">
-                <label for="end_time">End Time</label>
-                <input type="text" class="form-control" id="end_time" name="end_time" placeholder="" readonly />
-            </div>
-            <div class="card-title" ><label style="font-size:15px!important;font-weight:700; margin-left:10px;  border-bottom: 1px solid black;
-">Fillup Bride Details</label></div>
-    <!-- Bride Firstname -->
-    <div class="form-group">
                 <label for="firstnames">Firstname of Bride</label>
                 <input type="text" class="form-control" id="firstnames" name="firstnames" placeholder="Enter Firstname"
-                    />
+                    value="" />
                 <div id="brideFirstnameError" class="error text-danger"></div>
             </div>
 
@@ -406,7 +305,7 @@ small {
             <div class="form-group">
                 <label for="lastnames">Last Name of Bride</label>
                 <input type="text" class="form-control" id="lastnames" name="lastnames" placeholder="Enter Lastname"
-                  />
+                    value="" />
                 <div id="brideLastnameError" class="error text-danger"></div>
             </div>
 
@@ -414,7 +313,7 @@ small {
             <div class="form-group">
                 <label for="middlenames">Middle Name of Bride</label>
                 <input type="text" class="form-control" id="middlenames" name="middlenames" placeholder="Enter Middlename"
-                  />
+                    value="" />
                 <div id="brideMiddlenameError" class="error text-danger"></div>
             </div>
 
@@ -462,6 +361,15 @@ small {
                 <input type="text" class="form-control" id="bride_citizenship" name="bride_citizenship" placeholder="Enter Bride Citizenship" />
                 <div id="brideCitizenshipError" class="error text-danger"></div>
             </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <!-- End Time -->
+            <div class="form-group">
+                <label for="end_time">End Time</label>
+                <input type="text" class="form-control" id="end_time" name="end_time" placeholder="" value="<?php echo htmlspecialchars($announcementData['end_time']); ?>"readonly />
+            </div>
+
             <!-- Bride Address -->
             <div class="form-group">
                 <label for="bride_address">Bride Address</label>
@@ -490,41 +398,6 @@ small {
                                 
                             </div>
                             <div class="card-action">
-    <div class="card-header">
-                        <div class="card-title">Seminar Schedule and Payableamount</div>
-                    </div>
-    <div class="col-md-6 col-lg-4">
-
-    <div class="form-group">
-    <label for="eventType">Select Priest</label>
-    <select class="form-control" id="eventType" name="eventType">
-        <option value="" disabled selected>Select Priest</option>
-        <?php foreach ($priests as $priest): ?>
-            <option value="<?php echo htmlspecialchars($priest['citizend_id']); ?>">
-                <?php echo htmlspecialchars($priest['fullname']); ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
-    <span class="error" id="priestError"></span>
-</div>
-
-<div class="form-group"> 
-    <label for="saturdays">Select Seminar</label>
-    <select class="form-control" id="saturdays" name="saturdays">    
-    </select>
-    <span class="error" id="seminarError"></span>
-</div>
-
-<div class="form-group">
-    <label for="pay_amount">Payable Amount</label>
-    <input type="number" class="form-control" id="pay_amount" name="pay_amount" placeholder="Enter Payable Amount" />
-    <span class="error" id="payAmountError"></span>
-</div>
- 
-       
-        </div>
-            </div>
-                            <div class="card-action">
                                 <button type="submit" class="btn btn-success">Submit</button>
                                 <button type="button" class="btn btn-danger" onclick="window.location.href='your_cancel_url.php'">Cancel</button>
                                 <button type="button" class="btn btn-info" onclick="clearForm()">Clear</button>
@@ -535,7 +408,8 @@ small {
             </div>
         </div>
     </div>
-</div>
+
+
 <script>
     function validateForm() {
     var isValid = true;
@@ -592,36 +466,6 @@ small {
     if (isEmptyOrWhitespace(brideDob.month) || isEmptyOrWhitespace(brideDob.day) || isEmptyOrWhitespace(brideDob.year)) {
         document.getElementById(brideDob.errorId).innerText = 'Complete Bride Date of Birth is required.';
         isValid = false;
-    }
-    const seminar = document.getElementById('saturdays').value;
-if (seminar === '' || seminar === null) {
-    document.getElementById('seminarError').innerText = 'Please select a seminar';
-    document.getElementById('saturdays').classList.add('error');
-    isValid = false;
-} else {
-    document.getElementById('seminarError').innerText = '';
-    document.getElementById('saturdays').classList.remove('error');
-}
-
-const priest = document.getElementById('eventType').value;
-if (priest === '' || priest === null) {
-    document.getElementById('priestError').innerText = 'Please select a priest';
-    document.getElementById('eventType').classList.add('error');
-    isValid = false;
-} else {
-    document.getElementById('priestError').innerText = '';
-    document.getElementById('eventType').classList.remove('error');
-}
-
-    
- const payAmount = document.getElementById('pay_amount').value;
-    if (payAmount === '' || isNaN(payAmount) || payAmount <= 0) {
-        document.getElementById('payAmountError').innerText = 'Please enter a valid payable amount';
-        document.getElementById('pay_amount').classList.add('error');
-        isValid = false;
-    } else {
-        document.getElementById('payAmountError').innerText = '';
-        document.getElementById('pay_amount').classList.remove('error');
     }
 
     return isValid; 

@@ -1,4 +1,5 @@
 <?php
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -9,18 +10,22 @@ require __DIR__ . "/../vendor/autoload.php";
 require_once __DIR__ . '/../Model/staff_mod.php';
 require_once __DIR__ . '/../Model/db_connection.php';
 require_once __DIR__ . '/../Model/citizen_mod.php';
-session_start();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $staff = new Staff($conn);
     $Citizen = new Citizen($conn);
+    $requestform_id = isset($_POST['requestform_id']) ? $_POST['requestform_id'] : null;
     $baptismfill_id = isset($_POST['baptismfill_id']) ? $_POST['baptismfill_id'] : null;
-    $baptismfillId = isset($_POST['baptismfill_id']) ? $_POST['baptismfill_id'] : null;
+     $confirmationfill_id = isset($_POST['confirmationfill_id']) ? $_POST['confirmationfill_id'] : null;
     $massbaptismfillId = isset($_POST['massbaptismfill_id']) ? $_POST['massbaptismfill_id'] : null;
     $weddingffill_id = isset($_POST['marriage_id']) ? $_POST['marriage_id'] : null;
     $massweddingffill_id = isset($_POST['massmarriage_id']) ? $_POST['massmarriage_id'] : null;
     $defuctomfill_id = isset($_POST['defuctom_id']) ? $_POST['defuctom_id'] : null;
-    $confirmationfill_id = $_POST['confirmation_id']; 
+   // Handle Baptism
+   
+
+
+
     if ($baptismfill_id) {
     $sunday = $start_time = $end_time = $priestId = $payableAmount = null;
         if (isset($_POST['sundays'])) {
@@ -32,12 +37,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
 
-        $priestId = $_POST['eventType'] ?? null;
+ 
         $payableAmount = $_POST['eventTitle'] ?? null;
         $citizen_id = isset($_SESSION['citizen_id']) ? $_SESSION['citizen_id'] : null;
 
         // Check that all required fields are present
-        if (!$sunday || !$start_time || !$end_time || !$payableAmount || !$priestId) {
+        if (!$sunday || !$start_time || !$end_time || !$payableAmount) {
             die('Error: Missing required form data.');
         }
 
@@ -45,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $scheduleId = $appointment->insertSchedule($sunday, $start_time, $end_time, 'Seminar');
 
         if ($scheduleId) {
-            $result = $Citizen->insertAppointment($baptismfill_id, $payableAmount, $priestId, $scheduleId);
+            $result = $Citizen->insertAppointment($baptismfill_id, $payableAmount, $scheduleId);
             $result = $appointment->approveBaptism($baptismfill_id);
             if ($result) {
                 $contactInfo = $appointment->getContactInfoAndTitle($baptismfill_id);
@@ -185,11 +190,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             die("Error: No sundays data provided.");
         }
 
-        $priestId = isset($_POST['eventType']) ? $_POST['eventType'] : null;
+       
         $payableAmount = $_POST['eventTitle']; 
         $citizen_id = isset($_SESSION['citizen_id']) ? $_SESSION['citizen_id'] : null;
 
-        if (!$sunday || !$start_time || !$end_time || !$payableAmount || !$weddingffill_id || !$priestId) {
+        if (!$sunday || !$start_time || !$end_time || !$payableAmount || !$weddingffill_id) {
             die('Error: Missing required form data.');
         }
 
@@ -197,7 +202,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $scheduleId = $appointment->insertSchedule($sunday, $start_time, $end_time, 'Seminar');
 
         if ($scheduleId) {
-            $result = $appointment->insertwAppointment($weddingffill_id, $payableAmount, $priestId, $scheduleId);
+            $result = $appointment->insertwAppointment($weddingffill_id, $payableAmount, $scheduleId);
             $result = $appointment->approveWedding($weddingffill_id);
             
             if ($result) {
@@ -466,13 +471,47 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo "Error updating status. Please try again.";
     }
 
-} 
+}else if ($requestform_id) {
+ 
+    $date = $_POST['date'] ?? '';
+    $startTime = $_POST['start_time'] ?? '';
+    $endTime = $_POST['end_time'] ?? '';
+    $datetofollowup = $_POST['datetofollowup'] ?? '';
+    $priestId = $_POST['eventType'] ?? null;
+    // Collecting the names and address
+    $fullname = trim(implode(' ', [$_POST['firstname'] ?? '', $_POST['middlename'] ?? '', $_POST['lastname'] ?? '']));
+    $fullnames = trim(implode(' ', [$_POST['firstnames'] ?? '', $_POST['middlenames'] ?? '', $_POST['lastnames'] ?? '']));
+    $chapel = $_POST['chapel'] ?? '';
+    $address = $_POST['address'] ?? ''; 
+    $cpnumber = $_POST['cpnumber'] ?? '';
+    $selectrequest = $_POST['selectrequest'] ?? '';
+    
+    // Insert schedule and request form
+    $scheduleId = $Citizen->insertSchedule(null, $date, $startTime, $endTime);
+    $requestinside = $Citizen->insertRequestFormFill($scheduleId,$priestId, $selectrequest, $fullname, $datetofollowup, $address, $cpnumber, $fullnames, $chapel);
+    
+    // Insert appointment
+   
+    $payableAmount = $_POST['pay_amount'] ?? null;
+    $appointmentResult = $Citizen->insertrequestAppointment($requestinside, $payableAmount);
+
+    // Check if the insertions were successful
+    if ($scheduleId && $appointmentResult) {
+        $_SESSION['status'] = "success";
+        header('Location: ../View/PageStaff/StaffDashboard.php');
+        exit();
+    } else {
+        $_SESSION['status'] = "failure"; // Handle the failure case
+    }
+}
+ 
      
     else  {
         echo "Error: No valid form data provided.";
     }
     
 }
+ob_end_flush();
 
 // Close the database connection
 $conn->close();

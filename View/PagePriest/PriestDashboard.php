@@ -183,9 +183,18 @@ $appointmentSchedule = $appointments->getPriestAppointmentSchedule($priestId);
                
                     <td><?= $eventName ?></td>
                     <td>
-                    <button class="btn btn-primary btn-xs approve-btn" data-id="<?= htmlspecialchars($appointment['appsched_id'], ENT_QUOTES, 'UTF-8') ?>" style="background-color: #31ce36!important; border-color:#31ce36!important;">Approve</button>
-      <button class="btn btn-primary btn-xs">Decline</button>
-                    </td>
+    <button class="btn btn-primary btn-xs approve-btn" 
+        data-id="<?= htmlspecialchars($appointment['id'], ENT_QUOTES, 'UTF-8') ?>" 
+        data-type="<?= htmlspecialchars($appointment['type'], ENT_QUOTES, 'UTF-8') ?>" 
+        style="background-color: #31ce36!important; border-color:#31ce36!important;">
+        Approve
+    </button>
+    <button class="btn btn-primary btn-xs decline-btn" data-id="<?= htmlspecialchars($appointment['id'], ENT_QUOTES, 'UTF-8') ?>" 
+        style="background-color: #d9534f!important; border-color:#d9534f!important;">
+        Decline
+    </button>
+</td>
+
                 </tr>
                 <?php $previousDate = $currentDate; // Update previous date to current ?>
             <?php endforeach; ?>
@@ -254,26 +263,26 @@ $appointmentSchedule = $appointments->getPriestAppointmentSchedule($priestId);
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Handle form submission success message
-    <?php
-    if (isset($_SESSION['status']) && $_SESSION['status'] == 'success') {
-        echo "Swal.fire({
+    // Show form submission success message using SweetAlert
+    <?php if (isset($_SESSION['status']) && $_SESSION['status'] == 'success') { ?>
+        Swal.fire({
             icon: 'success',
             title: 'Form submitted successfully!',
             text: 'Waiting for Approval.',
-        });";
-        unset($_SESSION['status']);
-    }
-    ?>
+        });
+        <?php unset($_SESSION['status']); ?>
+    <?php } ?>
 
-    // Handle approval button click
+    // Handle the approval button click
     document.querySelectorAll('.approve-btn').forEach(function(button) {
         button.addEventListener('click', function() {
             var appointmentId = this.getAttribute('data-id');
-            
+            var appointmentType = this.getAttribute('data-type'); // Get the type
+
+            // SweetAlert confirmation dialog
             Swal.fire({
                 title: 'Are you sure?',
-                text: "You won't be able to change it!",
+                text: "You won't be able to change this!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -281,33 +290,43 @@ document.addEventListener('DOMContentLoaded', function() {
                 confirmButtonText: 'Yes, approve it!'
             }).then((result) => {
                 if (result.isConfirmed) {
+                    // Send AJAX request to approve appointment
                     var xhr = new XMLHttpRequest();
                     xhr.open('POST', '../../Controller/priest_con.php', true);
                     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
                     xhr.onload = function() {
                         if (xhr.status === 200) {
-                            Swal.fire(
-                                'Approved!',
-                                'The appointment has been approved.',
-                                'success'
-                            ).then(() => {
-                                // Optionally refresh or update the page
-                                location.reload(); // Reloads the page
-                            });
+                            if (xhr.responseText === 'success') {
+                                Swal.fire(
+                                    'Approved!',
+                                    'The appointment has been approved.',
+                                    'success'
+                                ).then(() => {
+                                    location.reload(); // Optionally reload the page
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Error!',
+                                    'There was an issue approving the appointment.',
+                                    'error'
+                                );
+                            }
                         } else {
                             Swal.fire(
                                 'Error!',
-                                'There was an issue approving the appointment.',
+                                'There was an issue processing the request.',
                                 'error'
                             );
                         }
                     };
-                    xhr.send('appointmentId=' + encodeURIComponent(appointmentId));
+                    // Include the appointmentType in the request
+                    xhr.send('appointmentId=' + encodeURIComponent(appointmentId) + '&appointmentType=' + encodeURIComponent(appointmentType));
                 }
             });
         });
     });
 });
+
 
       document.getElementById('schedule-date').addEventListener('change', function() {
     const selectedDate = this.value;

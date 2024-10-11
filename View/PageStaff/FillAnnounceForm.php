@@ -1,15 +1,24 @@
 <?php
-
 require_once '../../Model/db_connection.php';
 require_once '../../Controller/citizen_con.php';
 require_once '../../Model/citizen_mod.php';
+// Retrieve date and time from session
+$scheduleDate = $_SESSION['selectedDate'] ?? null;
+$startTime = $_SESSION['startTime'] ?? null;
+$endTime = $_SESSION['endTime'] ?? null;
+
+// Assuming you're storing session data for the user's name and citizen ID
 $nme = $_SESSION['fullname'];
 $regId = $_SESSION['citizend_id'];
+
+// Create instances of the required classes
 $citizen = new Citizen($conn);
 $staff = new Staff($conn);
-$priests = $citizen->getPriests();
 
+// Fetch available priests based on the selected schedule
+$priests = $citizen->getAvailablePriests($scheduleDate, $startTime, $endTime);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -87,27 +96,108 @@ small {
           sessionStorage.fonts = true;
         },
       });
-      
+// Retrieve data from sessionStorage
+const selectedDate = sessionStorage.getItem('selectedDate');
+const startTime = sessionStorage.getItem('startTime');
+const endTime = sessionStorage.getItem('endTime');
 
+// Use the retrieved data as needed
+console.log('Selected Date:', selectedDate);
+console.log('Start Time:', startTime);
+console.log('End Time:', endTime);
 
-      document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
     const selectedDate = sessionStorage.getItem('selectedDate');
-    const selectedTimeRange = sessionStorage.getItem('selectedTime');
-
+    const selectedTimeRange = sessionStorage.getItem('selectedTimeRange');
+    console.log('Selected Date:', selectedDate);  // Check if date is properly stored
+    console.log('Selected Time Range:', selectedTimeRange);  // Check if time range is stored correctly
     if (selectedDate) {
         document.getElementById('date').value = selectedDate;
     }
 
     if (selectedTimeRange) {
-        const [startTime, endTime] = selectedTimeRange.split('-');
-        document.getElementById('start_time').value = startTime;
-        document.getElementById('end_time').value = endTime;
+        const [startTime, endTime] = selectedTimeRange.split(' - ');
+        document.getElementById('start_time').value = startTime.trim();
+        document.getElementById('end_time').value = endTime.trim();
+    }
+});
+document.addEventListener('DOMContentLoaded', function() {
+    // Retrieve the selected date from sessionStorage
+    const selectedDate = sessionStorage.getItem('selectedDate');
+    
+    // Display the retrieved date in the readonly input field
+    if (selectedDate) {
+        document.getElementById('date').value = selectedDate;
     }
 
-    // Optionally, clear the session storage if you don't want to persist the data
-  //   sessionStorage.removeItem('selectedDate');
-   //  sessionStorage.removeItem('selectedTime');
+    // Use the current date and the selected date to limit the range of the "Select Seminar" field
+    if (selectedDate) {
+        const seminarInput = document.getElementById('dates');
+        
+        // Get today's date
+        const today = new Date().toISOString().split('T')[0]; // Format as YYYY-MM-DD
+
+        // Set the min date to today and the max date to the stored selectedDate
+        seminarInput.min = today;
+        seminarInput.max = selectedDate;
+    }
 });
+document.addEventListener('DOMContentLoaded', function() {
+    // Populate dropdown with time options
+    function populateDropdown(dropdown, startHour, startMinute, endHour, endMinute) {
+        dropdown.innerHTML = ''; // Clear current options
+
+        let time = new Date();
+        time.setHours(startHour);
+        time.setMinutes(startMinute);
+
+        const endTime = new Date();
+        endTime.setHours(endHour);
+        endTime.setMinutes(endMinute);
+
+        // Create time options in 1-hour intervals
+        while (time <= endTime) {
+            const hours = time.getHours();
+            const minutes = time.getMinutes().toString().padStart(2, '0');
+            const period = hours >= 12 ? 'PM' : 'AM';
+            const displayHours = hours % 12 || 12; // Convert 24-hour time to 12-hour time format
+
+            const optionValue = `${hours.toString().padStart(2, '0')}:${minutes}`; // 24-hour format
+            const optionText = `${displayHours}:${minutes} ${period}`; // 12-hour format
+            
+            const option = new Option(optionText, optionValue);
+            dropdown.add(option);
+
+            // Increment by 1 hour
+            time.setHours(time.getHours() + 1);
+        }
+    }
+
+    // Get the dropdowns
+    const startTimeDropdown = document.getElementById('start_times');
+    const endTimeDropdown = document.getElementById('end_times');
+
+    // Initial population of both dropdowns
+    populateDropdown(startTimeDropdown, 8, 30, 16, 30);  // Populate start time: 8:30 AM to 4:30 PM
+    populateDropdown(endTimeDropdown, 9, 30, 17, 30);    // Populate end time: 9:30 AM to 5:30 PM
+
+    // Update end time based on selected start time
+    startTimeDropdown.addEventListener('change', function() {
+        const selectedStartTime = startTimeDropdown.value.split(':');
+        const startHour = parseInt(selectedStartTime[0], 10);
+        const startMinute = parseInt(selectedStartTime[1], 10);
+
+        // Populate end time with only times greater than selected start time
+        const newEndHour = startHour + 1; // End time starts from selected start time + 1 hour
+        populateDropdown(endTimeDropdown, newEndHour, startMinute, 17, 30); // Maintain the upper limit of 5:30 PM
+    });
+});
+
+
+
+
+
+
 document.addEventListener('DOMContentLoaded', function() {
     const dateInput = document.getElementById('date');
     
@@ -179,6 +269,8 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="form-group">
     <label for="date">Date</label>
     <input type="text" class="form-control" id="date" name="date" placeholder="Select a date" readonly />
+
+
     <span class="error" id="dateError"></span>
 </div>
 
@@ -197,8 +289,8 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="col-md-6 col-lg-4">
             <div class="form-group">
                 <label for="start_time">Start Time</label>
-                <input type="text" class="form-control" id="start_time" name="start_time" placeholder="" readonly />
-              <span class="error" id="startTimeError"></span>
+                <input type="text" class="form-control" id="start_time" name="start_time" placeholder="Start Time" readonly>    
+                 <span class="error" id="startTimeError"></span>
             </div>
             <div class="form-group">
             <label for="eventType">Event Type</label>
@@ -216,8 +308,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="col-md-6 col-lg-4">
             <div class="form-group">
                 <label for="end_time">End Time</label>
-                <input type="text" class="form-control" id="end_time" name="end_time" placeholder="" readonly />
-                  <span class="error" id="endTimeError"></span>
+                <input type="text" class="form-control" id="end_time" name="end_time" placeholder="End Time" readonly>        <span class="error" id="endTimeError"></span>
             </div>
             <div class="form-group">
             <label for="description">Description</label>
@@ -232,6 +323,25 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="card-title">Priest</div>
                     </div>
     <div class="col-md-6 col-lg-4">
+    <div class="form-group">
+    <label for="dates">Select Seminar</label>
+    <input type="date" class="form-control" id="dates" name="dates" placeholder="Enter description">
+</div>
+<div class="form-group">
+    <label for="start_times">Select Start Time</label>
+    <select class="form-control" id="start_times" name="start_times">
+        <!-- Time options will be added by JavaScript -->
+    </select>
+</div>
+
+<div class="form-group">
+    <label for="end_times">Select End Time</label>
+    <select class="form-control" id="end_times" name="end_times">
+        <!-- Time options will be added by JavaScript -->
+    </select>
+</div>
+
+
 
     <div class="form-group">
     <label for="eventType">Select Priest</label>
@@ -245,10 +355,6 @@ document.addEventListener('DOMContentLoaded', function() {
     </select>
     <span class="error" id="priestError"></span>
 </div>
-
-    
-        </div>
-            </div>
     <div class="card-action">
         <button type="submit" class="btn btn-success">Submit</button>
         <button type="button" class="btn btn-danger" onclick="window.location.href='your_cancel_url.php'">Cancel</button>
@@ -262,6 +368,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </div>
 <script>
+    
 
 function validateForm() {
     let isValid = true;

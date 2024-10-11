@@ -1,3 +1,15 @@
+<?php
+session_start();
+$email = $_SESSION['email'];
+$nme = $_SESSION['fullname'];
+$regId = $_SESSION['citizend_id'];
+require_once '../../Model/admin_mod.php';
+require_once '../../Model/db_connection.php';
+$admin = new Admin($conn);
+$pendingItems = $admin ->getPendingAppointments();
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -59,216 +71,36 @@
                       >
                         <thead>
                           <tr>
+                          <th>No.</th>
                             <th>Citizen's Name</th>
                             <th>Finance Type</th>
                             <th>Amount</th>
                             <th>Payment On </th>
-                            <th>Description</th>
-                            <th>Action</th>
+                    
                           </tr>
                         </thead>
                   
                         <tbody>
-                          <tr>
-                            <td>Kathryn Bernardo</td>
-                            <th>For Mass</th>
-                           <td><span>&#8369;</span>500 </td>
-                           <td>2024/04/25</td>
-                           <td>Shoutout my name after the mass</td>
-                           <td>  
-                            <button class="btn btn-primary btn-xs" style="background-color: #31ce36!important; border-color:#31ce36!important;"> Edit</button> 
-                            <button class="btn btn-primary btn-xs"> Delete</button> 
-                        </td>
-                          </tr>
-                          <tr>
-                            <td>Alden Richards</td>
-                            <th>For Church</th>
-                           <td><span>&#8369;</span>1,000 </td>
-                           <td>2024/04/25</td>
-                           <td>None</td>
-                           <td>  
-                            <button class="btn btn-primary btn-xs" style="background-color: #31ce36!important; border-color:#31ce36!important;"> Edit</button> 
-                            <button class="btn btn-primary btn-xs"> Delete</button> 
-                        </td>
-                          </tr>
-                          <tr>
-                            <td>Alden Richards</td>
-                            <th>For Church</th>
-                           <td><span>&#8369;</span>1,000 </td>
-                           <td>2024/04/25</td>
-                           <td>None</td>
-                           <td>  
-                            <button class="btn btn-primary btn-xs" style="background-color: #31ce36!important; border-color:#31ce36!important;"> Edit</button> 
-                            <button class="btn btn-primary btn-xs"> Delete</button> 
-                        </td>
-                          </tr>
-                          <tr>
-                            <td>Alden Richards</td>
-                            <th>For Church</th>
-                           <td><span>&#8369;</span>1,000 </td>
-                           <td>2024/04/25</td>
-                           <td>None</td>
-                           <td>  
-                            <button class="btn btn-primary btn-xs" style="background-color: #31ce36!important; border-color:#31ce36!important;"> Edit</button> 
-                            <button class="btn btn-primary btn-xs"> Delete</button> 
-                        </td>
-                          </tr>
-                          <tr>
-                            <td>Alden Richards</td>
-                            <th>For Church</th>
-                           <td><span>&#8369;</span>1,000 </td>
-                           <td>2024/04/25</td>
-                           <td>None</td>
-                           <td>  
-                            <button class="btn btn-primary btn-xs" style="background-color: #31ce36!important; border-color:#31ce36!important;"> Edit</button> 
-                            <button class="btn btn-primary btn-xs"> Delete</button> 
-                        </td>
-                          </tr>
-                          <tr>
-                            <td>Alden Richards</td>
-                            <th>For Church</th>
-                           <td><span>&#8369;</span>1,000 </td>
-                           <td>2024/04/25</td>
-                           <td>None</td>
-                           <td>  
-                            <button class="btn btn-primary btn-xs" style="background-color: #31ce36!important; border-color:#31ce36!important;"> Edit</button> 
-                            <button class="btn btn-primary btn-xs"> Delete</button> 
-                        </td>
-                          </tr>
-                          <tr>
-                            <td>Alden Richards</td>
-                            <th>For Church</th>
-                           <td><span>&#8369;</span>1,000 </td>
-                           <td>2024/04/25</td>
-                           <td>None</td>
-                           <td>  
-                            <button class="btn btn-primary btn-xs" style="background-color: #31ce36!important; border-color:#31ce36!important;"> Edit</button> 
-                            <button class="btn btn-primary btn-xs"> Delete</button> 
-                        </td>
-                          </tr>
-                          <tr>
-                            <td>Alden Richards</td>
-                            <th>For Church</th>
-                           <td><span>&#8369;</span>1,000 </td>
-                           <td>2024/04/25</td>
-                           <td>None</td>
-                           <td>  
-                            <button class="btn btn-primary btn-xs" style="background-color: #31ce36!important; border-color:#31ce36!important;"> Edit</button> 
-                            <button class="btn btn-primary btn-xs"> Delete</button> 
-                        </td>
-                          </tr>
-                          <tr>
-                            <td>Alden Richards</td>
-                            <th>For Church</th>
-                           <td><span>&#8369;</span>1,000 </td>
-                           <td>2024/04/25</td>
-                           <td>None</td>
-                           <td>  
-                            <button class="btn btn-primary btn-xs" style="background-color: #31ce36!important; border-color:#31ce36!important;"> Edit</button> 
-                            <button class="btn btn-primary btn-xs"> Delete</button> 
-                        </td>
-                          </tr>
-                          <tr>
-                            <td>Alden Richards</td>
-                            <th>For Church</th>
-                           <td><span>&#8369;</span>1,000 </td>
-                           <td>2024/04/25</td>
-                           <td>None</td>
-                           <td>  
-                            <button class="btn btn-primary btn-xs" style="background-color: #31ce36!important; border-color:#31ce36!important;"> Edit</button> 
-                            <button class="btn btn-primary btn-xs"> Delete</button> 
-                        </td>
-                          </tr>
-                          <tr>
-                            <td>Alden Richards</td>
-                            <th>For Church</th>
-                           <td><span>&#8369;</span>1,000 </td>
-                           <td>2024/04/25</td>
-                           <td>None</td>
-                           <td>  
-                            <button class="btn btn-primary btn-xs" style="background-color: #31ce36!important; border-color:#31ce36!important;"> Edit</button> 
-                            <button class="btn btn-primary btn-xs"> Delete</button> 
-                        </td>
-                          </tr>
-                          <tr>
-                            <td>Alden Richards</td>
-                            <th>For Church</th>
-                           <td><span>&#8369;</span>1,000 </td>
-                           <td>2024/04/25</td>
-                           <td>None</td>
-                           <td>  
-                            <button class="btn btn-primary btn-xs" style="background-color: #31ce36!important; border-color:#31ce36!important;"> Edit</button> 
-                            <button class="btn btn-primary btn-xs"> Delete</button> 
-                        </td>
-                          </tr>
-                          <tr>
-                            <td>Alden Richards</td>
-                            <th>For Church</th>
-                           <td><span>&#8369;</span>1,000 </td>
-                           <td>2024/04/25</td>
-                           <td>None</td>
-                           <td>  
-                            <button class="btn btn-primary btn-xs" style="background-color: #31ce36!important; border-color:#31ce36!important;"> Edit</button> 
-                            <button class="btn btn-primary btn-xs"> Delete</button> 
-                        </td>
-                          </tr>
-                          <tr>
-                            <td>Alden Richards</td>
-                            <th>For Church</th>
-                           <td><span>&#8369;</span>1,000 </td>
-                           <td>2024/04/25</td>
-                           <td>None</td>
-                           <td>  
-                            <button class="btn btn-primary btn-xs" style="background-color: #31ce36!important; border-color:#31ce36!important;"> Edit</button>  
-                            <button class="btn btn-primary btn-xs"> Delete</button> 
-                        </td>
-                          </tr>
-                          <tr>
-                            <td>Alden Richards</td>
-                            <th>For Church</th>
-                           <td><span>&#8369;</span>1,000 </td>
-                           <td>2024/04/25</td>
-                           <td>None</td>
-                           <td>  
-                            <button class="btn btn-primary btn-xs" style="background-color: #31ce36!important; border-color:#31ce36!important;"> Edit</button> 
-                            <button class="btn btn-primary btn-xs"> Delete</button> 
-                        </td>
-                          </tr>
-                          <tr>
-                            <td>Alden Richards</td>
-                            <th>For Church</th>
-                           <td><span>&#8369;</span>1,000 </td>
-                           <td>2024/04/25</td>
-                           <td>None</td>
-                            <td>  
-                                <button class="btn btn-primary btn-xs" style="background-color: #31ce36!important; border-color:#31ce36!important;"> Edit</button> 
-                                <button class="btn btn-primary btn-xs"> Delete</button> 
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>Alden Richards</td>
-                            <th>For Church</th>
-                           <td><span>&#8369;</span>1,000 </td>
-                           <td>2024/04/25</td>
-                           <td>None</td>
-                           <td>  
-                            <button class="btn btn-primary btn-xs" style="background-color: #31ce36!important; border-color:#31ce36!important;"> Edit</button> 
-                            <button class="btn btn-primary btn-xs"> Delete</button> 
-                        </td>
-                          </tr>
-                          <tr>
-                            <td>Alden Richards</td>
-                            <th>For Church</th>
-                           <td><span>&#8369;</span>1,000 </td>
-                           <td>2024/04/25</td>
-                           <td>None</td>
-                           <td>  
-                            <button class="btn btn-primary btn-xs" style="background-color: #31ce36!important; border-color:#31ce36!important;"> Edit</button> 
-                            <button class="btn btn-primary btn-xs"> Delete</button> 
-                        </td>
-                          </tr>
-                         
-                        </tbody>
+                <?php if (isset($pendingItems) && !empty($pendingItems)): ?>
+                    <?php foreach ($pendingItems as $index => $item): ?>
+                        <tr>
+                           
+                            <td><?php echo htmlspecialchars($index + 1); ?></td>
+                            <td><?php echo htmlspecialchars($item['fullnames']); ?></td>
+                            <td><?php echo htmlspecialchars($item['Event_Name']); ?></td>
+           
+                            <td><?php echo htmlspecialchars($item['payable_amount']); ?></td>
+                            <td><?php echo htmlspecialchars($item['roles']); ?></td>
+
+                          
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="13">No pending Citizen found.</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
                       </table>
                     </div>
                   </div>

@@ -395,6 +395,34 @@ We invite you to check back regularly to stay updated on the vibrant life of our
     <script>
 
 
+  // Show the pop-up if it hasn't been shown before
+  document.addEventListener("DOMContentLoaded", function () {
+   if (!localStorage.getItem("ratingPopupShown")) {
+      document.getElementById("ratingPopup").style.display = "flex";
+   }
+});
+
+// Close the pop-up when clicking the 'x'
+document.getElementById("closePopup").addEventListener("click", function () {
+   document.getElementById("ratingPopup").style.display = "none";
+});
+
+// Handle form submission and close the pop-up
+document.getElementById("ratingForm").addEventListener("submit", function (event) {
+   event.preventDefault();
+
+   // Save to localStorage to avoid showing the pop-up again
+   localStorage.setItem("ratingPopupShown", "true");
+
+   // Optionally, send the rating and comment to the server here
+   let rating = document.getElementById("rating").value;
+   let comment = document.getElementById("comment").value;
+   
+   console.log("Rating:", rating, "Comment:", comment); // Replace with actual submission logic
+
+   document.getElementById("ratingPopup").style.display = "none";
+});
+
 
       document.addEventListener('DOMContentLoaded', function() {
     <?php

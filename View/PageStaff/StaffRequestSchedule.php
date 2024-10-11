@@ -6,7 +6,7 @@ $regId = $_SESSION['citizend_id'];
 require_once '../../Model/staff_mod.php';
 require_once '../../Model/db_connection.php';
 $staff = new Staff($conn);
-$pendingItems = $staff->getPendingCitizen();
+$pendingItems = $staff->getRequestSchedule();
 
 ?>
 
@@ -60,7 +60,7 @@ $pendingItems = $staff->getPendingCitizen();
               <div class="col-md-12">
                 <div class="card">
                   <div class="card-header">
-                    <h4 class="card-title">Citizen Solo Scheduling</h4>
+                    <h4 class="card-title">Citizen Request Form Scheduling</h4>
                   </div>
                   <div class="card-body">
                     <div class="table-responsive">
@@ -70,17 +70,19 @@ $pendingItems = $staff->getPendingCitizen();
                       >
                         <thead>
                           <tr>
-                            <th>ID NO.</th>
-                            <th>Citizen Name</th>
-                            <th>Event Name</th>
-                            <th>Schedule Date</th>
-                            <th>Schedule Time</th>
-                      
-                            <th>Schedule Type</th>
-                            <th>Priest</th>
-                            <th>Status</th>
+                          <th>ID NO.</th>
+            <th>Request Category</th>
+            <th>Request Person</th>
+            <th>Request Appointment Date</th>
+            <th>Request Appointment Time</th>
+            <th>Request Address</th>
+            <th>Request Phone Number</th>
+            <th>Date of Follow Up</th>
+            <th>Request Chapel</th>
+            <th>Priest Name</th>
+            <th>Status</th>
                             <th>Action</th>
-                          </tr>
+                            priest_name                   </tr>
                         </thead>
                         <tfoot>
                           
@@ -88,39 +90,34 @@ $pendingItems = $staff->getPendingCitizen();
     <?php if (isset($pendingItems) && !empty($pendingItems)): ?>
         <?php foreach ($pendingItems as $index => $item): ?>
             <tr>
-                <td><?php echo htmlspecialchars($index + 1); ?></td>
-                <td><?php echo htmlspecialchars($item['citizen_name']); ?></td>
-                <td><?php echo htmlspecialchars($item['event_name']); ?></td>
-                <td><?php echo htmlspecialchars(date('Y/m/d', strtotime($item['schedule_date']))); ?></td>
-                <td><?php echo htmlspecialchars(date('g:i A', strtotime($item['schedule_start_time']))); ?></td>
-                <td><?php echo htmlspecialchars($item['roles']); ?></td>
-                <td>
-                  <?php
-                  if ($item['priest_status'] == 'Approved') {
-                      echo htmlspecialchars($item['Priest']);
-                  } elseif ($item['priest_status'] == 'Pending') {
-                      echo "Waiting for Approval";
-                  } elseif ($item['priest_status'] == 'Declined') {
-                      echo "Has been Declined";
-                  }
-                  ?>
-              </td>
+            <td><?php echo htmlspecialchars($index + 1); ?></td>
+                    <td><?php echo htmlspecialchars($item['req_category']); ?></td>
+                    <td><?php echo htmlspecialchars($item['req_person']); ?></td>
+                    <td><?php echo htmlspecialchars(date('Y/m/d', strtotime($item['date']))); ?></td>
+                    <td><?php echo htmlspecialchars(date('g:i A', strtotime($item['start_time']))); ?></td>
+                    <td><?php echo htmlspecialchars($item['req_address']); ?></td>
+                    <td><?php echo htmlspecialchars($item['req_pnumber']); ?></td>
+                    <td><?php echo htmlspecialchars($item['cal_date']); ?></td>
+                    <td><?php echo htmlspecialchars($item['req_chapel']); ?></td> 
+                    <td>
+    <?php
+    if ($item['pr_status'] == 'Pending') {
+        echo 'Waiting for approval';
+    } else {
+        echo htmlspecialchars($item['priest_name']);
+    }
+    ?>
+</td>
 
-                <td><?php echo htmlspecialchars($item['approval_status']); ?></td>
+                     <td><?php echo htmlspecialchars($item['req_status']); ?></td>
                 <td>
                     <?php
                     $viewUrl = '';
-                    if ($item['event_name'] === 'Baptism') {
+                    if ($item['req_id']) {
                         $viewUrl = 'FillBaptismForm.php';
-                    } elseif ($item['event_name'] === 'Wedding') {
-                        $viewUrl = 'FillWeddingForm.php';
-                    } elseif ($item['event_name'] === 'Funeral') {
-                        $viewUrl = 'FillFuneralForm.php';
-                    }elseif ($item['event_name'] === 'Confirmation') {
-                      $viewUrl = 'FillConfirmationForm.php';
-                  }
+                    } 
                     ?>
-                    <a href="<?php echo htmlspecialchars($viewUrl . '?id=' . $item['id']); ?>" class="btn btn-primary btn-xs" style="background-color: #31ce36!important; border-color:#31ce36!important;">View</a>
+                    <a href="<?php echo htmlspecialchars($viewUrl . '?req_id=' . $item['req_id']); ?>" class="btn btn-primary btn-xs" style="background-color: #31ce36!important; border-color:#31ce36!important;">View</a>
                   </td>
             </tr>
         <?php endforeach; ?>

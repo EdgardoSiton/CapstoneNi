@@ -23,6 +23,9 @@ if (isset($_GET['id'])) {
         }
     }
 }
+
+$Priest = isset($pendingItem['Priest']) ? ($pendingItem['Priest']) : '';
+$Pending = isset($pendingItem['priest_status']) ? ($pendingItem['priest_status']) : '';
 $citizend_id = isset($pendingItem['citizend_id']) ? ($pendingItem['citizend_id']) : '';
 // Initialize variables common to all events
 $date = isset($pendingItem['schedule_date']) ? date(($pendingItem['schedule_date'])) : '';

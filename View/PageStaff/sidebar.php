@@ -120,6 +120,18 @@
                
               </li>
               <li class="nav-item">
+                <a href="StaffRequestSchedule.php">
+                  <i class="fas fa-pen-square"></i>
+                  <p>Request Form Schedule</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="StaffRequestForm.php">
+                  <i class="fas fa-pen-square"></i>
+                  <p>Request Form Appointment</p>
+                </a>
+              </li>
+              <li class="nav-item">
                 <a href="StaffCitizenAccounts.php">
                   <i class="
                   fas fa-user-alt"></i>

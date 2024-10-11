@@ -48,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 header('Location: ../../View/PageStaff/StaffDashboard.php');
                 exit;
             } elseif ($accountType === 'Priest') {
-                header('Location: ../../View/PagePriest/PriestDashboard.php');
+                header('Location: ../../View/PagePriest/index.php');
                 exit;
             } else {
                 // Account not approved yet

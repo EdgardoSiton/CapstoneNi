@@ -114,10 +114,12 @@ function renderCalendar() {
         else if (type === 'Funeral' && dayDate.getTime() === today.getTime()) {
             dayElement.classList.add('past'); // Disable today for funerals
         }
+        
         // Disable based on the event type
         else if (type === 'Wedding' && dayDate < fifteenDaysFromNow) {
             dayElement.classList.add('past'); // Disable for weddings if less than 15 days
         }
+      
         else if (type !== 'Funeral' && dayDate < oneWeekFromNow) {
             dayElement.classList.add('past'); // Disable for all other events except funerals if less than 7 days
         }
@@ -161,7 +163,7 @@ function selectDate(dayElement) {
 
     const selectedDate = new Date(currentYear, currentMonth, dayElement.textContent);
     const formattedDate = selectedDate.toLocaleDateString('en-CA'); // Format date in local time
-
+    sessionStorage.setItem('selectedDate', formattedDate);
     // Deselect any previously selected radio button
     const selectedRadioButton = document.querySelector('input[type="radio"]:checked');
     if (selectedRadioButton) {
@@ -269,7 +271,6 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     renderCalendar();
 });
-
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('scheduleForm');
 
@@ -283,38 +284,65 @@ document.addEventListener('DOMContentLoaded', function() {
             if (selectedDateElement && selectedRadioButton) {
                 const selectedDate = new Date(currentYear, currentMonth, selectedDateElement.textContent);
                 selectedDate.setHours(12, 0, 0, 0);
+                
+                // Format the date as YYYY-MM-DD
                 const formattedDate = selectedDate.toISOString().split('T')[0];
                 const selectedTimeRange = selectedRadioButton.nextElementSibling.textContent.trim();
+                const [startTime, endTime] = selectedTimeRange.split(' - ');
 
-                // Store the selected date and time in sessionStorage
-                sessionStorage.setItem('selectedDate', formattedDate);
+                // Store the selected time range in session storage
+                sessionStorage.setItem('selectedTimeRange', selectedTimeRange);
 
-                // Store start and end times separately
-                sessionStorage.setItem('selectedTime', selectedTimeRange);
+                // Prepare data to send to PHP
+                const data = {
+                    selectedDate: formattedDate,
+                    startTime: startTime.trim(),
+                    endTime: endTime.trim(),
+                    type: new URLSearchParams(window.location.search).get('type') || 'baptism'
+                };
 
-                // Get the type from the URL to determine the form type
-                const urlParams = new URLSearchParams(window.location.search);
-                const type = urlParams.get('type') || 'baptism'; // Default to 'baptism' if not set
-
-                let nextPage;
-                if (type === 'baptism') {
-                    nextPage = `FillBaptism.php`;
-                } else if (type === 'confirmation') {
-                    nextPage = `FillConfirmation.php`;
-                } else if (type === 'Wedding') {
-                    nextPage = `FillWedding.php`;
-                } else if (type === 'Funeral') {
-                    nextPage = `FillFuneral.php`;
-                } else if (type === 'Announcement') {
-                    nextPage = `FillAnnounceForm.php`;
-                }
-                 else {
-                    alert('Invalid scheduling type.');
-                    return;
-                }
-
-                console.log('Redirecting to:', nextPage);
-                window.location.assign(nextPage);
+                // Send data to PHP via AJAX
+                fetch('../../Controller/store_schedule.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        // Redirect to the appropriate page based on the event type
+                        let nextPage;
+                        switch (data.type) {
+                            case 'baptism':
+                                nextPage = 'FillBaptism.php';
+                                break;
+                            case 'confirmation':
+                                nextPage = 'FillConfirmation.php';
+                                break;
+                            case 'Wedding':
+                                nextPage = 'FillWedding.php';
+                                break;
+                            case 'Funeral':
+                                nextPage = 'FillFuneral.php';
+                                break;
+                            case 'Announcement':
+                                nextPage = 'FillAnnounceForm.php';
+                                break;
+                                case 'RequestForm':
+                                nextPage = 'FillInsideRequestScheduleForm.php';
+                                break;
+                            default:
+                                alert('Invalid scheduling type.');
+                                return;
+                        }
+                        window.location.assign(nextPage); // Redirect to the determined nextPage
+                    } else {
+                        alert('Failed to store schedule data.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
             } else {
                 alert('Please select both a date and a time before submitting.');
             }

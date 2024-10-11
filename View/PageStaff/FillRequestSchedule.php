@@ -210,7 +210,6 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     renderCalendar();
 });
-
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('scheduleForm');
 
@@ -224,33 +223,51 @@ document.addEventListener('DOMContentLoaded', function() {
             if (selectedDateElement && selectedRadioButton) {
                 const selectedDate = new Date(currentYear, currentMonth, selectedDateElement.textContent);
                 selectedDate.setHours(12, 0, 0, 0);
+                
+                // Format the date as YYYY-MM-DD
                 const formattedDate = selectedDate.toISOString().split('T')[0];
                 const selectedTimeRange = selectedRadioButton.nextElementSibling.textContent.trim();
+                const [startTime, endTime] = selectedTimeRange.split(' - ');
 
-                // Store the selected date and time in sessionStorage
-                sessionStorage.setItem('selectedDate', formattedDate);
+                // Store the selected time range in session storage
+                sessionStorage.setItem('selectedTimeRange', selectedTimeRange);
 
-                // Store start and end times separately
-                sessionStorage.setItem('selectedTime', selectedTimeRange);
+                // Prepare data to send to PHP
+                const data = {
+                    selectedDate: formattedDate,
+                    startTime: startTime.trim(),
+                    endTime: endTime.trim(),
+                    type: new URLSearchParams(window.location.search).get('type') || 'baptism'
+                };
 
-                // Get the type from the URL to determine the form type
-                const urlParams = new URLSearchParams(window.location.search);
-                const type = urlParams.get('type') || 'baptism'; // Default to 'baptism' if not set
-
-                let nextPage;
-                if (type === 'FIESTAMASS') {
-                    nextPage = `FillRequestScheduleForm.php`;
-                } else if (type === 'BLESSING') {
-                    nextPage = `FillRequestScheduleForm.php`;
-                } else if (type === 'ccmass') {
-                    nextPage = `FillRequestScheduleForm.php`;
-                }  else {
-                    alert('Invalid scheduling type.');
-                    return;
-                }
-
-                console.log('Redirecting to:', nextPage);
-                window.location.assign(nextPage);
+                // Send data to PHP via AJAX
+                fetch('../../Controller/store_schedule.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        // Redirect to the appropriate page based on the event type
+                        let nextPage;
+                        switch (data.type) {
+                          case 'RequestForm':
+                                nextPage = 'FillInsideRequestScheduleForm.php';
+                                break;
+                          
+                            default:
+                                alert('Invalid scheduling type.');
+                                return;
+                        }
+                        window.location.assign(nextPage); // Redirect to the determined nextPage
+                    } else {
+                        alert('Failed to store schedule data.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
             } else {
                 alert('Please select both a date and a time before submitting.');
             }

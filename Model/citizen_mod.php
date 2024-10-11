@@ -7,14 +7,115 @@ class Citizen {
         $this->conn = $conn;
         $this->regId = $regId;
     }
-    public function insertWalkinWeddingFill($scheduleId, $groom_name, $groom_dob, $groom_place_of_birth, $groom_citizenship, $groom_address, $groom_religion, $groom_previously_married,$groomage, $bride_name, $bride_dob, $bride_place_of_birth, $bride_citizenship, $bride_address, $bride_religion, $bride_previously_married,$brideage) {
+    public function updateBaptismStatus($bpriest_id, $priestId) {
+        // SQL query to update the baptismfill table
+        $sql = "UPDATE baptismfill 
+                SET priest_id = ?, 
+                    pr_status = 'Pending' 
+                WHERE baptism_id = ?";
+
+        // Prepare the statement
+        $stmt = $this->conn->prepare($sql);
+
+        // Bind the parameters (priest_id, baptism_id)
+        $stmt->bind_param("ii", $priestId, $bpriest_id);
+
+        // Execute the query
+        if ($stmt->execute()) {
+            // Close the statement
+            $stmt->close();
+            return true; // Update successful
+        } else {
+            // Log error if failed and close the statement
+            error_log("Update failed: " . $stmt->error);
+            $stmt->close();
+            return false; // Update failed
+        }
+    }
+    public function updatemarriageStatus($mpriest_id, $priestId) {
+        // SQL query to update the baptismfill table
+        $sql = "UPDATE marriagefill 
+                SET priest_id = ?, 
+                    pr_status = 'Pending' 
+                WHERE marriagefill_id = ?";
+
+        // Prepare the statement
+        $stmt = $this->conn->prepare($sql);
+
+        // Bind the parameters (priest_id, baptism_id)
+        $stmt->bind_param("ii", $priestId, $mpriest_id);
+
+        // Execute the query
+        if ($stmt->execute()) {
+            // Close the statement
+            $stmt->close();
+            return true; // Update successful
+        } else {
+            // Log error if failed and close the statement
+            error_log("Update failed: " . $stmt->error);
+            $stmt->close();
+            return false; // Update failed
+        }
+    }
+    public function updatdefuctomStatus($fpriest_id, $priestId) {
+        // SQL query to update the baptismfill table
+        $sql = "UPDATE defuctomfill 
+                SET priest_id = ?, 
+                    pr_status = 'Pending' 
+                WHERE defuctomfill_id = ?";
+
+        // Prepare the statement
+        $stmt = $this->conn->prepare($sql);
+
+        // Bind the parameters (priest_id, baptism_id)
+        $stmt->bind_param("ii", $priestId, $fpriest_id);
+
+        // Execute the query
+        if ($stmt->execute()) {
+            // Close the statement
+            $stmt->close();
+            return true; // Update successful
+        } else {
+            // Log error if failed and close the statement
+            error_log("Update failed: " . $stmt->error);
+            $stmt->close();
+            return false; // Update failed
+        }
+    }
+    public function updateconfirmationStatus($cpriest_id, $priestId) {
+        // SQL query to update the baptismfill table
+        $sql = "UPDATE confirmationfill 
+                SET priest_id = ?, 
+                    pr_status = 'Pending' 
+                WHERE confirmationfill_id = ?";
+
+        // Prepare the statement
+        $stmt = $this->conn->prepare($sql);
+
+        // Bind the parameters (priest_id, baptism_id)
+        $stmt->bind_param("ii", $priestId, $cpriest_id);
+
+        // Execute the query
+        if ($stmt->execute()) {
+            // Close the statement
+            $stmt->close();
+            return true; // Update successful
+        } else {
+            // Log error if failed and close the statement
+            error_log("Update failed: " . $stmt->error);
+            $stmt->close();
+            return false; // Update failed
+        }
+    }
+    
+    public function insertWalkinWeddingFill($scheduleId,$priestId, $groom_name, $groom_dob, $groom_place_of_birth, $groom_citizenship, $groom_address, $groom_religion, $groom_previously_married,$groomage, $bride_name, $bride_dob, $bride_place_of_birth, $bride_citizenship, $bride_address, $bride_religion, $bride_previously_married,$brideage) {
       
     
-        $sql = "INSERT INTO marriagefill (schedule_id, groom_name, groom_dob, groom_place_of_birth, groom_citizenship, groom_address, groom_religion, groom_previously_married,groom_age, bride_name, bride_dob, bride_place_of_birth, bride_citizenship, bride_address, bride_religion, bride_previously_married,bride_age, status, event_name, role) 
-                VALUES (?, ?, ?, ?, ?, ?, ?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', 'Wedding','Walkin')";
+        $sql = "INSERT INTO marriagefill (schedule_id,priest_id,pr_status, groom_name, groom_dob, groom_place_of_birth, groom_citizenship, groom_address, groom_religion, groom_previously_married,groom_age, bride_name, bride_dob, bride_place_of_birth, bride_citizenship, bride_address, bride_religion, bride_previously_married,bride_age, status, event_name, role) 
+                VALUES (?,?,'Pending', ?, ?, ?, ?, ?, ?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', 'Wedding','Walkin')";
     
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("isssssssisssssssi", $scheduleId, $groom_name, $groom_dob, $groom_place_of_birth, $groom_citizenship, $groom_address, $groom_religion, $groom_previously_married,$groomage, $bride_name, $bride_dob, $bride_place_of_birth, $bride_citizenship, $bride_address, $bride_religion, $bride_previously_married,$brideage);
+        $stmt->bind_param("iisssssssisssssssi", $scheduleId,$priestId, $groom_name, $groom_dob, $groom_place_of_birth, $groom_citizenship, $groom_address, $groom_religion, $groom_previously_married,$groomage, $bride_name, $bride_dob, $bride_place_of_birth, $bride_citizenship, $bride_address, $bride_religion, $bride_previously_married,$brideage);
         if ($stmt->execute()) {
             // Return the last inserted ID
             $weddingffill_id = $this->conn->insert_id;
@@ -27,14 +128,14 @@ class Citizen {
         }
     }
     
-    public function insertwAppointment($weddingffill_id, $payableAmount, $priestId,$scheduleId) {
+    public function insertwAppointment($weddingffill_id , $payableAmount, $scheduleId) {
         $referenceNumber = $this->generateReferenceNumber();
-       $sql = "INSERT INTO appointment_schedule (marriage_id, payable_amount,priest_id,schedule_id, status, p_status,pr_status,reference_number)
-                VALUES (?, ?,?, ?, 'Process', 'Unpaid','Pending',?)";
+       $sql = "INSERT INTO appointment_schedule (marriage_id, payable_amount,schedule_id, status, p_status,reference_number)
+                VALUES (?, ?, ?, 'Process', 'Unpaid',?)";
         $stmt = $this->conn->prepare($sql);
     
         // Bind parameters: 'i' for integer (baptismfill_id, priest_id), 'd' for decimal/float (payable_amount)
-        $stmt->bind_param("idiis",$weddingffill_id ,$payableAmount,$priestId,$scheduleId,$referenceNumber);
+        $stmt->bind_param("idis",$weddingffill_id ,$payableAmount,$scheduleId,$referenceNumber);
         if ($stmt->execute()) {
             // Get the last inserted ID
             $weddingffill_id = $this->conn->insert_id;
@@ -46,14 +147,37 @@ class Citizen {
             return false;  // Insertion failed
         } 
     }
-    public function insertAppointment($baptismfillId = null, $payableAmount = null, $priestId  = null, $scheduleId = null) {
+    public function insertrequestAppointment($requestinside, $payableAmount,) {
+        $referenceNumber = $this->generateReferenceNumber();
+        // Make sure to add a comma after `priest_id`
+        $sql = "INSERT INTO appointment_schedule (request_id, payable_amount, status, p_status, reference_number)
+                VALUES (?, ?,  'Process', 'Unpaid', ?)";
+    
+        $stmt = $this->conn->prepare($sql);
+    
+        // Bind parameters: 'i' for integer (req_id, priest_id), 'd' for decimal/float (payable_amount)
+        $stmt->bind_param("ids", $requestinside, $payableAmount,  $referenceNumber);
+    
+        if ($stmt->execute()) {
+            // Get the last inserted ID
+            $appointment_id = $this->conn->insert_id; // Adjusted variable name
+            $stmt->close();
+            return $appointment_id; // Return the ID of the newly inserted record
+        } else {
+            error_log("Insertion failed: " . $stmt->error);
+            $stmt->close();
+            return false; // Insertion failed
+        }
+    }
+    
+    public function insertAppointment($baptismfillId = null, $payableAmount = null,  $scheduleId = null) {
         // Generate a random 12-letter reference number
         $referenceNumber = $this->generateReferenceNumber();
     
-        $sql = "INSERT INTO appointment_schedule (baptismfill_id, payable_amount, priest_id, schedule_id, status, pr_status,p_status, reference_number) 
-                VALUES (?, ?, ?, ?, 'Process', 'Pending','Unpaid', ?)";
+        $sql = "INSERT INTO appointment_schedule (baptismfill_id, payable_amount, schedule_id, status, p_status, reference_number) 
+                VALUES (?,  ?, ?, 'Process','Unpaid', ?)";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("idiis", $baptismfillId, $payableAmount, $priestId, $scheduleId, $referenceNumber);
+        $stmt->bind_param("idis", $baptismfillId, $payableAmount, $scheduleId, $referenceNumber);
     
         if ($stmt->execute()) {
             // Get the last inserted ID
@@ -66,16 +190,36 @@ class Citizen {
             return false;  // Insertion failed
         }
     }
-    public function insertWalkinFuneralFill($scheduleId, $d_fullname, $d_address, $d_gender, $cause_of_death, $marital_status, $place_of_birth, $father_fullname, $date_of_birth,$birthage, $mother_fullname, $parents_residence, $date_of_death, $place_of_death) {
+    public function insertcAppointment($confirmationId= null, $payableAmount = null,) {
+        // Generate a random 12-letter reference number
+        $referenceNumber = $this->generateReferenceNumber();
+    
+        $sql = "INSERT INTO appointment_schedule (confirmation_id, payable_amount,  status, p_status, reference_number) 
+                VALUES (?,  ?,  'Process','Unpaid', ?)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("ids", $confirmationId, $payableAmount,  $referenceNumber);
+    
+        if ($stmt->execute()) {
+            // Get the last inserted ID
+            $confirmationId = $this->conn->insert_id;
+            $stmt->close();
+            return $confirmationId;  // Return the ID of the newly inserted record
+        } else {
+            error_log("Insertion failed: " . $stmt->error);
+            $stmt->close();
+            return false;  // Insertion failed
+        }
+    }
+    public function insertWalkinFuneralFill($scheduleId,$priestId, $d_fullname, $d_address, $d_gender, $cause_of_death, $marital_status, $place_of_birth, $father_fullname, $date_of_birth,$birthage, $mother_fullname, $parents_residence, $date_of_death, $place_of_death) {
         $status = 'Pending';
         $event_name = 'Funeral';
         $role = 'Walkin';
     
-        $sql = "INSERT INTO defuctomfill (schedule_id, d_fullname, d_address, d_gender, cause_of_death, marital_status, place_of_birth, father_fullname, date_of_birth,age,  mother_fullname, parents_residence, date_of_death, place_of_death, status, event_name, role) 
-                VALUES (?, ?,?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO defuctomfill (schedule_id, priest_id,pr_status,d_fullname, d_address, d_gender, cause_of_death, marital_status, place_of_birth, father_fullname, date_of_birth,age,  mother_fullname, parents_residence, date_of_death, place_of_death, status, event_name, role) 
+                VALUES (?, ?,'Pending',?,?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("issssssssisssssss", $scheduleId, $d_fullname, $d_address, $d_gender, $cause_of_death, $marital_status, $place_of_birth, $father_fullname, $date_of_birth,$birthage,  $mother_fullname, $parents_residence, $date_of_death, $place_of_death, $status, $event_name, $role);
+        $stmt->bind_param("iissssssssisssssss", $scheduleId,$priestId, $d_fullname, $d_address, $d_gender, $cause_of_death, $marital_status, $place_of_birth, $father_fullname, $date_of_birth,$birthage,  $mother_fullname, $parents_residence, $date_of_death, $place_of_death, $status, $event_name, $role);
         if ($stmt->execute()) {
             // Return the last inserted ID
             $defuctomfill_id = $this->conn->insert_id;
@@ -87,12 +231,12 @@ class Citizen {
             return false;
         }
     }
-    public function insertfAppointment( $defuctomfill_id, $payableAmount,$priestId) {
+    public function insertfAppointment( $defuctomfill_id, $payableAmount) {
         $referenceNumber = $this->generateReferenceNumber();
-       $sql = "INSERT INTO appointment_schedule (defuctom_id, payable_amount, priest_id, status, p_status,pr_status,reference_number)
-                VALUES (?, ?,?, 'Process', 'Unpaid','Pending',?)";
+       $sql = "INSERT INTO appointment_schedule (defuctom_id, payable_amount,  status, p_status,reference_number)
+                VALUES (?, ?, 'Process', 'Unpaid',?)";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("idis", $defuctomfill_id ,$payableAmount,$priestId, $referenceNumber);
+        $stmt->bind_param("ids", $defuctomfill_id ,$payableAmount, $referenceNumber);
     
         if ($stmt->execute()) {
             // Get the last inserted ID
@@ -105,14 +249,33 @@ class Citizen {
             return false;  // Insertion failed
         }
     }
-    public function insertIntoWalkinBaptismFill($scheduleId, $fatherFullname, $fullname, $gender, $c_date_birth, $address, $pbirth, $mother_fullname, $religion, $parentResident, $godparent, $age) {
-        $sql = "INSERT INTO baptismfill (schedule_id, father_fullname, fullname, gender, c_date_birth, address, pbirth, mother_fullname, religion, parent_resident, godparent, age, status, event_name, role, created_at) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', 'Baptism', 'Walk In', CURRENT_TIMESTAMP)";
+    public function insertIntoWalkinConfirmFill($scheduleId,$priestId, $fullname, $gender, $c_date_birth, $address,  $date_of_baptism, $name_of_church, $father_fullname, $mother_fullname, $permission_to_confirm, $church_address,$age) {
+        $sql = "INSERT INTO confirmationfill (schedule_id,priest_id,pr_status, fullname, c_gender, c_date_birth, c_address,  date_of_baptism, name_of_church, father_fullname, mother_fullname, permission_to_confirm, church_address,c_age, status, event_name, role) 
+                VALUES (?,?,'Pending', ?, ?,  ?, ?, ?,  ?, ?, ?, ?, ?,?, 'Pending', 'Confirmation', 'Online')";
+        $stmt = $this->conn->prepare($sql);
+        
+        // Use 'isssssssssssss' for the type definition string, corresponding to the parameters
+        $stmt->bind_param("iissssssssssi", $scheduleId,$priestId, $fullname, $gender, $c_date_birth, $address,  $date_of_baptism, $name_of_church, $father_fullname, $mother_fullname, $permission_to_confirm, $church_address,$age);
+    
+        if ($stmt->execute()) {
+            // Return the last inserted ID
+            $confirmationId = $this->conn->insert_id;
+            $stmt->close();
+            return$confirmationId;
+        } else {
+            error_log("Insert failed: " . $stmt->error);
+            $stmt->close();
+            return false;
+        }
+    }
+    public function insertIntoWalkinBaptismFill($scheduleId,$priestId, $fatherFullname, $fullname, $gender, $c_date_birth, $address, $pbirth, $mother_fullname, $religion, $parentResident, $godparent, $age) {
+        $sql = "INSERT INTO baptismfill (schedule_id,priest_id,pr_status, father_fullname, fullname, gender, c_date_birth, address, pbirth, mother_fullname, religion, parent_resident, godparent, age, status, event_name, role, created_at) 
+                VALUES (?,?,'Pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', 'Baptism', 'Walk In', CURRENT_TIMESTAMP)";
         
         $stmt = $this->conn->prepare($sql);
         
         // Bind parameters
-        $stmt->bind_param("issssssssssi", $scheduleId, $fatherFullname, $fullname, $gender, $c_date_birth, $address, $pbirth, $mother_fullname, $religion, $parentResident, $godparent, $age);
+        $stmt->bind_param("iissssssssssi", $scheduleId,$priestId, $fatherFullname, $fullname, $gender, $c_date_birth, $address, $pbirth, $mother_fullname, $religion, $parentResident, $godparent, $age);
     
         if ($stmt->execute()) {
             // Return the last inserted ID
@@ -550,6 +713,20 @@ class Citizen {
         }
         $stmt->close();
     }
+    public function insertIntowalkinMassConfirmFill($announcementId, $fullname, $gender, $c_date_birth,$cage, $address,  $date_of_baptism, $name_of_church, $father_fullname, $mother_fullname, $permission_to_confirm, $church_address) {
+        $sql = "INSERT INTO confirmationfill (announcement_id, fullname, c_gender, c_date_birth,c_age, c_address,  date_of_baptism, name_of_church, father_fullname, mother_fullname, permission_to_confirm, church_address, status, event_name, role) 
+                VALUES (?, ?, ?,?,  ?, ?, ?,  ?, ?, ?, ?, ?, 'Pending', 'MassConfirmation', 'Online')";
+        $stmt = $this->conn->prepare($sql);
+        
+        // Use 'isssssssssssss' for the type definition string, corresponding to the parameters
+        $stmt->bind_param("isssisssssss", $announcementId, $fullname, $gender, $c_date_birth,$cage, $address,  $date_of_baptism, $name_of_church, $father_fullname, $mother_fullname, $permission_to_confirm, $church_address);
+    
+        if (!$stmt->execute()) {
+            error_log("Insert failed: " . $stmt->error);
+        }
+        $stmt->close();
+    }
+    
     
     public function insertMassWeddingFill($citizenId,$announcementId, $groom_name, $groom_dob, $groom_place_of_birth, $groom_citizenship, $groom_address, $groom_religion, $groom_previously_married, $groomage, $bride_name, $bride_dob, $bride_place_of_birth, $bride_citizenship, $bride_address, $bride_religion, $bride_previously_married,$brideage, $status,$event_name,$role) {
         
@@ -559,6 +736,21 @@ class Citizen {
     
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("iisssssssisssssssisss", $citizenId,$announcementId, $groom_name, $groom_dob, $groom_place_of_birth, $groom_citizenship, $groom_address, $groom_religion, $groom_previously_married,$groomage, $bride_name, $bride_dob, $bride_place_of_birth, $bride_citizenship, $bride_address, $bride_religion, $bride_previously_married,$brideage, $status, $event_name, $role);
+    
+        if ($stmt->execute()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public function insertwalkinMassWeddingFill($announcementId, $groom_name, $groom_dob, $groom_place_of_birth, $groom_citizenship, $groom_address, $groom_religion, $groom_previously_married, $groomage, $bride_name, $bride_dob, $bride_place_of_birth, $bride_citizenship, $bride_address, $bride_religion, $bride_previously_married,$brideage, $status,$event_name,$role) {
+        
+    
+        $sql = "INSERT INTO marriagefill (announcement_id, groom_name, groom_dob, groom_place_of_birth, groom_citizenship, groom_address, groom_religion, groom_previously_married,groom_age, bride_name, bride_dob, bride_place_of_birth, bride_citizenship, bride_address, bride_religion, bride_previously_married,bride_age, status, event_name, role) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("isssssssisssssssisss",$announcementId, $groom_name, $groom_dob, $groom_place_of_birth, $groom_citizenship, $groom_address, $groom_religion, $groom_previously_married,$groomage, $bride_name, $bride_dob, $bride_place_of_birth, $bride_citizenship, $bride_address, $bride_religion, $bride_previously_married,$brideage, $status, $event_name, $role);
     
         if ($stmt->execute()) {
             return true;
@@ -589,6 +781,28 @@ class Citizen {
         $stmt->close();
     }
     
+    public function insertwalkinMassBaptismFill( $announcementId, $fullname, $gender, $address, $dateOfBirth,$fatherFullname, $placeOfBirth, $motherFullname, $religion, $parentResident, $godparent, $age, $status, $eventName, $role) {
+        $stmt = $this->conn->prepare("
+            INSERT INTO baptismfill (
+              announcement_id, fullname, gender, address, c_date_birth, father_fullname, pbirth, mother_fullname, religion, parent_resident, godparent,age, status, event_name, role
+            ) VALUES ( ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?,?)
+        ");
+        
+        if ($stmt === FALSE) {
+            die("Error: " . $this->conn->error);
+        }
+    
+        $stmt->bind_param(
+            "issssssssssisss",
+            $announcementId, $fullname, $gender, $address, $dateOfBirth,$fatherFullname, $placeOfBirth, $motherFullname, $religion, $parentResident, $godparent, $age, $status, $eventName, $role
+        );
+    
+        if ($stmt->execute() === FALSE) {
+            die("Error: " . $stmt->error);
+        }
+    
+        $stmt->close();
+    }
     
     
     public function getFetchDetails($email) {
@@ -657,20 +871,27 @@ private function generateReferenceNumber() {
         }
         $stmt->close();
     }
-    public function insertRequestFormFill($selectrequest = null, $fullname = null, $datetofollowup = null, $address = null, $cpnumber = null, $fullnames = null, $chapel = null) {
-        $sql = "INSERT INTO req_form (req_category, req_person, cal_date, req_address, req_pnumber, req_name_pamisahan, req_chapel, status, role, created_at) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending', 'Online', CURRENT_TIMESTAMP)";
+    public function insertRequestFormFill($scheduleId = null, $priestId, $selectrequest = null, $fullname = null, $datetofollowup = null, $address = null, $cpnumber = null, $fullnames = null, $chapel = null) {
+        // Corrected SQL with schedule_id included
+        $sql = "INSERT INTO req_form (schedule_id,priest_id,pr_status, req_category, req_person, cal_date, req_address, req_pnumber, req_name_pamisahan, req_chapel, status, role, created_at) 
+                VALUES (?,?,'Pending', ?, ?, ?, ?, ?, ?, ?, 'Pending', 'Online', CURRENT_TIMESTAMP)";
         
         $stmt = $this->conn->prepare($sql);
         
-        // Use 'sssssss' for the type definition string, corresponding to the parameters
-        $stmt->bind_param("sssssss", $selectrequest, $fullname, $datetofollowup, $address, $cpnumber, $fullnames, $chapel);
-    
-        if (!$stmt->execute()) {
+        // Use 'sssssssss' for the type definition string, corresponding to the parameters
+        $stmt->bind_param("iisssssss", $scheduleId,$priestId, $selectrequest, $fullname, $datetofollowup, $address, $cpnumber, $fullnames, $chapel);
+        if ($stmt->execute()) {
+            // Return the last inserted ID
+            $requestId = $this->conn->insert_id;
+            $stmt->close();
+            return $requestId; // Return the ID of the newly inserted record
+        } else {
             error_log("Insert failed: " . $stmt->error);
+            $stmt->close();
+            return false; // Insertion failed
         }
-        $stmt->close();
     }
+    
     
     
     public function insertIntoConfirmFill($scheduleId, $fullname, $gender, $c_date_birth, $address,  $date_of_baptism, $name_of_church, $father_fullname, $mother_fullname, $permission_to_confirm, $church_address,$age) {
@@ -796,43 +1017,88 @@ private function generateReferenceNumber() {
     
         return $schedules;
     }
-
     public function getAvailablePriests($selectedDate, $startTime, $endTime) {
         // Query to fetch available priests excluding those already booked on the selected date and time
         $sql = "
-           SELECT 
-                c.citizend_id,
-                c.fullname
-            FROM 
-                citizen c
-            WHERE 
-                c.user_type = 'Priest' 
-                AND NOT EXISTS (
-                    SELECT 1
-                    FROM appointment_schedule a
-                    JOIN baptismfill b ON a.baptismfill_id = b.baptism_id
-                    JOIN schedule s ON b.schedule_id = s.schedule_id
-                    WHERE 
-                        a.priest_id = c.citizend_id
-                        AND s.date = ?  -- The date for the appointment
-                        AND (
-                            (s.start_time <= ? AND s.end_time >= ?)  -- Check if the priest is busy during the specified time
-                        )
-                )";
-        
+        SELECT 
+            c.citizend_id,
+            c.fullname
+        FROM 
+            citizen c
+        WHERE 
+            c.user_type = 'Priest'
+            AND NOT EXISTS (
+                -- Combine all event types that involve priests using UNION to check if the priest is busy
+                SELECT 1
+                FROM (
+                    SELECT s.schedule_id, s.date, s.start_time, s.end_time, b.priest_id
+                    FROM schedule s
+                    JOIN baptismfill b ON s.schedule_id = b.schedule_id
+                    WHERE s.date = ? AND (s.start_time < ? AND s.end_time > ?)
+                    
+                    UNION ALL
+                    
+                    SELECT s.schedule_id, s.date, s.start_time, s.end_time, cf.priest_id
+                    FROM schedule s
+                    JOIN confirmationfill cf ON s.schedule_id = cf.schedule_id
+                    WHERE s.date = ? AND (s.start_time < ? AND s.end_time > ?)
+                    
+                    UNION ALL
+                    
+                    SELECT s.schedule_id, s.date, s.start_time, s.end_time, df.priest_id
+                    FROM schedule s
+                    JOIN defuctomfill df ON s.schedule_id = df.schedule_id
+                    WHERE s.date = ? AND (s.start_time < ? AND s.end_time > ?)
+                    
+                    UNION ALL
+                    
+                    SELECT s.schedule_id, s.date, s.start_time, s.end_time, mf.priest_id
+                    FROM schedule s
+                    JOIN marriagefill mf ON s.schedule_id = mf.schedule_id
+                    WHERE s.date = ? AND (s.start_time < ? AND s.end_time > ?)
+                    
+                    UNION ALL
+                    
+                    SELECT s.schedule_id, s.date, s.start_time, s.end_time, ann.priest_id
+                    FROM schedule s
+                    JOIN announcement ann ON s.schedule_id = ann.schedule_id
+                    WHERE s.date = ? AND (s.start_time < ? AND s.end_time > ?)
+                    
+                    UNION ALL
+                    
+                    SELECT s.schedule_id, s.date, s.start_time, s.end_time, r.priest_id
+                    FROM schedule s
+                    JOIN req_form r ON s.schedule_id = r.schedule_id
+                    WHERE s.date = ? AND (s.start_time < ? AND s.end_time > ?)
+                ) AS events
+                WHERE events.priest_id = c.citizend_id
+            )
+        ";
+    
+        // Prepare the statement and bind the parameters for all event types
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("sss", $selectedDate, $startTime, $endTime);
+        $stmt->bind_param(
+            "ssssssssssssssssss", 
+            $selectedDate, $endTime, $startTime,  // Baptism
+            $selectedDate, $endTime, $startTime,  // Confirmation
+            $selectedDate, $endTime, $startTime,  // Defuctom
+            $selectedDate, $endTime, $startTime,  // Marriage
+            $selectedDate, $endTime, $startTime,  // Announcement
+            $selectedDate, $endTime, $startTime   // Req Form
+        );
+    
+        // Execute the statement
         $stmt->execute();
-        $result = $stmt->get_result();
     
-        $priests = [];
-        while ($row = $result->fetch_assoc()) {
-            $priests[] = $row;
-        }
-    
-        $stmt->close();
-        return $priests;
+        // Return the result as an associative array
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
+    
+    
+    
+    
+    
+    
     
     public function getPriests() {
         $sql = "SELECT citizend_id, fullname FROM citizen WHERE user_type = 'Priest'";

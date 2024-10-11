@@ -2,11 +2,23 @@
 require_once '../../Model/db_connection.php';
 require_once '../../Controller/citizen_con.php';
 require_once '../../Model/citizen_mod.php';
+// Retrieve date and time from session
+$scheduleDate = $_SESSION['selectedDate'] ?? null;
+$startTime = $_SESSION['startTime'] ?? null;
+$endTime = $_SESSION['endTime'] ?? null;
+
+// Assuming you're storing session data for the user's name and citizen ID
 $nme = $_SESSION['fullname'];
 $regId = $_SESSION['citizend_id'];
+
+// Create instances of the required classes
 $citizen = new Citizen($conn);
 $staff = new Staff($conn);
-$priests = $citizen->getPriests();
+
+// Fetch available priests based on the selected schedule
+$priests = $citizen->getAvailablePriests($scheduleDate, $startTime, $endTime);
+
+
 
 ?>
 
@@ -42,25 +54,31 @@ $priests = $citizen->getPriests();
       });
 
 
-      document.addEventListener('DOMContentLoaded', function() {
-    const selectedDate = sessionStorage.getItem('selectedDate');
-    const selectedTimeRange = sessionStorage.getItem('selectedTime');
+// Retrieve data from sessionStorage
+const selectedDate = sessionStorage.getItem('selectedDate');
+const startTime = sessionStorage.getItem('startTime');
+const endTime = sessionStorage.getItem('endTime');
 
+// Use the retrieved data as needed
+console.log('Selected Date:', selectedDate);
+console.log('Start Time:', startTime);
+console.log('End Time:', endTime);
+
+document.addEventListener('DOMContentLoaded', function() {
+    const selectedDate = sessionStorage.getItem('selectedDate');
+    const selectedTimeRange = sessionStorage.getItem('selectedTimeRange');
+    console.log('Selected Date:', selectedDate);  // Check if date is properly stored
+    console.log('Selected Time Range:', selectedTimeRange);  // Check if time range is stored correctly
     if (selectedDate) {
         document.getElementById('date').value = selectedDate;
     }
 
     if (selectedTimeRange) {
-        const [startTime, endTime] = selectedTimeRange.split('-');
-        document.getElementById('start_time').value = startTime;
-        document.getElementById('end_time').value = endTime;
+        const [startTime, endTime] = selectedTimeRange.split(' - ');
+        document.getElementById('start_time').value = startTime.trim();
+        document.getElementById('end_time').value = endTime.trim();
     }
-
-    // Optionally, clear the session storage if you don't want to persist the data
-  //   sessionStorage.removeItem('selectedDate');
-    // sessionStorage.removeItem('selectedTime');
 });
-
 
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('.btn-info').addEventListener('click', function() {

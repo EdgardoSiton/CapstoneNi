@@ -34,8 +34,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $massconfirmation_id = isset($_POST['confirmationannouncement_id']) ? $_POST['confirmationannouncement_id'] : null;
     $weddingannouncement_id = isset($_POST['weddingannouncement_id']) ? $_POST['weddingannouncement_id'] : null;
     $baptismannouncement_id = isset($_POST['baptismannouncement_id']) ? $_POST['baptismannouncement_id'] : null;
+    $walkinbaptismannouncement_id = isset($_POST['walkinbaptismannouncement_id']) ? $_POST['walkinbaptismannouncement_id'] : null;
+    $walkinmassconfirmation_id = isset($_POST['walkinconfirmationannouncement_id']) ? $_POST['walkinconfirmationannouncement_id'] : null;
+    $walkinweddingannouncement_id = isset($_POST['walkinweddingannouncement_id']) ? $_POST['walkinweddingannouncement_id'] : null;
     $walkinbaptism_id = isset($_POST['walkinbaptism_id']) ? $_POST['walkinbaptism_id'] : null;
-   $walkinfuneral_id = isset($_POST['walkinfuneral_id']) ? $_POST['walkinfuneral_id'] : null;
+    $walkinconfirmation_id = isset($_POST['walkinconfirmation_id']) ? $_POST['walkinconfirmation_id'] : null;
+
+    $walkinfuneral_id = isset($_POST['walkinfuneral_id']) ? $_POST['walkinfuneral_id'] : null;
    $walkinwedding_id= isset($_POST['walkinwedding_id']) ? $_POST['walkinwedding_id'] : null;
    $requestform_id = isset($_POST['requestform_id']) ? $_POST['requestform_id'] : null;
     if($baptism_id){
@@ -407,7 +412,86 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
        echo "Announcement ID $announcementId does not exist.";
    }
 
-}else if($weddingannouncement_id){
+}else if($walkinmassconfirmation_id){
+    // Retrieve form data with default values
+    $month = $_POST['months'] ?? '';
+    $day = $_POST['days'] ?? '';
+    $year = $_POST['years'] ?? '';
+       if ($month && $day && $year) {
+        $date_of_baptism = "$year-$month-$day"; 
+        // Calculate age
+       
+    } else {
+        $date_of_baptism = ''; 
+    }
+    $months = $_POST['month'] ?? '';
+    $days = $_POST['day'] ?? '';
+    $years = $_POST['year'] ?? '';
+     if ($month && $day && $year) {
+        $c_date_birth = "$year-$month-$day"; 
+        // Calculate age
+        $cage = calculateAge($c_date_birth);
+    } else {
+        $c_date_birth = ''; 
+        $cage = ''; // Handle case where date of birth is not provided
+    }
+    $firstname = $_POST['firstname'] ?? '';  
+    $lastname = $_POST['lastname'] ?? ''; 
+    $middlename = $_POST['middlename'] ?? ''; 
+    $fullname = trim($firstname . ' ' . $middlename . ' ' . $lastname);
+    
+    $gender = $_POST['c_gender'] ?? '';
+    $address = $_POST['c_address'] ?? ''; 
+    $father_fullname = $_POST['father_fullname'] ?? '';
+    $mother_fullname = $_POST['mother_fullname'] ?? '';
+    $permission_to_confirm= $_POST['permission_to_confirm'] ?? '';
+    $church_address = $_POST['church_address'] ?? '';
+    $name_of_church = $_POST['name_of_church'] ?? '';
+ 
+    // Define default values for status, event_name, and role
+    $status = 'Pending';
+    $eventName = 'MassConfirmation';
+    $role = 'Online';
+    $announcementId = $_POST['announcement_id'] ?? '';
+ 
+    // Check if the announcement_id exists using the Staff model
+    $announcement = $staffModel->getAnnouncementById($announcementId);
+ 
+    if ($announcement) {
+        // Complete the reservation if the form is filled out
+       
+            // Insert data into baptismfill
+            $citizenModel->insertIntowalkinMassConfirmFill(
+           
+                $announcementId,
+                $fullname,
+                $gender,
+                $c_date_birth,
+                $cage,
+                $address, 
+                $date_of_baptism,
+                $name_of_church,
+                $father_fullname,
+                $mother_fullname,
+                $permission_to_confirm,
+                $church_address,
+                $status,
+                $eventName,
+                $role
+            );
+            
+            $_SESSION['status'] = "success";
+        
+            header('Location: ../View/PageStaff/StaffAnnouncement.php');
+            exit();
+       
+    } else {
+        // Handle the case where the announcement_id does not exist
+        echo "Announcement ID $announcementId does not exist.";
+    }
+ 
+ }
+else if($weddingannouncement_id){
     $month = $_POST['month'] ?? '';
     $day = $_POST['day'] ?? '';
     $year = $_POST['year'] ?? '';
@@ -491,7 +575,92 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         else {
            echo "Announcement ID $announcementId does not exist.";
        }
-}else if($baptismannouncement_id){
+}else if($walkinweddingannouncement_id){
+    $month = $_POST['month'] ?? '';
+    $day = $_POST['day'] ?? '';
+    $year = $_POST['year'] ?? '';
+
+    if ($month && $day && $year) {
+        $groom_dob = "$year-$month-$day"; 
+        $groomage = calculateAge($groom_dob);
+    } else {
+        $groom_dob = ''; 
+    }
+
+
+   $month = $_POST['months'] ?? '';
+    $day = $_POST['days'] ?? '';
+    $year = $_POST['years'] ?? '';
+    if ($month && $day && $year) {
+        $bride_dob = "$year-$month-$day"; 
+        $brideage =calculateage($bride_dob);
+    } else {
+        $bride_dob = ''; 
+    }
+    $firstname = $_POST['firstname'] ?? '';  
+    $lastname = $_POST['lastname'] ?? ''; 
+    $middlename = $_POST['middlename'] ?? ''; 
+    $firstnames = $_POST['firstnames'] ?? '';  
+    $lastnames = $_POST['lastnames'] ?? ''; 
+    $middlenames = $_POST['middlenames'] ?? ''; 
+    $groom_place_of_birth = $_POST['groom_place_of_birth'] ?? '';
+    $groom_citizenship = $_POST['groom_citizenship'] ?? ''; 
+    $groom_address = $_POST['groom_address'] ?? ''; 
+    $groom_religion = $_POST['groom_religion'] ?? '';
+    $groom_previously_married = $_POST['groom_previously_married'] ?? '';
+
+    $bride_place_of_birth = $_POST['bride_place_of_birth'] ?? '';
+    $bride_citizenship = $_POST['bride_citizenship'] ?? ''; 
+    $bride_address = $_POST['bride_address'] ?? '';
+    $bride_religion = $_POST['bride_religion'] ?? '';
+    $bride_previously_married = $_POST['bride_previously_married'] ?? '';
+    $groom_name= trim($firstname . ' ' . $middlename . ' ' . $lastname);
+    $bride_name= trim($firstnames . ' ' . $middlenames . ' ' . $lastnames);
+    $announcementId = $_POST['announcement_id'] ?? '';
+    $status = 'Pending';
+    $eventName = 'MassWedding';
+    $role = 'Online';
+
+
+    $announcement = $staffModel->getAnnouncementById($announcementId);
+    if ($announcement) {
+     
+        $citizenModel->insertwalkinMassWeddingFill(
+          
+            $announcementId,
+            $groom_name,
+            $groom_dob,
+            $groom_place_of_birth,
+            $groom_citizenship,
+            $groom_address,
+            $groom_religion,
+            $groom_previously_married,
+            $groomage,
+            $bride_name,
+            $bride_dob,
+            $bride_place_of_birth,
+            $bride_citizenship,
+            $bride_address,
+            $bride_religion,
+            $bride_previously_married,
+            $brideage,
+            $status,
+            $eventName,
+            $role
+            
+        );
+        $_SESSION['status'] = "success";
+        
+        header('Location: ../View/PageStaff/StaffAnnouncement.php');
+           exit();
+           
+    
+ }
+        else {
+           echo "Announcement ID $announcementId does not exist.";
+       }
+}
+else if($baptismannouncement_id){
   $month = $_POST['month'] ?? '';
   $day = $_POST['day'] ?? '';
   $year = $_POST['year'] ?? '';
@@ -562,9 +731,169 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       // Handle the case where the announcement_id does not exist
       echo "Announcement ID $announcementId does not exist.";
   }
-}
+}else if($walkinbaptismannouncement_id){
+    $month = $_POST['month'] ?? '';
+    $day = $_POST['day'] ?? '';
+    $year = $_POST['year'] ?? '';
+  
+    if ($month && $day && $year) {
+      $dateOfBirth = "$year-$month-$day"; 
+        // Calculate age
+        $age = calculateAge($dateOfBirth);
+    } else {
+      $dateOfBirth = ''; 
+        $age = ''; // Handle case where date of birth is not provided
+    }
+  
+  
+    $firstname = $_POST['firstname'] ?? '';  
+    $lastname = $_POST['lastname'] ?? ''; 
+    $middlename = $_POST['middlename'] ?? ''; 
+    $fullname = trim($firstname . ' ' . $middlename . ' ' . $lastname);
+    
+    $gender = $_POST['gender'] ?? '';
+    $address = $_POST['address'] ?? ''; 
+    $fatherFullname = $_POST['father_fullname'] ?? '';
+    $motherFullname = $_POST['mother_fullname'] ?? '';
+    $religion = $_POST['religion'] ?? '';
+    $placeOfBirth = $_POST['pbirth'] ?? '';
+    $parentResident = $_POST['parent_resident'] ?? '';
+    $godparent = $_POST['godparent'] ?? '';
+    
+    // Retrieve announcement_id from form data
+    $announcementId = $_POST['announcement_id'] ?? '';
+    
+    // Define default values for status, event_name, and role
+    $status = 'Pending';
+    $eventName = 'MassBaptism';
+    $role = 'Online';
+  
+    // Check if the announcement_id exists using the Staff model
+    $announcement = $staffModel->getAnnouncementById($announcementId);
+  
+    if ($announcement) {
+        // Insert data into baptismfill
+    
+        $citizenModel->insertwalkinMassBaptismFill(
+          
+            $announcementId,
+            $fullname,
+            $gender,
+            $address,
+            $dateOfBirth, 
+            $fatherFullname,
+            $placeOfBirth,
+            $motherFullname,
+            $religion,
+            $parentResident,
+            $godparent,
+            $age ,
+            $status,
+            $eventName,
+            $role
+        );
+    
+        $_SESSION['status'] = "success";
+        
+        header('Location: ../View/PageStaff/StaffAnnouncement.php');
+        exit();
+    
+  } else {
+        // Handle the case where the announcement_id does not exist
+        echo "Announcement ID $announcementId does not exist.";
+    }
+  }
 
 //-----------------------------------------WALK IN AREA FILLUP --------------------------------------------------------
+else if($walkinconfirmation_id){
+    // Handle birth date and age
+    $birthMonth = $_POST['month'] ?? '';
+    $birthDay = $_POST['day'] ?? '';
+    $birthYear = $_POST['year'] ?? '';
+
+    if ($birthMonth && $birthDay && $birthYear) {
+        $c_date_birth = "$birthYear-$birthMonth-$birthDay"; 
+        // Calculate age
+        $age = calculateAge($c_date_birth);
+    } else {
+        $c_date_birth = ''; 
+        $age = ''; // Handle case where date of birth is not provided
+    }
+
+    // Handle baptism date
+    $baptismMonth = $_POST['months'] ?? '';
+    $baptismDay = $_POST['days'] ?? '';
+    $baptismYear = $_POST['years'] ?? '';
+    
+    if ($baptismMonth && $baptismDay && $baptismYear) {
+        $date_of_baptism = "$baptismYear-$baptismMonth-$baptismDay"; 
+    } else {
+        $date_of_baptism = ''; 
+    }
+
+    // Retrieve other form data
+    $date = $_POST['date'] ?? '';
+    $startTime = $_POST['start_time'] ?? '';
+    $endTime = $_POST['end_time'] ?? '';
+ 
+    $firstname = $_POST['firstname'] ?? '';  
+    $lastname = $_POST['lastname'] ?? ''; 
+    $middlename = $_POST['middlename'] ?? ''; 
+   
+    $gender = $_POST['c_gender'] ?? '';
+    $address = $_POST['c_address'] ?? ''; 
+    $name_of_church = $_POST['name_of_church'] ?? '';
+    $father_fullname = $_POST['father_fullname'] ?? '';
+    $mother_fullname = $_POST['mother_fullname'] ?? '';
+    $permission_to_confirm = $_POST['permission_to_confirm'] ?? '';
+    $church_address = $_POST['church_address'] ?? '';
+    
+    $fullname = trim($firstname . ' ' . $middlename . ' ' . $lastname);
+
+    // Convert times to 24-hour format
+    $startTime = convertTo24HourFormat($startTime);
+    $endTime = convertTo24HourFormat($endTime);
+
+    // Get priest ID (event type)
+    $priestId = $_POST['eventType'] ?? null;
+
+    // Insert into schedule and get the generated schedule_id
+    $scheduleId = $citizenModel->insertSchedule(null, $date, $startTime, $endTime);
+
+    if ($scheduleId) {
+        // Insert into walk-in confirmation form
+        $confirmationId = $citizenModel->insertIntowalkinConfirmFill(
+            $scheduleId,
+            $priestId,
+            $fullname,
+            $gender,        
+            $c_date_birth,
+            $address,       
+            $date_of_baptism,
+            $name_of_church,
+            $father_fullname,
+            $mother_fullname,
+            $permission_to_confirm,
+            $church_address,
+            $age
+        );
+        $payableAmount = $_POST['pay_amount'] ?? null;
+        // Insert the appointment linked to the confirmation form
+        $appointmentResult = $citizenModel->insertcAppointment($confirmationId, $payableAmount);
+
+        if ($appointmentResult) {
+            $_SESSION['status'] = "success";
+            // Redirect upon success
+            header('Location: ../View/PageStaff/StaffDashboard.php');
+            exit();
+        } else {
+            echo "Failed to insert appointment.";
+        }
+    } else {
+        // Handle error in schedule insertion
+        echo "Failed to insert schedule.";
+    }
+}
 else if($walkinbaptism_id){
 // Check if the form data is provided
 $month = $_POST['month'] ?? '';
@@ -595,7 +924,7 @@ $religion = $_POST['religion'] ?? '';
 $parentResident = $_POST['parent_resident'] ?? '';
 $godparent = $_POST['godparent'] ?? '';
 $fullname = trim($firstname . ' ' . $middlename . ' ' . $lastname);
-
+$priestId = $_POST['eventType'] ?? null;
 // Convert times to 24-hour format
 $startTime = convertTo24HourFormat($startTime);
 $endTime = convertTo24HourFormat($endTime);
@@ -607,6 +936,7 @@ if ($scheduleId) {
     // Insert into the baptism fill table, including the calculated age
     $baptismfillId = $citizenModel->insertIntoWalkinBaptismFill(
         $scheduleId,
+        $priestId,
         $fatherFullname,
         $fullname,  
         $gender,
@@ -617,7 +947,7 @@ if ($scheduleId) {
         $religion,
         $parentResident,
         $godparent,
-        $age // Insert the calculated age
+        $age 
     );
 
     // After the walkinbaptism_id is retrieved from the insertion
@@ -637,7 +967,7 @@ if ($scheduleId) {
             die("Error: No sundays data provided.");
         }
 
-        $priestId = $_POST['eventType'] ?? null;
+       
         $payableAmount = $_POST['pay_amount'] ?? null;
 
         // Validate required form data
@@ -651,22 +981,18 @@ if ($scheduleId) {
 
         if ($seminarScheduleId) {
             // Insert into appointment using $walkinbaptism_id instead of $baptismfill_id
-            $appointmentResult = $citizenModel->insertAppointment($baptismfillId, $payableAmount, $priestId, $seminarScheduleId);
+            $appointmentResult = $citizenModel->insertAppointment($baptismfillId, $payableAmount, $seminarScheduleId);
 
-            if ($appointmentResult) {
-                // Approve baptism using $walkinbaptism_id instead of $baptismfill_id
-                $approvalResult = $appointment->approveBaptism($baptismfillId);
+       
 
-                if ($approvalResult) {
+                if ($seminarScheduleId) {
                     $_SESSION['status'] = "success";
                     header('Location: ../View/PageStaff/StaffDashboard.php');
                     exit();
                 } else {
                     echo "Failed to approve baptism.";
                 }
-            } else {
-                echo "Failed to insert appointment.";
-            }
+          
         } else {
             echo "Failed to insert seminar schedule.";
         }
@@ -711,7 +1037,7 @@ if ($scheduleId) {
     $mother_fullname = $_POST['mother_fullname'] ?? '';
     $parents_residence = $_POST['parents_residence'] ?? '';
     $place_of_death = $_POST['place_of_death'] ?? '';
-    
+    $priestId = $_POST['eventType'] ?? null;
     $birthage = ($date_birth) ? calculateAge($date_birth) : null;
     
     // Insert into schedule and get schedule_id
@@ -720,31 +1046,29 @@ if ($scheduleId) {
     if ($scheduleId) {
         // Insert into defuctomfill
         $defuctomfill_id = $citizenModel->insertWalkinFuneralFill(
-            $scheduleId, $d_fullname, $d_address, $gender, $cause_of_death,
+            $scheduleId,$priestId, $d_fullname, $d_address, $gender, $cause_of_death,
             $marital_status, $place_of_birth, $father_fullname, $date_birth,
             $birthage, $mother_fullname, $parents_residence, $date_of_death, $place_of_death
         );
     
         if ($defuctomfill_id) {
 
-            $priestId = $_POST['eventType'] ?? null;
+       
             $payableAmount = $_POST['pay_amount'] ?? null;
     
             // Validate required form data
-            if ( !$payableAmount || !$priestId) {
+            if ( !$payableAmount ) {
                 die('Error: Missing required form data.');
             }
     
-            $result = $appointment->insertfAppointment($defuctomfill_id, $payableAmount, $priestId);
+            $result = $appointment->insertfAppointment($defuctomfill_id, $payableAmount);
     
-            if ($result) {
-                $appointment->approveFuneral($defuctomfill_id);
+            
+             
                 $_SESSION['status'] = "success";
                 header('Location: ../View/PageStaff/StaffDashboard.php');
                 exit();
-            } else {
-                echo "Failed to insert appointment details.";
-            }
+         
         } else {
             echo "Failed to insert funeral details.";
         }
@@ -797,7 +1121,7 @@ if ($scheduleId) {
     $bride_address = $_POST['bride_address'] ?? '';
     $bride_religion = $_POST['bride_religion'] ?? '';
     $bride_previously_married = $_POST['bride_previously_married'] ?? '';
- 
+    $priestId = $_POST['eventType'] ?? null;
     $startTime = convertTo24HourFormat($startTime);
     $endTime = convertTo24HourFormat($endTime);
     $groom_name= trim($firstname . ' ' . $middlename . ' ' . $lastname);
@@ -807,8 +1131,9 @@ if ($scheduleId) {
     $scheduleId = $citizenModel->insertSchedule(NULL, $date, $startTime, $endTime);
     if ($scheduleId) {
         // Insert into marriagefill
-        $weddingffill_id = $citizenModel->insertWeddingFill(
+        $weddingffill_id = $citizenModel->insertWalkinWeddingFill(
             $scheduleId,
+            $priestId,
             $groom_name,
             $groom_dob,
             $groom_place_of_birth,
@@ -843,36 +1168,33 @@ if ($scheduleId) {
                 die("Error: No saturdays data provided.");
             }
     
-            $priestId = $_POST['eventType'] ?? null;
+          
             $payableAmount = $_POST['pay_amount'] ?? null;
     
             // Validate required form data
-            if (!$sunday || !$start_time || !$end_time || !$payableAmount || !$priestId) {
+            if (!$sunday || !$start_time || !$end_time || !$payableAmount ) {
                 die('Error: Missing required form data.');
             }
     
             // Insert into schedule for the seminar
             $appointment = new Staff($conn);
-            $seminarScheduleId = $appointment->insertSchedule($sunday, $start_time, $end_time, 'Seminar');
+            $scheduleId = $appointment->insertSchedule($sunday, $start_time, $end_time, 'Seminar');
     
-            if ($seminarScheduleId) {
+            if ($scheduleId) {
                 // Insert into appointment using $walkinbaptism_id instead of $baptismfill_id
-                $appointmentResult = $citizenModel->insertwAppointment($weddingffill_id, $payableAmount, $priestId, $seminarScheduleId);
+                $appointmentResult = $citizenModel->insertwAppointment($weddingffill_id, $payableAmount,$scheduleId);
     
-                if ($appointmentResult) {
-                    // Approve baptism using $walkinbaptism_id instead of $baptismfill_id
-                    $approvalResult = $appointment->approveWedding($weddingffill_id);
+              
+                
     
-                    if ($approvalResult) {
+                    if ($appointmentResult) {
                         $_SESSION['status'] = "success";
                         header('Location: ../View/PageStaff/StaffDashboard.php');
                         exit();
                     } else {
                         echo "Failed to approve Wedding.";
                     }
-                } else {
-                    echo "Failed to insert appointment.";
-                }
+                
             } else {
                 echo "Failed to insert seminar schedule.";
             }

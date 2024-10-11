@@ -65,28 +65,17 @@ $approvedCount = count($approvedRegistrations);
             >
               <div>
                 <h3 class="fw-bold mb-3">Staff Dashboard</h3>
-                <div class="dropdown">
-        <button class="btn btn-primary btn-round dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-          Request Form
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <li><a class="dropdown-item" href="FillRequestSchedule.php?type=FIESTAMASS">FIESTA MASS</a></li>
-            <li><a class="dropdown-item" href="FillRequestForm.php">NOVENA MASS</a></li>
-            <li><a class="dropdown-item" href="FillRequestForm.php">WAKE MASS</a></li>
-            <li><a class="dropdown-item" href="FillRequestForm.php">MONTHLY MASS</a></li>
-            <li><a class="dropdown-item" href="FillRequestForm.php">1ST FRIDAY MASS</a></li>
-            <li><a class="dropdown-item" href="FillRequestSchedule?type=ccmass">CEMETERY CHAPEL MASS</a></li>
-            <li><a class="dropdown-item" href="FillRequestForm.php">BACCALAUREATE MASS</a></li>
-            <li><a class="dropdown-item" href="FillRequestForm.php">ANNOINTING OF THE SICK</a></li>
-            <li><a class="dropdown-item" href="FillRequestSchedule.php?type=>BLESSING">BLESSING</a></li>
-            <li><a class="dropdown-item" href="FillRequestForm.php">MASS INTENTION</a></li>
-            <li><a class="dropdown-item" href="FillRequestForm.php">THANKSGIVING</a></li>
-            <li><a class="dropdown-item" href="FillRequestForm.php">MASS INTENTION </a></li>
-            <li><a class="dropdown-item" href="FillRequestForm.php">SOUL & PETITION </a></li>
-            <li><a class="dropdown-item" href="FillRequestForm.php">REUNION </a></li>
-            <li><a class="dropdown-item" href="FillRequestForm.php">FAMILY DEVOTION</a></li>
-        </ul>
-    </div>
+        
+                <button class="btn btn-primary btn-round" type="button" onclick="window.location.href='FillScheduleForm.php?type=RequestForm'">
+       Inside Request Form
+    </button>
+    
+             
+               <button class="btn btn-primary btn-round" type="button" onclick="window.location.href='FillRequestSchedule.php?type=RequestForm'">
+        Outside Request Form
+    </button>
+      
+
               </div>
               <div class="ms-md-auto py-2 py-md-0">
                 

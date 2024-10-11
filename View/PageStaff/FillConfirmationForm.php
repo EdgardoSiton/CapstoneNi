@@ -8,11 +8,24 @@ require_once '../../Model/citizen_mod.php';
 
 // Initialize the Staff class
 $staff = new Staff($conn);
+$citizen = new Citizen($conn);
 $email = $_SESSION['email'];
 $nme = $_SESSION['fullname'];
 $regId = $_SESSION['citizend_id'];
-$confirmationfill_id = $_GET['id'] ?? '';
+$confirmationfill_id =isset($_GET['id']) ? intval($_GET['id']) : null;
 // Get citizen ID from the URL
+if (isset($_GET['id'])) {
+    $confirmationfill_id = intval($_GET['id']);
+    // Fetch schedule details
+    $scheduleDetails = $staff->getScheduleDetails(NULL,$confirmationfill_id); // Fetch date, start_time, end_time based on baptism ID
+    $scheduleDate = $scheduleDetails['schedule_date'];
+    $startTime = $scheduleDetails['schedule_start_time'];
+    $endTime = $scheduleDetails['schedule_end_time'];
+    $priests = $citizen->getAvailablePriests($scheduleDate, $startTime, $endTime);
+} 
+
+
+
 if ($confirmationfill_id) {
     // Fetch schedule_id from baptismfill
     $scheduleId = $staff->getcScheduleId($confirmationfill_id);
@@ -171,6 +184,44 @@ small {
         </div>
     </div>
 </div>
+<!-- Second Modal -->
+<div class="modal fade" id="myModals" tabindex="-1" role="dialog" aria-labelledby="modalLabel2" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel2">Approval for Schedule Baptism</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="modalForm2" method="POST" action="../../Controller/updatepayment_con.php">
+                <div class="modal-body">
+                    <input type="hidden" name="cpriest_id" value="<?php echo htmlspecialchars($confirmationfill_id); ?>" />
+                    <div class="form-group">
+                        <label for="priestSelect2">Select Priest</label>
+                        <select class="form-control" id="priestSelect2" name="eventType">
+                            <option value="" disabled selected>Select Priest</option>
+                            <!-- Populate priests in the dropdown -->
+                            <?php if (!empty($priests)): ?>
+                                <?php foreach ($priests as $priest): ?>
+                                    <option value="<?php echo htmlspecialchars($priest['citizend_id']); ?>">
+                                        <?php echo htmlspecialchars($priest['fullname']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <option value="" disabled>No priests available for the selected time</option>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
     <div class="page-inner">
         <div class="row">
             <div class="col-md-12">
@@ -178,6 +229,36 @@ small {
                     <div class="card-header">
                         <div class="card-title">Confirmation View Information Form</div>
                     </div>
+                    <div class="col-md-6 col-lg-4">
+    <!-- Priest Name Section -->
+    <div class="form-group">
+    <label for="priestName">Priest Name</label>
+    <div class="d-flex align-items-center">
+        <input type="text" class="form-control" id="priestName" name="priestName" value="<?php echo $Priest; ?>" readonly />
+
+        <?php if ($Pending == 'Pending'): ?>
+            <!-- If the priest is pending, show a disabled button -->
+            <button type="button" class="btn btn-warning" disabled>Waiting for Approval</button>
+
+        <?php elseif ($Pending == 'Approved'): ?>
+            <!-- If the priest is accepted, display a message instead of a button -->
+            <span class="text-success">Has been Approved</span>
+
+            <?php elseif ($Pending == 'Declined'): ?>
+            <!-- If the priest is declined, enable the button to trigger the modal -->
+            <button type="button" data-toggle="modal" data-target="#myModals" class="btn btn-danger">Priest Declined - Click to Reassign</button>
+        
+        
+            <?php else: ?>
+            <!-- Default button state (e.g., if no status is set) -->
+            <button type="button" data-toggle="modal" data-target="#myModals" class="btn btn-success">Priest Assign </button>
+             
+        <?php endif; ?>
+    </div>
+</div>
+</div>
+
+
                     <div class="card-body">
     <input type="hidden" name="form_type" value="confirmation">
     <div class="row">

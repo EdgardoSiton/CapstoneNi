@@ -20,6 +20,213 @@ class Admin {
         }
         return $donations;
     }
+    public function getConfirmationAppointments() {
+        $sql = "SELECT 
+         'Confirmation' AS type,
+         cf.status AS status,
+            cf.fullname AS fullnames,
+           cf.pr_status AS approve_priest,
+            cf.confirmationfill_id AS id,
+            cf.role AS roles,
+            cf.c_date_birth AS birth,
+            cf.c_age AS age,
+            
+            cf.event_name AS Event_Name,
+            c.fullname AS citizen_name, 
+            s.date AS schedule_date,
+            s.start_time AS schedule_time,
+            a.appsched_id,
+            a.baptismfill_id,
+            cf.priest_id,
+            priest.fullname AS priest_name,
+            a.schedule_id AS appointment_schedule_id,
+            a.payable_amount AS payable_amount,
+            a.status AS c_status,
+            a.p_status AS p_status,
+            sch.date AS appointment_schedule_date,  
+            sch.start_time AS appointment_schedule_start_time,
+            sch.end_time AS appointment_schedule_end_time,
+            cf.c_created_at 
+        FROM 
+            schedule s
+        LEFT JOIN citizen c ON c.citizend_id = s.citizen_id 
+        JOIN confirmationfill cf ON s.schedule_id = cf.schedule_id
+        JOIN appointment_schedule a ON cf.confirmationfill_id = a.confirmation_id
+        JOIN schedule sch ON a.schedule_id = sch.schedule_id  
+        LEFT JOIN citizen priest ON cf.priest_id = priest.citizend_id AND priest.user_type = 'Priest' 
+        WHERE 
+ 
+    cf.status = 'Approved' AND 
+    (a.status = 'Completed' OR a.p_status = 'Paid')
+
+ ";
+    
+        return $this->fetchAppointments($sql);
+    }
+    public function getBaptismAppointments() {
+        $sql = "SELECT 
+         'Baptism' AS type,
+         b.status AS status,
+            b.fullname AS fullnames,
+            b.pr_status AS approve_priest,
+            b.baptism_id AS id,
+            b.role AS roles,
+            
+            b.event_name AS Event_Name,
+            c.fullname AS citizen_name, 
+            s.date AS schedule_date,
+            s.start_time AS schedule_time,
+            a.appsched_id,
+            a.baptismfill_id,
+            b.priest_id,
+            priest.fullname AS priest_name,
+            a.schedule_id AS appointment_schedule_id,
+            a.payable_amount AS payable_amount,
+            a.status AS c_status,
+            a.p_status AS p_status,
+            sch.date AS appointment_schedule_date,  
+            sch.start_time AS appointment_schedule_start_time,
+            sch.end_time AS appointment_schedule_end_time,
+            b.created_at 
+        FROM 
+            schedule s
+        LEFT JOIN citizen c ON c.citizend_id = s.citizen_id 
+        JOIN baptismfill b ON s.schedule_id = b.schedule_id
+        JOIN appointment_schedule a ON b.baptism_id = a.baptismfill_id
+        JOIN schedule sch ON a.schedule_id = sch.schedule_id  
+        LEFT JOIN citizen priest ON b.priest_id = priest.citizend_id AND priest.user_type = 'Priest' 
+        WHERE 
+ 
+    b.status = 'Approved' AND 
+    (a.status = 'Completed' OR a.p_status = 'Paid')
+
+ ";
+    
+        return $this->fetchAppointments($sql);
+    }
+    
+    public function getMarriageAppointments() {
+        $sql = "SELECT 
+             'Marriage' AS type,
+           mf.status AS status,
+            mf.groom_name AS fullnames,
+            mf.pr_status AS approve_priest,
+            mf.marriagefill_id AS id,
+            mf.role AS roles,
+            mf.event_name AS Event_Name,
+            c.fullname AS citizen_name,
+            s.date AS schedule_date,
+            s.start_time AS schedule_time,
+            a.appsched_id,
+            a.marriage_id,
+            mf.priest_id,
+            priest.fullname AS priest_name,
+            a.schedule_id AS appointment_schedule_id,
+            a.payable_amount AS payable_amount,
+            a.status AS c_status,
+            a.p_status AS p_status,
+            sch.date AS appointment_schedule_date,  
+            sch.start_time AS appointment_schedule_start_time,
+            sch.end_time AS appointment_schedule_end_time,
+            mf.m_created_at 
+        FROM 
+            schedule s
+        LEFT JOIN citizen c ON c.citizend_id = s.citizen_id 
+        JOIN marriagefill mf ON s.schedule_id = mf.schedule_id
+        JOIN appointment_schedule a ON mf.marriagefill_id = a.marriage_id
+        JOIN schedule sch ON a.schedule_id = sch.schedule_id
+        LEFT JOIN citizen priest ON mf.priest_id = priest.citizend_id AND priest.user_type = 'Priest' 
+        WHERE 
+
+    mf.status = 'Approved' AND 
+    (a.status = 'Completed' OR a.p_status = 'Paid')";
+    
+        return $this->fetchAppointments($sql);
+    }public function getDefuctomAppointments() {
+        $sql = "SELECT 
+        'Defuctom' AS type,
+          df.status AS status,
+            df.d_fullname AS fullnames,
+            df.pr_status AS approve_priest,
+            df.defuctomfill_id AS id,
+            df.role AS roles,
+            df.event_name AS Event_Name,
+            c.fullname AS citizen_name,
+            s.date AS schedule_date,
+            s.start_time AS schedule_time,
+            a.appsched_id,
+            a.defuctom_id,  
+            df.priest_id,
+            priest.fullname AS priest_name,
+            a.schedule_id AS appointment_schedule_id,
+            a.payable_amount AS payable_amount,
+            a.status AS c_status,
+            a.p_status AS p_status,
+            df.d_created_at 
+        FROM 
+            schedule s
+        LEFT JOIN citizen c ON c.citizend_id = s.citizen_id 
+        JOIN defuctomfill df ON s.schedule_id = df.schedule_id
+        JOIN appointment_schedule a ON df.defuctomfill_id = a.defuctom_id
+        LEFT JOIN citizen priest ON df.priest_id = priest.citizend_id AND priest.user_type = 'Priest' 
+        WHERE 
+    
+    df.status = 'Approved' AND 
+    (a.status = 'Completed' OR a.p_status = 'Paid') ";
+    
+        return $this->fetchAppointments($sql);
+    }private function fetchAppointments($sql) {
+        $result = $this->conn->query($sql);
+        
+        if ($result === FALSE) {
+            die("Error: " . $this->conn->error);
+        }
+    
+        $appointments = [];
+        while ($row = $result->fetch_assoc()) {
+            $appointments[] = $row;
+        }
+        return $appointments;
+    }
+    
+    public function getPendingAppointments() {
+        $confirmationAppointments = $this->getConfirmationAppointments();
+        $baptismAppointments = $this->getBaptismAppointments();
+        $marriageAppointments = $this->getMarriageAppointments();
+        $defuctomAppointments = $this->getDefuctomAppointments();
+    
+        // Combine all appointments into one array
+        $allAppointments = array_merge($confirmationAppointments,$baptismAppointments, $marriageAppointments, $defuctomAppointments);
+    
+        // Sort all appointments based on the correct created_at timestamp for each event type
+        usort($allAppointments, function($a, $b) {
+            // Determine the correct created_at field for each event type
+            $createdAtFieldA = $a['type'] === 'Confirmation' ? $a['c_created_at'] :
+                                 ($a['type'] === 'Baptism' ? $a['created_at'] :
+                               ($a['type'] === 'Marriage' ? $a['m_created_at'] :
+                               ($a['type'] === 'Defuctom' ? $a['d_created_at'] : '0'))); // Adjust based on your actual fields
+    
+            $createdAtFieldB =  $b['type'] === 'Confirmation' ? $b['c_created_at'] :
+                                ($b['type'] === 'Baptism' ? $b['created_at'] :
+                               ($b['type'] === 'Marriage' ? $b['m_created_at'] :
+                               ($b['type'] === 'Defuctom' ? $b['d_created_at'] : '0'))); // Adjust based on your actual fields
+    
+            // Convert created_at timestamps to UNIX timestamps for comparison
+            $aCreatedAt = strtotime($createdAtFieldA ?? '0');
+            $bCreatedAt = strtotime($createdAtFieldB ?? '0');
+    
+            // First, sort by created_at timestamp (ascending order)
+            if ($aCreatedAt !== $bCreatedAt) {
+                return $aCreatedAt - $bCreatedAt; // Ascending order
+            }
+    
+            // If created_at timestamps are the same, then sort by event type
+            $eventOrder = ['Baptism','Confirmation', 'Marriage', 'Defuctom'];
+            return array_search($a['type'], $eventOrder) - array_search($b['type'], $eventOrder);
+        });
+    
+        return $allAppointments;
+    }
     public function getBaptismRecords() {
         // Combined SQL query using UNION
         $sql = "SELECT 

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -71,7 +72,7 @@
           <div class="sidebar-content">
             <ul class="nav nav-secondary">
               <li class="nav-item active">
-                <a href="PriestDashboard.php">
+                <a href="index.php">
                   <i class="fas fa-home"></i>
                   <p>Schedule</p>
                 </a>
